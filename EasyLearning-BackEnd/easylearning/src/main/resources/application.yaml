@@ -1,0 +1,42 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: test
+
+  # Database connection properties
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/easyLearning?createDatabaseIfNotExist=true
+    username: root
+    password:
+
+  # Hibernate properties
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: workflowttp@gmail.com
+    password: mytk qdlt eyfl xfby
+    fromEmail: workflowttp@gmail.com
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+jwt:
+  signerKey: "a0YJZqjYV1ny1WVzrErLD1cWFmSiTfzDOIhsYH+Fw45JDN6WukcgWRWd+4zka+9G"
+  valid-duration: 36000  # in seconds
+  refreshable-duration: 36000  # in seconds
+
+
+
