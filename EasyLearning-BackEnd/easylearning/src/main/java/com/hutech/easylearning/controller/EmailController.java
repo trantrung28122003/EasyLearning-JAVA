@@ -35,12 +35,19 @@ public class EmailController {
         } catch (Exception ex) {
             ex.printStackTrace();
             return ApiResponse.<String>builder()
+<<<<<<< HEAD
                     .code(500)
+=======
+                    .code(500) // Internal server error
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
                     .message("Failed to send email")
                     .build();
         }
     }
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 }

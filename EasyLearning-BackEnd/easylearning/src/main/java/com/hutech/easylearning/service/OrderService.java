@@ -5,17 +5,26 @@ import com.hutech.easylearning.dto.request.OrderRequest;
 import com.hutech.easylearning.entity.Order;
 import com.hutech.easylearning.entity.OrderDetail;
 import com.hutech.easylearning.repository.OrderRepository;
+<<<<<<< HEAD
 import jakarta.validation.constraints.Email;
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+<<<<<<< HEAD
 import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+=======
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 import java.util.List;
 
 @Service
@@ -34,8 +43,11 @@ public class OrderService {
     @Autowired
     OrderDetailService orderDetailService;
 
+<<<<<<< HEAD
     @Autowired
     EmailService emailService;
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 
 
     @Transactional(readOnly = true)
@@ -52,7 +64,10 @@ public class OrderService {
     @Transactional
     public Order createOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)
@@ -77,6 +92,7 @@ public class OrderService {
                     .isDeleted(false)
                     .build();
             orderDetailService.createOrderDetail(orderDetail);
+<<<<<<< HEAD
             shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
 
@@ -98,6 +114,9 @@ public class OrderService {
         }
         emailService.sendEmailPaymentAsync(toEmail, subject, customerName, totalAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
 
+=======
+        }
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         return saveOrder;
     }
 

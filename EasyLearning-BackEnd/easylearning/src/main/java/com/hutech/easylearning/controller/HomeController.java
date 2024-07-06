@@ -1,5 +1,6 @@
 package com.hutech.easylearning.controller;
 
+<<<<<<< HEAD
 
 import com.hutech.easylearning.dto.reponse.RoleResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
@@ -26,4 +27,7 @@ public class HomeController {
     }
 
 
+=======
+public class HomeController {
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 }

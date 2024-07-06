@@ -72,6 +72,7 @@ public class User {
     ShoppingCart shoppingCart;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     Set<Order> orders;
 
     public boolean getIsDeleted() {

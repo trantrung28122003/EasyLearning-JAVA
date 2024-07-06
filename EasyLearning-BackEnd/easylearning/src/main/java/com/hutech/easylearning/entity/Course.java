@@ -1,7 +1,10 @@
 package com.hutech.easylearning.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hutech.easylearning.enums.CourseType;
 import jakarta.persistence.*;
@@ -101,7 +104,11 @@ public class Course {
     @JsonManagedReference
     Set<ShoppingCartItem> shoppingCartItems;
 
+<<<<<<< HEAD
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+=======
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
     @JsonManagedReference
     Set<OrderDetail> orderDetails;
 

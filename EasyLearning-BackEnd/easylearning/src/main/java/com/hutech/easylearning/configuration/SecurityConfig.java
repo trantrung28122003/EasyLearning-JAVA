@@ -22,9 +22,14 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {"/users",
             "/auth/login", "/auth/introspect",
             "/auth/register", "/auth/logout",
+<<<<<<< HEAD
             "/auth/refresh",
             "/email/sendVerificationCode",
 
+=======
+            "/auth/refresh", "/payment/confirmPaymentMomoClient",
+            "/email/sendVerificationCode",
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
@@ -39,7 +44,10 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+<<<<<<< HEAD
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
                         .anyRequest().authenticated());
 
         httpSecurity.oauth2ResourceServer(oauth2 ->
