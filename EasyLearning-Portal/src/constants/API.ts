@@ -1,8 +1,11 @@
-interface APIRequest {
-  method: string;
-  url: string;
-  requestBody: any;
-  token: string | null;
-}
+const BASE_URL = "http://localhost:8080";
+/* 
+  authentication
+*/
+const BASE_URL_AUTHEN = BASE_URL + "/auth";
+const URL_AUTHEN_LOGIN = BASE_URL_AUTHEN + "/login";
+/* 
+  authentication
+*/
 
-export const API: APIRequest[] = [];
+export { URL_AUTHEN_LOGIN };

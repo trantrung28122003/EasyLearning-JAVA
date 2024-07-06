@@ -5,4 +5,5 @@ export interface ApplicationRoute {
 
 export interface FullApplicationRoute extends ApplicationRoute {
   isProtected: boolean;
+  isAdmin: boolean;
 }

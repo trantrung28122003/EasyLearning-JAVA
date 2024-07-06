@@ -13,6 +13,10 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -20,17 +24,15 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/login", "/auth/introspect",
-            "/auth/register", "/auth/logout",
-            "/auth/refresh",
-            "/email/sendVerificationCode",
-            "/auth/refresh", "/payment/confirmPaymentMomoClient",
-
+            "/auth/login",
+            "/auth/introspect",
+            "/auth/register"
     };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
-            "/topThreeMostRegisteredCourses", "/customer/searchCourseByName"
-            , "/payment/confirmPaymentMomoClient"
+            "/topThreeMostRegisteredCourses",
+            "/customer/searchCourseByName",
+            "/payment/confirmPaymentMomoClient"
     };
 
 
@@ -50,7 +52,13 @@ public class SecurityConfig {
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
-
+        httpSecurity.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(List.of("*"));
+            configuration.setAllowedMethods(List.of("*"));
+            configuration.setAllowedHeaders(List.of("*"));
+            return configuration;
+        }));
         return httpSecurity.build();
     }
 

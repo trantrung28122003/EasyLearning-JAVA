@@ -53,8 +53,8 @@ public class ApplicationInitConfig {
             {
                 List<String> defaultRoleADMIN = List.of("ADMIN");
                 var roles = roleRepository.findByNameIn(defaultRoleNames);
-                User user = User.builder().userName("admin")
-                        .password(passwordEncoder.encode("admin"))
+                User user = User.builder().userName("SuperAdmin")
+                        .password(passwordEncoder.encode("Password@1234"))
                         .email("workflowttp@gmail.com")
                         .fullName("Administrator")
                         .dateCreate(LocalDateTime.now())

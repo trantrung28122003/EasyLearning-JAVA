@@ -1,5 +1,9 @@
-const IsLogin = () => {
+const isUserLogin = () => {
   return false;
 };
 
-export { IsLogin };
+const getUserInfo = () => {
+  return null;
+};
+
+export { isUserLogin, getUserInfo };
