@@ -3,8 +3,8 @@ import axios from "axios";
 const DoCallAPIWithToken = async <T>(
   token: string | null,
   url: string,
-  requestBody: T,
-  method: string
+  method: string,
+  requestBody?: T
 ) => {
   return axios({
     method: method,

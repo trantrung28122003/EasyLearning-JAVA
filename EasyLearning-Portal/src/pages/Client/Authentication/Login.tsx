@@ -1,11 +1,19 @@
 import React from "react";
 import AuthenticationShared from "./Shared/AuthenticationShared";
-import LoginRequest from "../../../model/Authentication";
-import { DoCallAPIWithOutToken } from "../../../services/HttpService";
-import { URL_AUTHEN_LOGIN } from "../../../constants/API";
+import {
+  DoCallAPIWithOutToken,
+  DoCallAPIWithToken,
+} from "../../../services/HttpService";
+import { GET_USER_INFO_URL, LOGIN_URL } from "../../../constants/API";
 import * as yup from "yup";
-import { ErrorMessage, Field, Form, Formik } from "formik";
+import { Field, Form, Formik } from "formik";
+import { useNavigate } from "react-router-dom";
+import { getCredentials } from "../../../hooks/useLogin";
+import { HTTP_OK } from "../../../constants/HTTPCode";
+import { LoginRequest } from "../../../model/Authentication";
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+
   const schema = yup.object().shape({
     userName: yup
       .string()
@@ -16,8 +24,25 @@ const Login: React.FC = () => {
   });
 
   const doLogin = (user: LoginRequest) => {
-    DoCallAPIWithOutToken(URL_AUTHEN_LOGIN, user, "post").then((res) => {
-      console.log(res);
+    DoCallAPIWithOutToken<LoginRequest>(LOGIN_URL, user, "post").then((res) => {
+      if (res.status === HTTP_OK) {
+        localStorage.setItem("authentication", JSON.stringify(res.data.result));
+        fetchCurrentUser();
+      }
+    });
+  };
+
+  const fetchCurrentUser = () => {
+    const token = getCredentials();
+    console.log(token);
+    DoCallAPIWithToken(token, GET_USER_INFO_URL, "get").then((res) => {
+      if (res.status === HTTP_OK) {
+        console.log(res.data.result);
+        localStorage.setItem("user_info", JSON.stringify(res.data.result));
+        navigate("/");
+      } else {
+        navigate("/login-fail");
+      }
     });
   };
 
@@ -27,7 +52,6 @@ const Login: React.FC = () => {
         initialValues={{ userName: "", password: "" }}
         validationSchema={schema}
         onSubmit={(values: LoginRequest) => {
-          console.log("Form submitted:", values);
           doLogin(values);
         }}
         validateOnChange

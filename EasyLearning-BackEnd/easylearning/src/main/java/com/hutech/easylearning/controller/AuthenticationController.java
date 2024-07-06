@@ -32,7 +32,7 @@ public class AuthenticationController {
     UserService userService;
 
     @PostMapping("/login")
-    ApiResponse<AuthenticationResponse> authenticate (@RequestBody AuthenticationRequest request)
+    public ApiResponse<AuthenticationResponse> authenticate (@RequestBody AuthenticationRequest request)
     {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()

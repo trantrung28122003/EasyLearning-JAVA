@@ -49,7 +49,7 @@ public class ApplicationInitConfig {
                 }
             }
 
-            if(userRepository.findByUserName("admin").isEmpty())
+            if(userRepository.findByUserName("SuperAdmin").isEmpty())
             {
                 List<String> defaultRoleADMIN = List.of("ADMIN");
                 var roles = roleRepository.findByNameIn(defaultRoleNames);
