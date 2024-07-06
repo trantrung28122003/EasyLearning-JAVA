@@ -22,7 +22,11 @@ public class PaymentService {
         String accessKey = "iPXneGmrJH0G8FOP";
         String secretKey = "sFcbSGRSJjwGxwhhcEktCHWYUuTuPNDB";
         String returnUrl = "http://localhost:8080/payment/confirmPaymentMomoClient";
+<<<<<<< HEAD
         String notifyUrl = "https://a0be-171-240-253-237.ngrok-free.app/payment/confirmPaymentMomoClient";
+=======
+        String notifyUrl = "https://4c8d-2001-ee0-5045-50-58c1-b2ec-3123-740d.ap.ngrok.io/Home/SavePayment";
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         String orderId = String.valueOf(System.currentTimeMillis());
         String requestId = String.valueOf(System.currentTimeMillis());
         String extraData = "";
@@ -37,10 +41,16 @@ public class PaymentService {
                 "&notifyUrl=" + notifyUrl +
                 "&extraData=" + extraData;
 
+<<<<<<< HEAD
         System.out.println("Raw hash: " + rawHash);
 
         String signature = signSHA256(rawHash, secretKey);
         System.out.println("Signature: " + signature);
+=======
+        System.out.println("Raw hash: " + rawHash); // Debugging
+        String signature = signSHA256(rawHash, secretKey);
+        System.out.println("Signature: " + signature); // Debugging
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 
         JSONObject message = new JSONObject();
         message.put("partnerCode", partnerCode);

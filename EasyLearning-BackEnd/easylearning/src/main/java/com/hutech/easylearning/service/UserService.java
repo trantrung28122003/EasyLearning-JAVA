@@ -66,6 +66,10 @@ public class UserService {
     }
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         var userImageUrl = "defalut";
         if(request.getImageUrl() != null)
         {

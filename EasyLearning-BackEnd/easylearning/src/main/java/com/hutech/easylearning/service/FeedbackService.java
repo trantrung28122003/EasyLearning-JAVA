@@ -1,6 +1,7 @@
 package com.hutech.easylearning.service;
 
 
+<<<<<<< HEAD
 import com.hutech.easylearning.dto.reponse.FeedbackInfoResponse;
 import com.hutech.easylearning.dto.reponse.FeedbackResponse;
 import com.hutech.easylearning.dto.request.FeedbackCreationRequest;
@@ -19,6 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+=======
+import com.hutech.easylearning.entity.Feedback;
+import com.hutech.easylearning.repository.FeedbackRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 import java.util.List;
 
 @Service
@@ -28,11 +39,14 @@ public class FeedbackService {
 
     FeedbackRepository feedbackRepository;
 
+<<<<<<< HEAD
     OrderDetailRepository orderDetailRepository;
 
     @Autowired
     UserService userService;
 
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
     @Transactional(readOnly = true)
     public List<Feedback> getAllFeedbacks() {
         return feedbackRepository.findAll();
@@ -44,6 +58,7 @@ public class FeedbackService {
                 .orElseThrow(() -> new RuntimeException("Feedback not found with id: " + id));
     }
 
+<<<<<<< HEAD
 
     @Transactional(readOnly = true)
     public FeedbackResponse getFeedbackByCourse(String courseId) {
@@ -89,10 +104,15 @@ public class FeedbackService {
                 .changedBy(currentUser.getId())
                 .isDeleted(false)
                 .build();
+=======
+    @Transactional
+    public Feedback createFeedback(Feedback feedback) {
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         return feedbackRepository.save(feedback);
     }
 
     @Transactional
+<<<<<<< HEAD
     public Feedback updateFeedback(String feedbackId, FeedbackUpdateRequest request) {
         var feedback = getFeedbackById(feedbackId);
         var currentUser = userService.getMyInfo();
@@ -104,6 +124,9 @@ public class FeedbackService {
         feedback.setFeedbackRating(request.getFeedbackRating());
         feedback.setDateChange(LocalDateTime.now());
         feedback.setChangedBy(currentUser.getId());
+=======
+    public Feedback updateFeedback(Feedback feedback) {
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         return feedbackRepository.save(feedback);
     }
 

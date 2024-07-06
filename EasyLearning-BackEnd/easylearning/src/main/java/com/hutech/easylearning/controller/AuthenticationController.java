@@ -31,6 +31,11 @@ public class AuthenticationController {
     @Autowired
     UserService userService;
 
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate (@RequestBody AuthenticationRequest request)
     {

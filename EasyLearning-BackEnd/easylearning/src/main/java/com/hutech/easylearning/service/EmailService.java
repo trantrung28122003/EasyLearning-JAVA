@@ -11,9 +11,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+<<<<<<< HEAD
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.List;
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 import java.util.Properties;
 
 @Service
@@ -37,11 +40,24 @@ public class EmailService {
 
     public void sendVerificationCode(String toEmail, String subject, String verificationCode) throws MessagingException, IOException {
         // Đọc template email
+<<<<<<< HEAD
         String emailTemplatePath = Paths.get("easylearning/src/main/resources/templates/Email/EmailVerification.html").toString();
         String emailTemplate = new String(Files.readAllBytes(Paths.get(emailTemplatePath)));
 
         String emailBody = emailTemplate.replace("[verificationCode]", verificationCode);
 
+=======
+        String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailVerification.html").toString();
+        Path absolutePath = Paths.get("src", "main", "resources", "templates", "Email", "EmailVerification.html").toAbsolutePath();
+        System.out.println("Absolute Path: " + absolutePath.toString());
+
+        String emailTemplate = new String(Files.readAllBytes(Paths.get(absolutePath.toString())));
+
+
+        String emailBody = emailTemplate.replace("[verificationCode]", verificationCode);
+
+
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
         Properties properties = new Properties();
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", String.valueOf(port));
@@ -66,6 +82,7 @@ public class EmailService {
         Transport.send(msg);
         System.out.println("Email sent successfully.");
     }
+<<<<<<< HEAD
 
     public void sendEmailPaymentAsync(String toEmail, String subject, String customerName, String totalAmount, String totalCourses, String authorizationCode, String orderDate, List<String> courseNameList) {
         try {
@@ -122,4 +139,6 @@ public class EmailService {
             throw new RuntimeException(ex);
         }
     }
+=======
+>>>>>>> 1ef5b29a805965381a5e5a9f235252655d37f369
 }
