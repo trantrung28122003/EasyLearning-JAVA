@@ -1,6 +1,8 @@
 package com.hutech.easylearning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +19,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+
 public class Order{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,9 +55,11 @@ public class Order{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_user", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonBackReference
     User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @JsonManagedReference
     Set<OrderDetail> orderDetails;
 }
 

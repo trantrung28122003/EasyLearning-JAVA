@@ -1,6 +1,8 @@
 package com.hutech.easylearning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +28,7 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonBackReference
     Order order;
 
     @Column(name = "Course_Id")
@@ -33,6 +36,7 @@ public class OrderDetail {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "Course_Id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonBackReference
     Course course;
 
     @Column(name = "dateCreate")

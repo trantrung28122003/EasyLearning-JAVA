@@ -5,15 +5,17 @@ import com.hutech.easylearning.dto.request.OrderRequest;
 import com.hutech.easylearning.entity.Order;
 import com.hutech.easylearning.entity.OrderDetail;
 import com.hutech.easylearning.repository.OrderRepository;
+import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.time.format.DateTimeFormatter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +34,8 @@ public class OrderService {
     @Autowired
     OrderDetailService orderDetailService;
 
+    @Autowired
+    EmailService emailService;
 
 
     @Transactional(readOnly = true)
@@ -48,6 +52,7 @@ public class OrderService {
     @Transactional
     public Order createOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
+
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)
@@ -72,7 +77,27 @@ public class OrderService {
                     .isDeleted(false)
                     .build();
             orderDetailService.createOrderDetail(orderDetail);
+            shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
+
+        var currentUser = userService.getMyInfo();
+        var toEmail = currentUser.getEmail();
+        var subject = "Thanh toán thành công trên trang eLearning";
+        var customerName = currentUser.getFullName();
+        var totalAmount = String.valueOf(orderAmount);
+        var totalCourses = String.valueOf(shoppingCartItems.size());
+        var authorizationCode = order.getId();
+        LocalDateTime orderDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String orderDateString = orderDate.format(formatter);
+
+        List<String> courseByNames = new ArrayList<>();
+
+        for (var itemShoppingCart : shoppingCartItems) {
+            courseByNames.add(itemShoppingCart.getCourse().getCourseName());
+        }
+        emailService.sendEmailPaymentAsync(toEmail, subject, customerName, totalAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
+
         return saveOrder;
     }
 

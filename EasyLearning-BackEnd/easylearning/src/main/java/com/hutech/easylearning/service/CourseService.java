@@ -2,20 +2,17 @@ package com.hutech.easylearning.service;
 
 import com.hutech.easylearning.dto.request.CourseCreationRequest;
 import com.hutech.easylearning.dto.request.CourseUpdateRequest;
-import com.hutech.easylearning.entity.Course;
-import com.hutech.easylearning.entity.CourseDetail;
-import com.hutech.easylearning.entity.TrainerDetail;
+import com.hutech.easylearning.entity.*;
 import com.hutech.easylearning.enums.CourseType;
-import com.hutech.easylearning.repository.CourseRepository;
-import com.hutech.easylearning.repository.UserRepository;
+import com.hutech.easylearning.repository.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,7 +34,12 @@ public class CourseService {
     @Autowired
     TrainerDetailService trainerDetailService;
 
-
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private CourseDetailRepository courseDetailRepository;
 
 
     @Transactional(readOnly = true)
@@ -149,7 +151,6 @@ public class CourseService {
         return courseRepository.save(courseById);
     }
 
-
     @Transactional
     public void deleteCourse(String id) {
         courseRepository.deleteById(id);
@@ -160,5 +161,41 @@ public class CourseService {
         Course course = getCourseById(id);
         course.setDeleted(true);
         courseRepository.save(course);
+    }
+
+
+    @Transactional
+    public List<Course> getTopThreeMostRegisteredCourses() {
+        return courseRepository.findTop3ByOrderByRegisteredUsersDesc();
+    }
+
+    @Transactional
+    public List<Course> getCoursePurchasedByUser() {
+        List<Course> courses = new ArrayList<>();
+        List<String> courseIds = new ArrayList<>();
+        var currentUser = userService.getMyInfo();
+        if (currentUser != null) {
+            List<Order> orders = orderRepository.findOrderByUserId(currentUser.getId());
+            for (Order order : orders) {
+                List<OrderDetail> orderDetails = order.getOrderDetails().stream().toList();
+
+                for (OrderDetail orderDetail : orderDetails) {
+                    String courseId = orderDetail.getCourseId();
+                    Course course = courseRepository.findById(courseId).orElse(null);
+                    if (course != null) {
+                        courseIds.add(course.getId());
+                    } else {
+                        System.err.println("Course with id " + courseId + " not found.");
+                    }
+                }
+            }
+        } else {
+            System.err.println("Current user not found.");
+        }
+        return courseRepository.findAllById(courseIds);
+    }
+
+    public List<Course> searchCoursesByName(String courseName) {
+        return courseRepository.findByCourseNameContainingIgnoreCase(courseName);
     }
 }

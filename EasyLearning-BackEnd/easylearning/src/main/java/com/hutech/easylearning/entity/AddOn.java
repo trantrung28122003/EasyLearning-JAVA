@@ -1,6 +1,7 @@
 package com.hutech.easylearning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -49,6 +50,7 @@ public class AddOn {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "courses_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonBackReference
     Course course;
 }
 

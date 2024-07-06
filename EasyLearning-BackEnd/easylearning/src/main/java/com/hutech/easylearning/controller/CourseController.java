@@ -43,7 +43,4 @@ public class CourseController {
                 .result(courseService.updateCourse(courseId, request))
                 .build();
     }
-
-
-
 }

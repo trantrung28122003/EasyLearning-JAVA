@@ -2,18 +2,25 @@ package com.hutech.easylearning.service;
 
 
 import com.hutech.easylearning.dto.reponse.ShoppingCartResponse;
+import com.hutech.easylearning.dto.request.ShoppingCartItemRequest;
 import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.ShoppingCartItem;
 import com.hutech.easylearning.entity.User;
+import com.hutech.easylearning.exception.AppException;
+import com.hutech.easylearning.exception.ErrorCode;
+import com.hutech.easylearning.repository.ShoppingCartItemRepository;
 import com.hutech.easylearning.repository.ShoppingCartRepository;
+import com.hutech.easylearning.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,11 +30,9 @@ public class ShoppingCartService {
 
     ShoppingCartRepository shoppingCartRepository;
 
-    @Autowired
-    UserService userService;
+    UserRepository userRepository;
 
-    @Autowired
-    ShoppingCartItemService shoppingCartItemService;
+    ShoppingCartItemRepository shoppingCartItemRepository;
 
     @Transactional(readOnly = true)
     public List<ShoppingCart> getAllShoppingCarts() {
@@ -50,9 +55,12 @@ public class ShoppingCartService {
 
     @Transactional(readOnly = true)
     public ShoppingCartResponse getShoppingCartByCurrentUser() {
-        var currentUser = userService.getMyInfo();
+        var context = SecurityContextHolder.getContext();
+        String userName = context.getAuthentication().getName();
+        var currentUser = userRepository.findByUserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
-        var shoppingCartItems = shoppingCartItemService.getShoppingCartItemByShoppingCart(shoppingCart.getId());
+
+        var shoppingCartItems =  shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId());
         BigDecimal totalPrice = calculateTotalPrice(shoppingCartItems);
         shoppingCart.setTotalPrice(totalPrice);
         shoppingCartRepository.save(shoppingCart);
@@ -72,7 +80,14 @@ public class ShoppingCartService {
     }
 
     @Transactional
-    public ShoppingCart createShoppingCart(ShoppingCart shoppingCart) {
+    public ShoppingCart createShoppingCartByUser(String userId) {
+        ShoppingCart shoppingCart = ShoppingCart.builder()
+                .userId(userId)
+                .dateCreate(LocalDateTime.now())
+                .dateChange(LocalDateTime.now())
+                .changedBy(userId)
+                .isDeleted(false)
+                .build();
         return shoppingCartRepository.save(shoppingCart);
     }
 

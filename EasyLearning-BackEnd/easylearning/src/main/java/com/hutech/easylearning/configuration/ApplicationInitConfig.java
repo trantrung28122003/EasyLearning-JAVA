@@ -31,7 +31,6 @@ public class ApplicationInitConfig {
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
-            // Tạo các vai trò "ADMIN" và "USER" nếu chúng chưa tồn tại
             List<String> defaultRoleNames = List.of("ADMIN", "USER");
             for (String roleName : defaultRoleNames) {
                 if (roleRepository.findByName(roleName).isEmpty()) {

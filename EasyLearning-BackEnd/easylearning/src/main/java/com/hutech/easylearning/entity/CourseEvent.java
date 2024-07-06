@@ -1,6 +1,7 @@
 package com.hutech.easylearning.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hutech.easylearning.enums.CourseEventType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -56,6 +57,6 @@ public class CourseEvent {
     boolean isDeleted;
 
     @OneToMany(mappedBy = "courseEvent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     Set<TrainingPart> trainingParts;
 }

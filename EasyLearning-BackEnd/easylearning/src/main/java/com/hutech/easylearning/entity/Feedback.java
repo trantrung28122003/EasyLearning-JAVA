@@ -1,6 +1,7 @@
 package com.hutech.easylearning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -47,5 +48,6 @@ public class Feedback {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feedback_courese_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JsonBackReference
     Course course;
 }

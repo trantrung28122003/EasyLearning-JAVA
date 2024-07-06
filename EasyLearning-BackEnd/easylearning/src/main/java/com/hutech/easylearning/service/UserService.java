@@ -35,6 +35,8 @@ public class UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
     //@PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
@@ -57,9 +59,13 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse getMyInfoByUserId(String userId)
+    {
+        var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        return userMapper.toUserResponse(user);
+    }
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
-
         var userImageUrl = "defalut";
         if(request.getImageUrl() != null)
         {
@@ -80,6 +86,8 @@ public class UserService {
         user.setRoles(new HashSet<>(roles));
         try {
             user = userRepository.save(user);
+            shoppingCartService.createShoppingCartByUser(user.getId());
+
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
