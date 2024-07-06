@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const DoCallAPI = async <T>(
+const DoCallAPIWithToken = async <T>(
   token: string | null,
   url: string,
   requestBody: T,
@@ -16,3 +16,17 @@ export const DoCallAPI = async <T>(
     },
   });
 };
+
+const DoCallAPIWithOutToken = async <T>(
+  url: string,
+  requestBody: T,
+  method: string
+) => {
+  return axios({
+    method: method,
+    url: url,
+    data: requestBody,
+  });
+};
+
+export { DoCallAPIWithToken, DoCallAPIWithOutToken };
