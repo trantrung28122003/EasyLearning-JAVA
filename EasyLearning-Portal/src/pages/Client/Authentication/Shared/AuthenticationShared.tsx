@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import footerImg from "../../../../assets/img/auth.png";
-import style from "./AuthenticationShared.module.scss";
+import style from "./AuthenticationShared.module.css";
 interface AuthenSharedProps {
   children: ReactNode;
 }

@@ -33,8 +33,7 @@ const Register: React.FC = () => {
   });
 
   const doRegister = (account: RegisterRequest) => {
-    console.log(account);
-    //navigate("/login");
+    navigate("/login");
   };
 
   return (
