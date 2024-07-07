@@ -8,11 +8,17 @@ export interface LoginResponse {
   token: string;
 }
 
-export interface RegisterRequest {
+export interface APIRegisterRequest {
   userName: string;
   email: string;
   fullName: string;
   dayOfBirth: Date | null;
+  imageName: string | null;
   imageUrl: File | null;
   password: string;
+}
+
+export interface RegisterRequest extends APIRegisterRequest {
+  confirmPassword: string;
+  termAndConditions: boolean;
 }
