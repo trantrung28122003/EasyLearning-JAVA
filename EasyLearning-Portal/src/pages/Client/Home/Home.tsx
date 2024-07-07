@@ -1,82 +1,15 @@
 import React from "react";
-import styled from "./Home.module.scss";
+import styled from "./Home.module.css";
 import ClientShared from "../Shared/ClientShared";
-
+import AboutImg from "../../../assets/img/about.jpg";
+import Cat1Img from "../../../assets/img/cat-1.jpg";
+import Cat2Img from "../../../assets/img/cat-2.jpg";
+import Cat3Img from "../../../assets/img/cat-3.jpg";
+import Cat4Img from "../../../assets/img/cat-4.jpg";
 const Home: React.FC = () => {
   return (
     <ClientShared>
       <div className={styled.home}>
-        <div className="container-fluid p-0 mb-5">
-          <div className="owl-carousel header-carousel position-relative">
-            <div className="owl-carousel-item position-relative">
-              <img className="img-fluid" src="img/carousel-1.jpg" alt="" />
-              <div
-                className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
-                style={{ background: "rgba(24, 29, 56, 0.7)" }}
-              >
-                <div className="container">
-                  <div className="row justify-content-start">
-                    <div className="col-sm-10 col-lg-8">
-                      <h5 className="text-primary text-uppercase mb-3 animated slideInDown">
-                        Các Khóa Học Tốt Nhất
-                      </h5>
-                      <h1 className="display-3 text-white animated slideInDown">
-                        Nền Tảng Bán Khóa Học Tốt Nhất Hiện Nay
-                      </h1>
-                      <p className="fs-5 text-white mb-4 pb-2"></p>
-                      <a
-                        href=""
-                        className="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft"
-                      >
-                        Xem Thêm
-                      </a>
-                      <a
-                        href=""
-                        className="btn btn-light py-md-3 px-md-5 animated slideInRight"
-                      >
-                        Tham Gia Ngay
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="owl-carousel-item position-relative">
-              <img className="img-fluid" src="img/carousel-2.jpg" alt="" />
-              <div
-                className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
-                style={{ background: "rgba(24, 29, 56, 0.7)" }}
-              >
-                <div className="container">
-                  <div className="row justify-content-start">
-                    <div className="col-sm-10 col-lg-8">
-                      <h5 className="text-primary text-uppercase mb-3 animated slideInDown">
-                        Các Khóa Học Tốt Nhất
-                      </h5>
-                      <h1 className="display-3 text-white animated slideInDown">
-                        Đăng Ký Trực Tuyến Ngay Tại Nhà
-                      </h1>
-                      <p className="fs-5 text-white mb-4 pb-2"></p>
-                      <a
-                        href=""
-                        className="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft"
-                      >
-                        Xem Thêm
-                      </a>
-                      <a
-                        href=""
-                        className="btn btn-light py-md-3 px-md-5 animated slideInRight"
-                      >
-                        Tham Gia Ngay
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-4">
@@ -157,7 +90,7 @@ const Home: React.FC = () => {
                 <div className="position-relative h-100">
                   <img
                     className="img-fluid position-absolute w-100 h-100"
-                    src="img/about.jpg"
+                    src={AboutImg}
                     alt=""
                     style={{ objectFit: "cover" }}
                   />
@@ -245,7 +178,7 @@ const Home: React.FC = () => {
                       className="position-relative d-block overflow-hidden"
                       href=""
                     >
-                      <img className="img-fluid" src="img/cat-1.jpg" alt="" />
+                      <img className="img-fluid" src={Cat1Img} alt="" />
                       <div
                         className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                         style={{ margin: "1px" }}
@@ -263,7 +196,7 @@ const Home: React.FC = () => {
                       className="position-relative d-block overflow-hidden"
                       href=""
                     >
-                      <img className="img-fluid" src="img/cat-2.jpg" alt="" />
+                      <img className="img-fluid" src={Cat2Img} alt="" />
                       <div
                         className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                         style={{ margin: "1px" }}
@@ -281,7 +214,7 @@ const Home: React.FC = () => {
                       className="position-relative d-block overflow-hidden"
                       href=""
                     >
-                      <img className="img-fluid" src="img/cat-3.jpg" alt="" />
+                      <img className="img-fluid" src={Cat3Img} alt="" />
                       <div
                         className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                         style={{ margin: "1px" }}
@@ -304,7 +237,7 @@ const Home: React.FC = () => {
                 >
                   <img
                     className="img-fluid position-absolute w-100 h-100"
-                    src="img/cat-4.jpg"
+                    src={Cat4Img}
                     alt=""
                     style={{ objectFit: "cover" }}
                   />

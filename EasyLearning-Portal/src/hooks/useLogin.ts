@@ -1,3 +1,4 @@
+import { LoginResponse } from "../model/Authentication";
 import { ApplicationResponse } from "../model/BaseResponse";
 import { User } from "../model/User";
 

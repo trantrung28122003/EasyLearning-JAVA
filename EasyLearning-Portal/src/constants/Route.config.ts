@@ -35,4 +35,18 @@ export const RoutesConfig: FullApplicationRoute[] = [
     isProtected: false,
     isAdmin: false,
   },
+  {
+    path: "/about",
+    component: LazyLoadComponent(import("../pages/Client/About/About")),
+    isProtected: false,
+    isAdmin: false,
+  },
+  {
+    path: "/shoppingCart",
+    component: LazyLoadComponent(
+      import("../pages/Client/ShoppingCart/ShoppingCart")
+    ),
+    isProtected: false,
+    isAdmin: false,
+  },
 ];
