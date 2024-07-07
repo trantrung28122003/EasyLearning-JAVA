@@ -52,7 +52,6 @@ public class AuthenticationService {
 
     OutboundIdentityClient outboundIdentityClient;
 
-    @Autowired
     OutboundUserClient outboundUserClient;
 
 
