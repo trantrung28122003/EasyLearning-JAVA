@@ -9,6 +9,7 @@ import com.hutech.easylearning.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,16 +29,16 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<Category> createCategory(@RequestBody @Valid CategoryCreationRequest request) {
+    public ApiResponse<Category> createCategory(@RequestBody @Valid CategoryCreationRequest request , @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<Category>builder()
-                .result(categoryService.createCategory(request))
+                .result(categoryService.createCategory(request, file))
                 .build();
     }
 
     @PutMapping("/update/{categoryId}")
-    public ApiResponse<Category> updateCategory(@PathVariable("categoryId") String categoryId ,@RequestBody @Valid CategoryUpdateRequest request) {
+    public ApiResponse<Category> updateCategory(@PathVariable("categoryId") String categoryId ,@RequestBody @Valid CategoryUpdateRequest request, @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<Category>builder()
-                .result(categoryService.updateCategory(categoryId, request))
+                .result(categoryService.updateCategory(categoryId, request, file))
                 .build();
     }
 

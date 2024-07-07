@@ -29,8 +29,6 @@ public class CourseCreationRequest {
 
     String courseContent;
 
-    String imageUrl;
-
     String instructor;
 
     LocalDateTime startDate;

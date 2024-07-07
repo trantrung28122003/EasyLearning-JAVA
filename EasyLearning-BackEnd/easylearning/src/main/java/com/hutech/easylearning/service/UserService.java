@@ -13,9 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -29,16 +31,20 @@ public class UserService {
 
     @Autowired
     private UserMapper userMapper;
+
     @Autowired
-
-
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private RoleRepository roleRepository;
+
     @Autowired
     private ShoppingCartService shoppingCartService;
 
-    //@PreAuthorize("hasRole('ADMIN')")
+    @Autowired
+    private UploaderService uploaderService;
+
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method getUsers");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
@@ -64,12 +70,12 @@ public class UserService {
         var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
-    public UserResponse createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request, MultipartFile file) {
         User user = userMapper.toUser(request);
-        var userImageUrl = "defalut";
-        if(request.getImageUrl() != null)
+        String userImageUrl = "http://res.cloudinary.com/dofr3xzmi/image/upload/v1720255836/aoy4tixw5shd9cxh5ep1.jpg";
+        if(file != null)
         {
-           // userImageUrl = _fileService.SaveFile(request.Avatar);
+           userImageUrl = uploaderService.uploadFile(file);
         }
         user.setImageUrl(userImageUrl);
         user.setDateCreate(LocalDateTime.now());

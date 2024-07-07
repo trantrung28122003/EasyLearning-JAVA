@@ -9,8 +9,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/easyLearning?createDatabaseIfNotExist=true
     username: root
-    #password:
-    password: Password@1234
+    password:
+    #password: Password@1234
 
   # Hibernate properties
   jpa:
@@ -33,6 +33,12 @@ spring:
           auth: true
           starttls:
             enable: true
+
+outbound:
+  identity:
+    client-id: "<clientId>"
+    client-secret: "<clientSecret>"
+    redirect-uri: ""
 
 jwt:
   signerKey: "a0YJZqjYV1ny1WVzrErLD1cWFmSiTfzDOIhsYH+Fw45JDN6WukcgWRWd+4zka+9G"

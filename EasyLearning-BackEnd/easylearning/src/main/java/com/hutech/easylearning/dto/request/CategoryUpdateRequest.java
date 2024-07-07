@@ -16,8 +16,6 @@ public class CategoryUpdateRequest {
 
     String categoryName;
 
-    String imageLink;
-
     Integer sortOrder;
 
     LocalDateTime dateCreate;

@@ -2,27 +2,28 @@ package com.hutech.easylearning.service;
 
 import com.hutech.easylearning.dto.reponse.AuthenticationResponse;
 import com.hutech.easylearning.dto.reponse.IntrospectResponse;
-import com.hutech.easylearning.dto.request.AuthenticationRequest;
-import com.hutech.easylearning.dto.request.IntrospectRequest;
-import com.hutech.easylearning.dto.request.LogoutRequest;
-import com.hutech.easylearning.dto.request.RefreshRequest;
+import com.hutech.easylearning.dto.request.*;
 import com.hutech.easylearning.entity.InvalidatedToken;
+import com.hutech.easylearning.entity.Role;
 import com.hutech.easylearning.entity.User;
 import com.hutech.easylearning.exception.AppException;
 import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.repository.InvalidatedTokenRepository;
+import com.hutech.easylearning.repository.RoleRepository;
+import com.hutech.easylearning.repository.httpclient.OutboundIdentityClient;
 import com.hutech.easylearning.repository.UserRepository;
+import com.hutech.easylearning.repository.httpclient.OutboundUserClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimNames;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.juli.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,11 +31,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -42,18 +41,50 @@ import java.util.UUID;
 public class AuthenticationService {
 
     @Autowired
+
     private UserRepository userRepository ;
+    @Autowired
+
+    private RoleRepository roleRepository ;
+
     @Autowired
     private InvalidatedTokenRepository invalidatedTokenRepository;
 
+    OutboundIdentityClient outboundIdentityClient;
+
+    @Autowired
+    OutboundUserClient outboundUserClient;
+
+
+
+    @NonFinal
     @Value("${jwt.signerKey}")
     protected String SIGNER_KEY;
 
+    @NonFinal
     @Value("${jwt.valid-duration}")
-    protected Long VALID_DURATION;
+    protected long VALID_DURATION;
 
+    @NonFinal
     @Value("${jwt.refreshable-duration}")
-    protected Long REFRESHABLE_DURATION;
+    protected long REFRESHABLE_DURATION;
+
+    @NonFinal
+    @Value("${outbound.identity.client-id}")
+    protected String CLIENT_ID;
+
+    @NonFinal
+    @Value("${outbound.identity.client-secret}")
+    protected String CLIENT_SECRET;
+
+    @NonFinal
+    @Value("${outbound.identity.redirect-uri}")
+    protected String REDIRECT_URI;
+
+    @NonFinal
+    protected final String GRANT_TYPE = "authorization_code";
+
+
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
@@ -67,6 +98,36 @@ public class AuthenticationService {
 
         return IntrospectResponse.builder()
                 .valid(isValid)
+                .build();
+    }
+
+    public AuthenticationResponse outboundAuthenticate(String code){
+        var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+                .code(code)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .redirectUri(REDIRECT_URI)
+                .grantType(GRANT_TYPE)
+                .build());
+
+        log.info("TOKEN RESPONSE {}", response);
+        var userInfo  = outboundUserClient.getUserInfo("json", response.getAccessToken());
+
+
+        List<String> defaultRoleNames = List.of("USER");
+        var roles = roleRepository.findByNameIn(defaultRoleNames);
+        var user = userRepository.findByUserName(userInfo.getEmail()).orElseGet(
+                () -> userRepository.save(User.builder()
+                                .userName(userInfo.getEmail())
+                                .fullName(userInfo.getName())
+                                .dateChange(LocalDateTime.now())
+                                .dateChange(LocalDateTime.now())
+                                .roles(new HashSet<>(roles))
+                                .build()));
+
+        var token = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
                 .build();
     }
 

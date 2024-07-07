@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,9 +49,9 @@ public class UserController {
                 .build();
     }
     @PostMapping("/create")
-    public ApiResponse<UserResponse> CreateUser(@RequestBody @Valid UserCreationRequest request) {
+    public ApiResponse<UserResponse> CreateUser(@RequestBody @Valid UserCreationRequest request,  @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createUser(request))
+                .result(userService.createUser(request, file))
                 .build();
     }
 

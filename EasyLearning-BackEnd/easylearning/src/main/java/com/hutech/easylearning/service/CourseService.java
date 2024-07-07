@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,10 +37,9 @@ public class CourseService {
 
     @Autowired
     OrderRepository orderRepository;
+
     @Autowired
-    private OrderDetailRepository orderDetailRepository;
-    @Autowired
-    private CourseDetailRepository courseDetailRepository;
+    private UploaderService uploaderService;
 
 
     @Transactional(readOnly = true)
@@ -54,14 +54,12 @@ public class CourseService {
     }
 
     @Transactional
-    public Course createCourse(CourseCreationRequest request) {
+    public Course createCourse(CourseCreationRequest request, MultipartFile file) {
         String imageLink = "https://easylearning.blob.core.windows.net/images-videos/default_course.png";
-        if(request.getImageUrl() != null) {
-            //imageLink = fileService.saveFile(courseViewModel.getImage());
+        if(file != null) {
+            imageLink = uploaderService.uploadFile(file);
         }
-
         var currentUserInfo  =  userService.getMyInfo();
-
         String instructor = request.getInstructor() != null ? request.getInstructor() : currentUserInfo.getFullName();
         Course course = Course.builder()
                 .courseName(request.getCourseName())
@@ -110,13 +108,12 @@ public class CourseService {
     }
 
     @Transactional
-    public Course updateCourse(String courseId, CourseUpdateRequest request) {
+    public Course updateCourse(String courseId, CourseUpdateRequest request, MultipartFile file) {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
         var currentUserInfo  =  userService.getMyInfo();
-        String imageLink = request.getCurrentImageUrl();
-
-        if (request.getNewImageUrl() != null) {
-            //imageLink = fileService.saveFile(courseViewModel.getImage());
+        if (file != null) {
+            String imageLink = uploaderService.uploadFile(file);
+            courseById.setImageUrl(imageLink);
         }
 
         courseById.setCourseName(request.getCourseName());
@@ -130,7 +127,6 @@ public class CourseService {
         courseById.setRegistrationDeadline(request.getRegistrationDeadline());
         courseById.setMaxAttendees(request.getMaxAttendees());
         courseById.setInstructor(request.getInstructor());
-        courseById.setImageUrl(imageLink);
         courseById.setDateChange(LocalDateTime.now());
         courseById.setChangedBy(currentUserInfo.getId());
 

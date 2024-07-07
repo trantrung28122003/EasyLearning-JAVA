@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,6 +27,9 @@ public class CategoryService {
 
     @Autowired
     CourseDetailService courseDetailService;
+    @Autowired
+    private UploaderService uploaderService;
+
     @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -38,11 +42,16 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category createCategory(CategoryCreationRequest request) {
+    public Category createCategory(CategoryCreationRequest request, MultipartFile file) {
         var currentUserInfo = userService.getMyInfo();
+        String imageLink ="Default";
+        if(file != null)
+        {
+            imageLink = uploaderService.uploadFile(file);
+        }
         Category category = Category.builder()
                 .categoryName(request.getCategoryName())
-                .imageLink(request.getImageLink())
+                .imageLink(imageLink)
                 .sortOrder(request.getSortOrder())
                 .dateCreate(LocalDateTime.now())
                 .dateChange(LocalDateTime.now())
@@ -53,13 +62,16 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category updateCategory(String categoryId, CategoryUpdateRequest request) {
+    public Category updateCategory(String categoryId, CategoryUpdateRequest request, MultipartFile file) {
         var currentUserInfo = userService.getMyInfo();
         var categoryById = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
-
+        if(file != null)
+        {
+            String imageLink = uploaderService.uploadFile(file);
+            categoryById.setImageLink(imageLink);
+        }
         categoryById.setCategoryName(request.getCategoryName());
-        categoryById.setImageLink(request.getImageLink());
         categoryById.setSortOrder(request.getSortOrder());
         categoryById.setDateChange(LocalDateTime.now());
         categoryById.setChangedBy(currentUserInfo.getId());

@@ -25,10 +25,6 @@ public class CourseUpdateRequest {
 
     String courseContent;
 
-    String currentImageUrl;
-
-    String newImageUrl;
-
     String instructor;
 
     LocalDateTime startDate;

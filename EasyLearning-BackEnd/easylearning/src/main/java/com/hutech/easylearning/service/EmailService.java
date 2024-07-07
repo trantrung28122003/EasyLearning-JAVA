@@ -36,7 +36,7 @@ public class EmailService {
     private String fromEmail;
 
     public void sendVerificationCode(String toEmail, String subject, String verificationCode) throws MessagingException, IOException {
-        String emailTemplatePath = Paths.get("easylearning/src/main/resources/templates/Email/EmailVerification.html").toString();
+        String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailVerification.html").toString();
         String emailTemplate = new String(Files.readAllBytes(Paths.get(emailTemplatePath)));
 
         String emailBody = emailTemplate.replace("[verificationCode]", verificationCode);
@@ -69,7 +69,7 @@ public class EmailService {
     public void sendEmailPaymentAsync(String toEmail, String subject, String customerName, String totalAmount, String totalCourses, String authorizationCode, String orderDate, List<String> courseNameList) {
         try {
 
-            String emailTemplatePath = Paths.get("easylearning/src/main/resources/templates/Email/EmailPayment.html").toString();
+            String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailPayment.html").toString();
             String emailTemplate = new String(Files.readAllBytes(Paths.get(emailTemplatePath)));
 
 

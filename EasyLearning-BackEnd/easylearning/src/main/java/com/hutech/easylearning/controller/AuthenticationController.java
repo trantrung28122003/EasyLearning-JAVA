@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
@@ -39,11 +40,17 @@ public class AuthenticationController {
                 .result(result)
                 .build();
     }
+    @PostMapping("/outbound/authentication")
+    ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code
+    ){
+        var result = authenticationService.outboundAuthenticate(code);
+        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+    }
 
     @PostMapping("/register")
-    public ApiResponse<UserResponse> CreateUser(@RequestBody @Valid UserCreationRequest request) {
+    public ApiResponse<UserResponse> CreateUser(@Valid UserCreationRequest request, @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createUser(request))
+                .result(userService.createUser(request, file))
                 .build();
     }
 
