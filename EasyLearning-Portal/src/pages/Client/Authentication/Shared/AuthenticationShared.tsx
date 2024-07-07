@@ -101,7 +101,7 @@ const AuthenticationShared: React.FC<AuthenSharedProps> = ({ children }) => {
             </div>
             <div className={`card_body mt-2`}>
               <h4 className="mb-2 text-center">Bắt đầu khám phá 🚀</h4>
-              <p className="mb-4 text-center">Học tập dễ dàng và thú vịvị!</p>
+              <p className="mb-4 text-center">Học tập dễ dàng và thú vị!</p>
 
               {children}
             </div>
