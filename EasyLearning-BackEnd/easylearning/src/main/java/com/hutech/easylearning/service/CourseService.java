@@ -40,12 +40,17 @@ public class CourseService {
 
     @Autowired
     private UploaderService uploaderService;
+    @Autowired
+    private TrainingPartService trainingPartService;
+    @Autowired
+    private ShoppingCartItemService shoppingCartItemService;
 
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
+
 
     @Transactional(readOnly = true)
     public Course getCourseById(String id) {
@@ -91,7 +96,7 @@ public class CourseService {
                     .isDeleted(false)
                     .changedBy(currentUserInfo.getId())
                     .build();
-            courseDetailService.createCourseDetails(courseDetail);
+            courseDetailService.createCourseDetail(courseDetail);
         }
 
         TrainerDetail trainerDetail = TrainerDetail.builder()
@@ -142,7 +147,7 @@ public class CourseService {
                     .isDeleted(false)
                     .changedBy(currentUserInfo.getId())
                     .build();
-            courseDetailService.createCourseDetails(courseDetail);
+            courseDetailService.createCourseDetail(courseDetail);
         }
         return courseRepository.save(courseById);
     }
@@ -153,11 +158,27 @@ public class CourseService {
     }
 
     @Transactional
-    public void softDeleteCourse(String id) {
-        Course course = getCourseById(id);
+    public void softDeleteCourse(String courseId) {
+        courseDetailService.softDeleteCourseDetailsByCategoryId(courseId);
+        trainingPartService.softDeleteTrainingPartAndCourseEventByCourseId(courseId);
+        shoppingCartItemService.softDeleteShoppingCartItemByCourseId(courseId);
+        Course course = getCourseById(courseId);
         course.setDeleted(true);
+        course.setDateChange(LocalDateTime.now());
         courseRepository.save(course);
     }
+
+    @Transactional
+    public void restoreCourse(String courseId) {
+        courseDetailService.restoreCourseDetailsByCategoryId(courseId);
+        trainingPartService.restoreTrainingPartAndCourseEventByCourseId(courseId);
+        shoppingCartItemService.restoreShoppingCartItemByCourseId(courseId);
+        Course course = getCourseById(courseId);
+        course.setDeleted(false);
+        course.setDateChange(LocalDateTime.now());
+        courseRepository.save(course);
+    }
+
 
 
     @Transactional

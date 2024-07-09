@@ -6,9 +6,11 @@ import com.hutech.easylearning.repository.TrainerDetailRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -48,8 +50,8 @@ public class TrainerDetailService {
     public void softDeleteTrainerDetail(String id) {
         TrainerDetail trainerDetail = getTrainerDetailById(id);
         trainerDetail.setDeleted(true);
+        trainerDetail.setDateChange(LocalDateTime.now());
         trainerDetailRepository.save(trainerDetail);
     }
-
 }
 

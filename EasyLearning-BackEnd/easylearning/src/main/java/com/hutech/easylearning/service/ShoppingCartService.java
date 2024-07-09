@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,7 +61,10 @@ public class ShoppingCartService {
         var currentUser = userRepository.findByUserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
 
-        var shoppingCartItems =  shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId());
+        var shoppingCartItems =  shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId())
+                                                            .stream()
+                                                            .filter(shoppingCartItem -> !shoppingCartItem.isDeleted())
+                                                            .collect(Collectors.toList());
         BigDecimal totalPrice = calculateTotalPrice(shoppingCartItems);
         shoppingCart.setTotalPrice(totalPrice);
         shoppingCartRepository.save(shoppingCart);

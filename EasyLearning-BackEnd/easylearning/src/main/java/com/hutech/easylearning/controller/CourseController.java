@@ -45,4 +45,22 @@ public class CourseController {
                 .result(courseService.updateCourse(courseId, request, file))
                 .build();
     }
+
+    @DeleteMapping("/delete/{courseId}")
+    public String deleteCourse(@PathVariable("courseId") String courseId) {
+        courseService.deleteCourse(courseId);
+        return "Course has been deleted";
+    }
+
+    @PostMapping("/softDelete/{courseId}")
+    public String softDeleteCourse(@PathVariable("courseId") String courseId) {
+        courseService.softDeleteCourse(courseId);
+        return "course has been soft deleted";
+    }
+
+    @PostMapping("/restore/{courseId}")
+    public String restoreCourse(@PathVariable("courseId") String courseId) {
+        courseService.restoreCourse(courseId);
+        return "Course has been restored";
+    }
 }

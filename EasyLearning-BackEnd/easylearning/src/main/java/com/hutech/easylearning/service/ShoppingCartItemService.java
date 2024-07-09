@@ -7,6 +7,7 @@ import com.hutech.easylearning.entity.CourseDetail;
 import com.hutech.easylearning.entity.ShoppingCartItem;
 import com.hutech.easylearning.entity.TrainerDetail;
 import com.hutech.easylearning.enums.CourseType;
+import com.hutech.easylearning.repository.CourseRepository;
 import com.hutech.easylearning.repository.ShoppingCartItemRepository;
 import com.hutech.easylearning.repository.ShoppingCartRepository;
 import lombok.AccessLevel;
@@ -26,8 +27,8 @@ public class ShoppingCartItemService {
 
     ShoppingCartItemRepository shoppingCartItemRepository;
     ShoppingCartRepository shoppingCartRepository;
-    @Autowired
-    CourseService courseService;
+
+    CourseRepository courseRepository;
 
     @Autowired
     UserService userService;
@@ -50,7 +51,7 @@ public class ShoppingCartItemService {
     @Transactional
     public ShoppingCartItem createShoppingCartItem(String courseId) {
 
-        var courseById = courseService.getCourseById(courseId);
+        var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));;
         var currentUser = userService.getMyInfo();
         var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
         ShoppingCartItem shoppingCartItem = ShoppingCartItem.builder()
@@ -81,6 +82,7 @@ public class ShoppingCartItemService {
     public void softDeleteShoppingCartItem(String id) {
         ShoppingCartItem shoppingCartItem = getShoppingCartItemById(id);
         shoppingCartItem.setDeleted(true);
+        shoppingCartItem.setDateChange(LocalDateTime.now());
         shoppingCartItemRepository.save(shoppingCartItem);
     }
 
@@ -89,6 +91,28 @@ public class ShoppingCartItemService {
         var currentUser = userService.getMyInfo();
         var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
         return shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId());
+    }
+
+    @Transactional
+    public void softDeleteShoppingCartItemByCourseId(String courseId) {
+        var getShoppingCartItemCourseId = shoppingCartItemRepository.findShoppingCartItemByCourseId(courseId);
+        for(var shoppingCartItem : getShoppingCartItemCourseId)
+        {
+            shoppingCartItem.setDeleted(true);
+            shoppingCartItem.setDateChange(LocalDateTime.now());
+            shoppingCartItemRepository.save(shoppingCartItem);
+        }
+    }
+
+    @Transactional
+    public void restoreShoppingCartItemByCourseId(String courseId) {
+        var getShoppingCartItemCourseId = shoppingCartItemRepository.findShoppingCartItemByCourseId(courseId);
+        for(var shoppingCartItem : getShoppingCartItemCourseId)
+        {
+            shoppingCartItem.setDeleted(false);
+            shoppingCartItem.setDateChange(LocalDateTime.now());
+            shoppingCartItemRepository.save(shoppingCartItem);
+        }
     }
 
 }

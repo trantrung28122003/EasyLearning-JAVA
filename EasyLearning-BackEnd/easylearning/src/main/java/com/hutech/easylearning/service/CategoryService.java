@@ -27,6 +27,7 @@ public class CategoryService {
 
     @Autowired
     CourseDetailService courseDetailService;
+
     @Autowired
     private UploaderService uploaderService;
 
@@ -87,10 +88,9 @@ public class CategoryService {
     @Transactional
     public void softDeleteCategory(String categoryId) {
         courseDetailService.softDeleteCourseDetailsByCategoryId(categoryId);
-
         Category category = getCategoryById(categoryId);
         category.setDeleted(true);
-
+        category.setDateChange(LocalDateTime.now());
         categoryRepository.save(category);
     }
 

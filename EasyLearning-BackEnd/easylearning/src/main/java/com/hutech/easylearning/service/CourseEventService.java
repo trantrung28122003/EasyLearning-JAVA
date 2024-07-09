@@ -42,6 +42,7 @@ public class CourseEventService {
         return courseEventRepository.findAll();
     }
 
+
     @Transactional(readOnly = true)
     public CourseEvent getCourseEventById(String courseEventId) {
         return courseEventRepository.findById(courseEventId)
@@ -90,10 +91,18 @@ public class CourseEventService {
     @Transactional
     public void softDeleteCourseEvent(String courseEventId) {
         trainingPartService.softDeleteTrainingPartByCourseEventId(courseEventId);
-
         CourseEvent courseEvent = getCourseEventById(courseEventId);
         courseEvent.setDeleted(true);
+        courseEvent.setDateChange(LocalDateTime.now());
+        courseEventRepository.save(courseEvent);
+    }
 
+    @Transactional
+    public void restoreCourseEvent(String courseEventId) {
+        trainingPartService.restoreTrainingPartByCourseEventId(courseEventId);
+        CourseEvent courseEvent = getCourseEventById(courseEventId);
+        courseEvent.setDeleted(false);
+        courseEvent.setDateChange(LocalDateTime.now());
         courseEventRepository.save(courseEvent);
     }
 }

@@ -3,10 +3,7 @@ package com.hutech.easylearning.service;
 
 import com.hutech.easylearning.dto.request.TrainingPartCreationRequest;
 import com.hutech.easylearning.dto.request.TrainingPartUpdateRequest;
-import com.hutech.easylearning.entity.Course;
-import com.hutech.easylearning.entity.CourseDetail;
-import com.hutech.easylearning.entity.TrainerDetail;
-import com.hutech.easylearning.entity.TrainingPart;
+import com.hutech.easylearning.entity.*;
 import com.hutech.easylearning.enums.CourseType;
 import com.hutech.easylearning.enums.TrainingPartType;
 import com.hutech.easylearning.repository.CourseEventRepository;
@@ -37,6 +34,7 @@ public class TrainingPartService {
     public List<TrainingPart> getAllTrainingParts() {
         return trainingPartRepository.findAll();
     }
+
 
     @Transactional(readOnly = true)
     public List<TrainingPart> getTrainingPartsByCourseId(String courseId) {
@@ -105,6 +103,7 @@ public class TrainingPartService {
     public void softDeleteTrainingPart(String trainingPartId) {
         TrainingPart trainingPart = getTrainingPartById(trainingPartId);
         trainingPart.setDeleted(true);
+        trainingPart.setDateChange(LocalDateTime.now());
         trainingPartRepository.save(trainingPart);
     }
 
@@ -123,7 +122,67 @@ public class TrainingPartService {
         for(var trainingPart : getTrainingPartsByCourseEventId)
         {
             trainingPart.setDeleted(true);
+            trainingPart.setDateChange(LocalDateTime.now());
             trainingPartRepository.save(trainingPart);
+        }
+    }
+
+    @Transactional
+    public void softDeleteTrainingPartAndCourseEventByCourseId(String courseId) {
+        var getTrainingPartsByCourseId = trainingPartRepository.findTrainingPartByCourseId(courseId);
+        for(var trainingPart : getTrainingPartsByCourseId)
+        {
+            trainingPart.setDeleted(true);
+            trainingPart.setDateChange(LocalDateTime.now());
+            trainingPartRepository.save(trainingPart);
+
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if (courseEvent.getId().equals(trainingPart.getCourseEventId())) {
+                    courseEvent.setDeleted(true);
+                    courseEvent.setDateChange(LocalDateTime.now());
+                    courseEventRepository.save(courseEvent);
+                }
+            }
+        }
+    }
+
+    @Transactional
+    public void restoreTrainingPart(String trainingPartId) {
+        TrainingPart trainingPart = getTrainingPartById(trainingPartId);
+        trainingPart.setDeleted(false);
+        trainingPart.setDateChange(LocalDateTime.now());
+        trainingPartRepository.save(trainingPart);
+    }
+
+    @Transactional
+    public void restoreTrainingPartByCourseEventId(String courseEventId) {
+        var getTrainingPartsByCourseEventId = trainingPartRepository.findTrainingPartByCourseEventId(courseEventId);
+        for(var trainingPart : getTrainingPartsByCourseEventId)
+        {
+            trainingPart.setDeleted(false);
+            trainingPart.setDateChange(LocalDateTime.now());
+            trainingPartRepository.save(trainingPart);
+        }
+    }
+
+    @Transactional
+    public void restoreTrainingPartAndCourseEventByCourseId(String courseId) {
+        var getTrainingPartsByCourseId = trainingPartRepository.findTrainingPartByCourseId(courseId);
+        for(var trainingPart : getTrainingPartsByCourseId)
+        {
+            trainingPart.setDeleted(false);
+            trainingPart.setDateChange(LocalDateTime.now());
+            trainingPartRepository.save(trainingPart);
+
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if (courseEvent.getId().equals(trainingPart.getCourseEventId())) {
+                    courseEvent.setDeleted(false);
+                    courseEvent.setDateChange(LocalDateTime.now());
+                    courseEventRepository.save(courseEvent);
+                }
+            }
         }
     }
 
