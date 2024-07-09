@@ -12,6 +12,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,23 +31,26 @@ public class TrainingPartService {
     @Autowired
     UserService userService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<TrainingPart> getAllTrainingParts() {
         return trainingPartRepository.findAll();
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<TrainingPart> getTrainingPartsByCourseId(String courseId) {
         return trainingPartRepository.findTrainingPartByCourseId(courseId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public TrainingPart getTrainingPartById(String id) {
         return trainingPartRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TrainingPart not found with id: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public TrainingPart createTrainingPart(TrainingPartCreationRequest request, String courseId) {
         if(request.getVideoUrl() != null) {
@@ -71,6 +75,7 @@ public class TrainingPartService {
         return trainingPartRepository.save(trainingPart);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public TrainingPart updateTrainingPart(String trainingPartId, TrainingPartUpdateRequest request) {
         var trainingPartById = trainingPartRepository.findById(trainingPartId).orElseThrow(() -> new RuntimeException("TrainingPart not found with id: " + trainingPartId));
@@ -94,11 +99,13 @@ public class TrainingPartService {
         return trainingPartRepository.save(trainingPartById);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteTrainingPart(String trainingPartId) {
         trainingPartRepository.deleteById(trainingPartId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void softDeleteTrainingPart(String trainingPartId) {
         TrainingPart trainingPart = getTrainingPartById(trainingPartId);
@@ -107,6 +114,7 @@ public class TrainingPartService {
         trainingPartRepository.save(trainingPart);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteTrainingPartByCourseEventId(String courseEventId) {
         var getTrainingPartsByCourseEventId = trainingPartRepository.findTrainingPartByCourseEventId(courseEventId);
@@ -116,6 +124,7 @@ public class TrainingPartService {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void softDeleteTrainingPartByCourseEventId(String courseEventId) {
         var getTrainingPartsByCourseEventId = trainingPartRepository.findTrainingPartByCourseEventId(courseEventId);
@@ -126,6 +135,7 @@ public class TrainingPartService {
             trainingPartRepository.save(trainingPart);
         }
     }
+
 
     @Transactional
     public void softDeleteTrainingPartAndCourseEventByCourseId(String courseId) {
@@ -185,6 +195,5 @@ public class TrainingPartService {
             }
         }
     }
-
 }
 

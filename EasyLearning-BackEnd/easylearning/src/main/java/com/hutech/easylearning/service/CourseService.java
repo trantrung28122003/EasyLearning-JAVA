@@ -8,6 +8,7 @@ import com.hutech.easylearning.repository.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,7 +46,7 @@ public class CourseService {
     @Autowired
     private ShoppingCartItemService shoppingCartItemService;
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -58,6 +59,7 @@ public class CourseService {
                 .orElseThrow(() -> new RuntimeException("Course not found with id: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Course createCourse(CourseCreationRequest request, MultipartFile file) {
         String imageLink = "https://easylearning.blob.core.windows.net/images-videos/default_course.png";
@@ -111,7 +113,7 @@ public class CourseService {
         trainerDetailService.createTrainerDetail(trainerDetail);
         return savedCourse;
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Course updateCourse(String courseId, CourseUpdateRequest request, MultipartFile file) {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
@@ -151,12 +153,12 @@ public class CourseService {
         }
         return courseRepository.save(courseById);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteCourse(String id) {
         courseRepository.deleteById(id);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void softDeleteCourse(String courseId) {
         courseDetailService.softDeleteCourseDetailsByCategoryId(courseId);
@@ -167,7 +169,7 @@ public class CourseService {
         course.setDateChange(LocalDateTime.now());
         courseRepository.save(course);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void restoreCourse(String courseId) {
         courseDetailService.restoreCourseDetailsByCategoryId(courseId);
@@ -178,7 +180,6 @@ public class CourseService {
         course.setDateChange(LocalDateTime.now());
         courseRepository.save(course);
     }
-
 
 
     @Transactional

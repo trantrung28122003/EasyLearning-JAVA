@@ -8,6 +8,7 @@ import com.hutech.easylearning.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,17 +32,21 @@ public class CategoryService {
     @Autowired
     private UploaderService uploaderService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public Category getCategoryById(String id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Category createCategory(CategoryCreationRequest request, MultipartFile file) {
         var currentUserInfo = userService.getMyInfo();
@@ -62,6 +67,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Category updateCategory(String categoryId, CategoryUpdateRequest request, MultipartFile file) {
         var currentUserInfo = userService.getMyInfo();
@@ -79,12 +85,14 @@ public class CategoryService {
         return categoryRepository.save(categoryById);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteCategory(String categoryId) {
         courseDetailService.deleteCourseDetailsByCategoryId(categoryId);
         categoryRepository.deleteById(categoryId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void softDeleteCategory(String categoryId) {
         courseDetailService.softDeleteCourseDetailsByCategoryId(categoryId);

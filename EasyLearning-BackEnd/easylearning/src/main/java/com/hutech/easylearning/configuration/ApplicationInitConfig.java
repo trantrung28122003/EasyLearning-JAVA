@@ -1,10 +1,12 @@
 package com.hutech.easylearning.configuration;
 
 import com.hutech.easylearning.entity.Role;
+import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.User;
 import com.hutech.easylearning.repository.RoleRepository;
 import com.hutech.easylearning.repository.UserRepository;
 import com.hutech.easylearning.service.RoleService;
+import com.hutech.easylearning.service.ShoppingCartService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ApplicationInitConfig {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 
     @Bean
     ApplicationRunner applicationRunner(UserRepository userRepository) {
@@ -63,6 +68,7 @@ public class ApplicationInitConfig {
                         .roles(new HashSet<>(roles))
                         .build();
                 userRepository.save(user);
+                shoppingCartService.createShoppingCartByUser(user.getId());
                 log.warn("admin user has been created with default password: admin, please change it");
             }
         };

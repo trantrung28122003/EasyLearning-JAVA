@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,18 +38,21 @@ public class CourseEventService {
     @Autowired
     TrainingPartService trainingPartService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public List<CourseEvent> getAllCourseEvents() {
         return courseEventRepository.findAll();
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
     public CourseEvent getCourseEventById(String courseEventId) {
         return courseEventRepository.findById(courseEventId)
                 .orElseThrow(() -> new RuntimeException("Course Event not found with id: " + courseEventId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public CourseEvent createCourseEvent(CourseEventCreationRequest request) {
         var currentUserInfo = userService.getMyInfo();
@@ -66,6 +70,7 @@ public class CourseEventService {
         return courseEventRepository.save(courseEvent);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public CourseEvent updateCourseEvent(String courseEventId, CourseEventUpdateRequest request)
     {
@@ -82,6 +87,7 @@ public class CourseEventService {
         return courseEventRepository.save(getCourseEventById);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void deleteCourseEvent(String courseEventId) {
         trainingPartService.deleteTrainingPartByCourseEventId(courseEventId);
@@ -97,6 +103,7 @@ public class CourseEventService {
         courseEventRepository.save(courseEvent);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public void restoreCourseEvent(String courseEventId) {
         trainingPartService.restoreTrainingPartByCourseEventId(courseEventId);
