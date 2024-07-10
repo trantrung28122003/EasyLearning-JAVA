@@ -1,9 +1,6 @@
 package com.hutech.easylearning.service;
 
-import com.hutech.easylearning.dto.reponse.CourseEventResponse;
-import com.hutech.easylearning.dto.reponse.DetailCourseResponse;
-import com.hutech.easylearning.dto.reponse.PurchasedCourseResponse;
-import com.hutech.easylearning.dto.reponse.ScheduleResponse;
+import com.hutech.easylearning.dto.reponse.*;
 import com.hutech.easylearning.dto.request.CourseCreationRequest;
 import com.hutech.easylearning.dto.request.CourseUpdateRequest;
 import com.hutech.easylearning.entity.*;
@@ -312,6 +309,7 @@ public class CourseService {
     {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
         var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseById.getId());
+        List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
         for(var trainingPartId : trainingPartByCourse)
         {
@@ -352,6 +350,22 @@ public class CourseService {
         }else {
         }
 
+
+        for (var feedback : feedbacksByCourseId) {
+            var userWithFeedback = userRepository.findById(feedback.getFeedbackUserId()).orElseThrow(() -> new RuntimeException("User not found with id: " + feedback.getFeedbackUserId()));
+            var typeUser = "Khách hàng";
+            FeedbackInfoResponse feedbackResponse = FeedbackInfoResponse.builder()
+                    .feedbackId(feedback.getId())
+                    .courseId(feedback.getCourseId())
+                    .userId(feedback.getFeedbackUserId())
+                    .content(feedback.getFeedbackContent())
+                    .fullNameUser(userWithFeedback.getFullName())
+                    .typeUser(typeUser)
+                    .avatar(userWithFeedback.getImageUrl())
+                    .dateChange(feedback.getDateChange())
+                    .build();
+            feedbackInfos.add(feedbackResponse);
+        }
         DetailCourseResponse detailCourseResponse = DetailCourseResponse.builder()
                 .courseId(courseById.getId())
                 .courseName(courseById.getCourseName())
@@ -361,6 +375,7 @@ public class CourseService {
                 .courseEventResponses(courseEventResponses)
                 .totalFeedback(totalFeedback)
                 .averageRating(averageRating)
+                .feedFeedbackInfoResponses(feedbackInfos)
                 .build();
 
         return detailCourseResponse;
