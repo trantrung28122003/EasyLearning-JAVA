@@ -48,5 +48,11 @@ public class ShoppingCartController {
         return "ShoppingCartItem has been soft deleted";
     }
 
+    @GetMapping("/isCourseInCart/{courseId}")
+    public boolean isCourseInCart(@PathVariable("courseId") String courseId) {
+        return shoppingCartService.isCourseInCart(courseId);
+    }
+
+
 
 }
