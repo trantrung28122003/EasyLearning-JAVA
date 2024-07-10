@@ -1,6 +1,7 @@
 package com.hutech.easylearning.controller;
 
 
+import com.hutech.easylearning.dto.reponse.CategoryWithCourseResponse;
 import com.hutech.easylearning.dto.reponse.RoleResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
 import com.hutech.easylearning.dto.request.RoleRequest;
@@ -37,4 +38,12 @@ public class HomeController {
                 .result(categoryService.findTop4BySortOrderNotNull())
                 .build();
     }
+
+    @GetMapping("/getAllCategoryWithCourse")
+    ApiResponse<List<CategoryWithCourseResponse>> getAllCategoryWithCourse() {
+        return ApiResponse.<List<CategoryWithCourseResponse>>builder()
+                .result(categoryService.getAllCategoryWithCourse())
+                .build();
+    }
+
 }

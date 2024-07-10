@@ -1,5 +1,6 @@
 package com.hutech.easylearning.repository;
 
+import com.hutech.easylearning.entity.Category;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.CourseDetail;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,5 @@ import java.util.List;
 public interface CourseDetailRepository extends JpaRepository<CourseDetail, String> {
     List<CourseDetail> findCourseDetailByCourseId(String courseId);
     List<CourseDetail> findCourseDetailByCategoryId(String categoryId);
+    List<CourseDetail> findCourseDetailByCategoryIn(List<Category> categories);
 }

@@ -32,7 +32,9 @@ public class SecurityConfig {
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/topThreeMostRegisteredCourses",
             "/customer/searchCourseByName",
-            "/payment/confirmPaymentMomoClient"
+            "/payment/confirmPaymentMomoClient",
+            "/getAllCategoryWithCourse",
+            "/topFourMostCategory",
     };
 
 
