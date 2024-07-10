@@ -8,11 +8,14 @@ import com.hutech.easylearning.dto.request.CourseCreationRequest;
 import com.hutech.easylearning.dto.request.CourseUpdateRequest;
 import com.hutech.easylearning.entity.*;
 import com.hutech.easylearning.enums.CourseType;
+import com.hutech.easylearning.exception.AppException;
+import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.repository.*;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,10 +63,10 @@ public class CourseService {
     private TrainingPartRepository trainingPartRepository;
 
     @Autowired
-    private CourseDetailRepository courseDetailRepository;
+    private FeedbackRepository feedbackRepository;
 
     @Autowired
-    private FeedbackRepository feedbackRepository;
+    private UserRepository userRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -362,6 +365,27 @@ public class CourseService {
 
         return detailCourseResponse;
 
+    }
+
+    public boolean isCourseInSchedule(String courseId) {
+        var currentUser = userService.getMyInfo();
+        if (currentUser != null) {
+            List<Order> orders = orderRepository.findOrderByUserId(currentUser.getId());
+            for (Order order : orders) {
+                List<OrderDetail> orderDetails = order.getOrderDetails().stream().toList();
+                for (OrderDetail orderDetail : orderDetails) {
+                    if(orderDetail.getCourseId().equals(courseId))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }
