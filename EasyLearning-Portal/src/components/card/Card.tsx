@@ -1,8 +1,22 @@
 import React from "react";
+import { Course } from "../../model/Course";
+import { DoCallAPIWithToken } from "../../services/HttpService";
+import { ADD_TO_CART } from "../../constants/API";
+import { HTTP_OK } from "../../constants/HTTPCode";
+import { useNavigate } from "react-router-dom";
 interface CardProps {
   course: Course;
 }
 const Card: React.FC<CardProps> = ({ course }) => {
+  const navigate = useNavigate();
+  const addToCart = () => {
+    const URL = ADD_TO_CART + "/" + course.id;
+    DoCallAPIWithToken(URL, "post").then((res) => {
+      if (res.status === HTTP_OK) {
+        navigate("/shoppingCart");
+      }
+    });
+  };
   return (
     <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
       <div className="course-item bg-light">
@@ -17,7 +31,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
               Xem Thêm
             </a>
             <a
-              href="#"
+              onClick={() => addToCart()}
               className="flex-shrink-0 btn btn-sm btn-primary px-3"
               style={{ borderRadius: "0 30px 30px 0" }}
             >

@@ -11,6 +11,7 @@ import { HTTP_OK } from "../../../constants/HTTPCode";
 import { GET_COURSES_MOST_REGISTERED } from "../../../constants/API";
 import { ApplicationResponse } from "../../../model/BaseResponse";
 import Card from "../../../components/card/Card";
+import { Course, Feedback } from "../../../model/Course";
 const Home: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const doGetCourses = () => {
