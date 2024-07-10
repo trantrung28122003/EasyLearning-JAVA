@@ -1,12 +1,23 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
+import { hasAdminRole, isUserLogin } from "../hooks/useLogin";
 interface ProtectedRouteProps {
   children: ReactNode;
+  isAdmin: boolean;
 }
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  //const auth: boolean = isUserLogin();
-  const auth: boolean = true;
-  return auth ? children : <Navigate to="/login" />;
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  isAdmin,
+}) => {
+  const auth: boolean = isUserLogin();
+  const isAdminUser: boolean = hasAdminRole();
+  console.log(isAdminUser);
+  //const auth: boolean = true;
+  if (!auth) return <Navigate to="/login" />;
+  if (isAdmin && !isAdminUser) {
+    return <Navigate to="/403" />;
+  }
+  return children;
 };
 
 export default ProtectedRoute;

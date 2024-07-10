@@ -10,7 +10,11 @@ const ApplicationRoutes = () => {
           return route.isProtected ? (
             <Route
               path={route.path}
-              element={<ProtectedRoute>{route.component}</ProtectedRoute>}
+              element={
+                <ProtectedRoute isAdmin={route.isAdmin}>
+                  {route.component}
+                </ProtectedRoute>
+              }
               key={index}
             />
           ) : (

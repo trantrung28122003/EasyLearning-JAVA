@@ -1,25 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ClientShared from "../Shared/ClientShared";
+import { DoCallAPIWithToken } from "../../../services/HttpService";
+import { BASE_URL_SHOPPING_CART } from "../../../constants/API";
+import { HTTP_OK } from "../../../constants/HTTPCode";
+import CartItem from "./CartItem/CartItem";
 
 const ShoppingCart: React.FC = () => {
+  const [shoppingCart, setShoppingCart] = useState<ShoppingCart>();
+
   const applyCoupon = () => {};
+  const doGetShoppingCart = () => {
+    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get").then((res) => {
+      if (res.status === HTTP_OK) {
+        const shoppingCart: ShoppingCart = res.data;
+        setShoppingCart(shoppingCart);
+      }
+    });
+  };
+  useEffect(() => {
+    doGetShoppingCart();
+  }, []);
   return (
     <ClientShared>
       <div className="container h-100">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col">
             <p>
-              <span className="h2">Giỏ hàng </span>
+              <span className="h2">Giỏ hàng: </span>
               <span id="cartItemCount" className="h4">
+                có {shoppingCart?.shoppingCartItems.length} sản phẩm
                 <br />
               </span>
             </p>
+            {shoppingCart?.shoppingCartItems.map((item) => {
+              return <CartItem item={item} />;
+            })}
+
             <div className="card mb-5">
               <div className="card-body p-4">
                 <div className="float-end">
                   <p className="mb-0 me-5 d-flex align-items-center">
                     <span id="order-total" className="small text-muted me-2">
-                      Tổng tiền:
+                      Tổng tiền: {shoppingCart?.totalPrice}.000 VND
                     </span>{" "}
                     <span className="lead fw-normal"></span>
                   </p>
@@ -46,7 +68,7 @@ const ShoppingCart: React.FC = () => {
               </button>
             </div>
             <div className="d-flex justify-content-end">
-              <a asp-controller="CustomerCourses" asp-action="ListCourse">
+              <a>
                 <button
                   type="button"
                   data-mdb-button-init
@@ -61,7 +83,7 @@ const ShoppingCart: React.FC = () => {
                   Tiếp tục mua hàng
                 </button>
               </a>
-              <a asp-controller="Order" asp-action="Create">
+              <a>
                 <button
                   type="button"
                   data-mdb-button-init

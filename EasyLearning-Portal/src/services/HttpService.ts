@@ -1,11 +1,12 @@
 import axios from "axios";
+import { getCredentials } from "../hooks/useLogin";
 
 const DoCallAPIWithToken = async <T>(
-  token: string | null,
   url: string,
   method: string,
   requestBody?: T
 ) => {
+  const token = getCredentials();
   return axios({
     method: method,
     url: url,
@@ -19,8 +20,8 @@ const DoCallAPIWithToken = async <T>(
 
 const DoCallAPIWithOutToken = async <T>(
   url: string,
-  requestBody: T,
-  method: string
+  method: string,
+  requestBody?: T | FormData
 ) => {
   return axios({
     method: method,

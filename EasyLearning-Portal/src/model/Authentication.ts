@@ -13,12 +13,12 @@ export interface APIRegisterRequest {
   email: string;
   fullName: string;
   dayOfBirth: Date | null;
-  imageName: string | null;
-  imageUrl: File | null;
+  file: File | null;
   password: string;
 }
 
 export interface RegisterRequest extends APIRegisterRequest {
+  imageName: string | null;
   confirmPassword: string;
   termAndConditions: boolean;
 }

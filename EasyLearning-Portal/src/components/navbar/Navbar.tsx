@@ -8,7 +8,7 @@ const Navbar: React.FC = () => {
         style={{ marginBottom: "3rem" }}
       >
         <a
-          href="index.html"
+          href="/"
           className="navbar-brand d-flex align-items-center px-4 px-lg-5"
         >
           <h2 className="m-0 text-primary">
@@ -25,25 +25,13 @@ const Navbar: React.FC = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <div className="navbar-nav ms-auto p-4 p-lg-0">
-            <a
-              asp-controller="Home"
-              asp-action="Index"
-              className="nav-item nav-link active"
-            >
+            <a href="/" className="nav-item nav-link active">
               Trang Chủ
             </a>
-            <a
-              asp-controller="About"
-              asp-action="IndexAbout"
-              className="nav-item nav-link"
-            >
+            <a href="/about" className="nav-item nav-link">
               Thông Tin Về Chúng Tôi
             </a>
-            <a
-              asp-controller="CustomerCourses"
-              asp-action="ListCourse"
-              className="nav-item nav-link"
-            >
+            <a className="nav-item nav-link" href="/course">
               Các Khóa Học
             </a>
             <div className="nav-item dropdown">
@@ -55,35 +43,13 @@ const Navbar: React.FC = () => {
                 Mục Lục
               </a>
               <div className="dropdown-menu fade-down m-0">
-                <a
-                  asp-controller="CustomerCourses"
-                  asp-action="EventSchedule"
-                  className="dropdown-item"
-                >
-                  Thời khóa biểu
-                </a>
-                <a
-                  asp-controller="CustomerCourses"
-                  asp-action="ListCourseOnlineByUser"
-                  className="dropdown-item"
-                >
-                  Danh sách khóa học của bạn
-                </a>
-                <a
-                  asp-controller="account"
-                  asp-action="login"
-                  className="dropdown-item"
-                >
-                  Cài đặt tài khoản
-                </a>
+                <a className="dropdown-item">Thời khóa biểu</a>
+                <a className="dropdown-item">Danh sách khóa học của bạn</a>
+                <a className="dropdown-item">Cài đặt tài khoản</a>
                 <a className="dropdown-item">Quản lý</a>
               </div>
             </div>
-            <a
-              asp-controller="ShoppingCart"
-              asp-action="GetShoppingCart"
-              className="position-relative me-4 my-auto"
-            >
+            <a className="position-relative me-4 my-auto" href="/shoppingCart">
               <i className="fa fa-shopping-bag fa-2x"></i>
             </a>
           </div>

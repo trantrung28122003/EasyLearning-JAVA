@@ -2,9 +2,14 @@ import React from "react";
 import AuthenticationShared from "./Shared/AuthenticationShared";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import { RegisterRequest } from "../../../model/Authentication";
+import {
+  APIRegisterRequest,
+  RegisterRequest,
+} from "../../../model/Authentication";
 import { Field, Form, Formik } from "formik";
-import { getToday } from "../../../hooks/useTime";
+import { DoCallAPIWithOutToken } from "../../../services/HttpService";
+import { REGISTER_URL } from "../../../constants/API";
+import { HTTP_OK } from "../../../constants/HTTPCode";
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const schema = yup.object().shape({
@@ -32,8 +37,26 @@ const Register: React.FC = () => {
       .oneOf([true], "You must accept the terms and conditions"),
   });
 
-  const doRegister = (account: RegisterRequest) => {
-    navigate("/login");
+  const doRegister = (account: APIRegisterRequest) => {
+    var formData = new FormData();
+    var date = new Date("2003-12-28");
+    if (account.file && date) {
+      formData.append("file", account.file);
+      formData.append("userName", account.userName);
+      formData.append("email", account.email);
+      //formData.append("dayOfBirth", JSON.stringify(date));
+      formData.append("fullName", account.fullName);
+      formData.append("password", account.password);
+    }
+    DoCallAPIWithOutToken<APIRegisterRequest>(
+      REGISTER_URL,
+      "post",
+      formData
+    ).then((res) => {
+      if (res.status === HTTP_OK) {
+        navigate("/login");
+      }
+    });
   };
 
   return (
@@ -43,16 +66,16 @@ const Register: React.FC = () => {
           userName: "",
           email: "",
           fullName: "",
-          dayOfBirth: new Date(getToday()),
+          dayOfBirth: new Date("2000-01-01"),
           imageName: "",
-          imageUrl: null,
           password: "",
+          file: null,
           termAndConditions: false,
           confirmPassword: "",
         }}
         validationSchema={schema}
         onSubmit={(values: RegisterRequest) => {
-          //console.log(values);
+          console.log(values);
           doRegister(values);
         }}
         validateOnChange
@@ -122,7 +145,7 @@ const Register: React.FC = () => {
                 </label>
 
                 {errors.dayOfBirth && touched.dayOfBirth ? (
-                  <div className="text-danger">{errors.dayOfBirth}</div>
+                  <div className="text-danger">{errors.dayOfBirth || ""}</div>
                 ) : null}
               </div>
 
@@ -169,12 +192,12 @@ const Register: React.FC = () => {
                   id="imageName"
                   onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     if (event.currentTarget.files) {
-                      console.log(event.currentTarget.files[0].name);
                       setFieldValue(
                         "imageName",
                         event.currentTarget.files[0].name
                       );
-                      setFieldValue("imageUrl", event.currentTarget.files[0]);
+                      setFieldValue("file", event.currentTarget.files[0]);
+                      console.log(event.currentTarget.files[0].name);
                     }
                   }}
                 />

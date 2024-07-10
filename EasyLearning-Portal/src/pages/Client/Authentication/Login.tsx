@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   });
 
   const doLogin = (user: LoginRequest) => {
-    DoCallAPIWithOutToken<LoginRequest>(LOGIN_URL, user, "post").then((res) => {
+    DoCallAPIWithOutToken<LoginRequest>(LOGIN_URL, "post", user).then((res) => {
       if (res.status === HTTP_OK) {
         localStorage.setItem("authentication", JSON.stringify(res.data.result));
         fetchCurrentUser();
@@ -35,9 +35,8 @@ const Login: React.FC = () => {
   const fetchCurrentUser = () => {
     const token = getCredentials();
     console.log(token);
-    DoCallAPIWithToken(token, GET_USER_INFO_URL, "get").then((res) => {
+    DoCallAPIWithToken(GET_USER_INFO_URL, "get").then((res) => {
       if (res.status === HTTP_OK) {
-        console.log(res.data.result);
         localStorage.setItem("user_info", JSON.stringify(res.data.result));
         navigate("/");
       } else {
