@@ -122,23 +122,32 @@ public class CategoryService {
 
     public List<CategoryWithCourseResponse> getAllCategoryWithCourse() {
         List<CategoryWithCourseResponse> categoryWithCourseResponses = new ArrayList<>();
-        Set<String> courseIdSet = new HashSet<>();
         List<Category> categories = categoryRepository.findAll();
-
         for(var category :categories)
         {
+            List<Course> coursesInCategory = new ArrayList<>();
             var courseDetails = courseDetailRepository.findCourseDetailByCategoryId(category.getId());
             for (CourseDetail courseDetail : courseDetails) {
-                courseIdSet.add(courseDetail.getCourseId());
+               for(var course : courseRepository.findAll())
+               {
+                   if(course.getId().equals(courseDetail.getCourseId())) {
+                       coursesInCategory.add(course);
+                   }
+               }
             }
-            List<String> courseIds = new ArrayList<>(courseIdSet);
-            List<Course> courses = courseRepository.findAllByIdIn(courseIds);
+            //List<Course> courses = courseRepository.findCoursesByIdIn(courseIds);
             CategoryWithCourseResponse categoryWithCourseResponse = CategoryWithCourseResponse.builder()
                     .id(category.getId())
                     .categoryName(category.getCategoryName())
-                    .courses(courses)
+                    .courses(coursesInCategory)
                     .build();
             categoryWithCourseResponses.add(categoryWithCourseResponse);
+            System.out.print("Category: " + category.getCategoryName());
+            System.out.print(" khóa học của category " + category.getCategoryName() + " là: ");
+            for (Course course : coursesInCategory) {
+                System.out.print(course.getCourseName() + ", ");
+            }
+            System.out.println();
         }
         return categoryWithCourseResponses;
     }
