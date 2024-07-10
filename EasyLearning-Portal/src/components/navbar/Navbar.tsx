@@ -1,6 +1,19 @@
 import React from "react";
+import { hasAdminRole, isUserLogin } from "../../hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
 const Navbar: React.FC = () => {
+  const isAdmin = hasAdminRole();
+  const isLogin = isUserLogin();
+  const navigator = useNavigate();
+  const handleLogout = () => {
+    localStorage.clear();
+    navigator("/");
+  };
+  const handleLogin = () => {
+    localStorage.clear();
+    navigator("/login");
+  };
   return (
     <>
       <nav
@@ -31,27 +44,47 @@ const Navbar: React.FC = () => {
             <a href="/about" className="nav-item nav-link">
               Thông Tin Về Chúng Tôi
             </a>
-            <a className="nav-item nav-link" href="/course">
+            <a className="nav-item nav-link" href="/courses">
               Các Khóa Học
             </a>
-            <div className="nav-item dropdown">
-              <a
-                href="#"
-                className="nav-link dropdown-toggle"
-                data-bs-toggle="dropdown"
-              >
-                Mục Lục
-              </a>
-              <div className="dropdown-menu fade-down m-0">
-                <a className="dropdown-item">Thời khóa biểu</a>
-                <a className="dropdown-item">Danh sách khóa học của bạn</a>
-                <a className="dropdown-item">Cài đặt tài khoản</a>
-                <a className="dropdown-item">Quản lý</a>
+            {isLogin && (
+              <div className="nav-item dropdown">
+                <a
+                  href="#"
+                  className="nav-link dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                >
+                  Mục Lục
+                </a>
+                <div className="dropdown-menu fade-down m-0">
+                  <a className="dropdown-item">Danh sách khóa học của bạn</a>
+                  <a className="dropdown-item">Cài đặt tài khoản</a>
+                  {isAdmin && (
+                    <a className="dropdown-item" href="admin/dashboard">
+                      Quản lý
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
             <a className="position-relative me-4 my-auto" href="/shoppingCart">
               <i className="fa fa-shopping-bag fa-2x"></i>
             </a>
+            {isLogin ? (
+              <button
+                className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"
+                onClick={handleLogout}
+              >
+                Đăng Xuất<i className="fa fa-arrow-right ms-3"></i>
+              </button>
+            ) : (
+              <button
+                className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"
+                onClick={handleLogin}
+              >
+                Tham Gia Ngay<i className="fa fa-arrow-right ms-3"></i>
+              </button>
+            )}
           </div>
         </div>
       </nav>

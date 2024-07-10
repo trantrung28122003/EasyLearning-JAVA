@@ -308,7 +308,7 @@ public class CourseService {
     public DetailCourseResponse getDetailCourse(String courseId)
     {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
-        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseById.getId());
+        var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseById.getId());
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
         for(var trainingPartId : trainingPartByCourse)
         {

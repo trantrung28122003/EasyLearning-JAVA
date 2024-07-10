@@ -1,12 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ClientShared from "../Shared/ClientShared";
 import { useParams } from "react-router-dom";
-
+import { CourseSlim } from "../../../model/Course";
+import { GET_COURSE_DETAIL } from "../../../constants/API";
+import { DoCallAPIWithOutToken } from "../../../services/HttpService";
+import "./CourseDetail.css";
 const CourseDetail: React.FC = () => {
   const { courseId } = useParams();
+  const [course, setCourse] = useState<CourseSlim>();
+  const numbers = [1, 2, 3, 4, 5];
   useEffect(() => {
-    console.log(courseId);
+    const URL = GET_COURSE_DETAIL + "/" + courseId;
+    DoCallAPIWithOutToken(URL, "get")
+      .then((res) => {
+        const courseDetail: CourseSlim = res.data.result;
+        setCourse(courseDetail);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
+
+  const LESSON = "LESSON";
+
   return (
     <ClientShared>
       <div className="container">
@@ -17,7 +33,11 @@ const CourseDetail: React.FC = () => {
                 <div id="myCarousel-2" className="carousel slide">
                   <div className="carousel-inner">
                     <div className="carousel-item active">
-                      <img className="img-fluid" alt="" />
+                      <img
+                        className="img-fluid"
+                        alt=""
+                        src={course?.courseImage}
+                      />
                     </div>
                   </div>
                   <button
@@ -42,13 +62,21 @@ const CourseDetail: React.FC = () => {
 
             <div className="col-md-6 col-sm-12 col-12">
               <h2 className="name">
-                <small>Khóa học bởi</small>
+                <small>Khóa học bởi {course?.nameInstructor}</small>
                 <span className="fa fa-2x">
-                  <h5>Lượt đánh giá</h5>
+                  {course?.averageRating &&
+                    numbers.map((x) =>
+                      x < course?.averageRating ? (
+                        <i className="fas fa-star fa-2x text-primary" />
+                      ) : (
+                        <i className="fas fa-star fa-2x text-muted" />
+                      )
+                    )}
+                  <h5>{course?.totalFeedback} Lượt đánh giá</h5>
                 </span>
               </h2>
               <hr />
-              <h3 className="price-container"></h3>
+              <h3 className="price-container">{course?.coursePrice}.000 VND</h3>
               <hr />
               <div className="description description-tabs">
                 <ul className="nav nav-pills">
@@ -87,22 +115,39 @@ const CourseDetail: React.FC = () => {
                   >
                     <br />
                     <dl>
-                      <dt className="toggle-details">
-                        <span className="icon">
-                          <i className="fas fa-chevron-down"></i>
-                        </span>
-                      </dt>
-                      <div
-                        className="details"
-                        style={{ display: "none" }}
-                      ></div>
+                      {course?.courseEventResponses.map((classEvent) => (
+                        <>
+                          <dt className="toggle-details">
+                            <span className="icon">
+                              {classEvent.courseEventName} &nbsp;
+                              {/* <i className="fas fa-chevron-down"></i> */}
+                            </span>
+                          </dt>
+                          <div className="details">
+                            {classEvent.trainingParts.map((part) => (
+                              <>
+                                <dd>
+                                  <span>
+                                    {part.trainingPartType == LESSON ? (
+                                      <i className="fas fa-tv"></i>
+                                    ) : (
+                                      <i className="far fa-file-alt"></i>
+                                    )}
+                                  </span>{" "}
+                                  {part.trainingPartName}
+                                </dd>
+                              </>
+                            ))}
+                          </div>
+                        </>
+                      ))}
                       <br />
                     </dl>
                   </div>
 
                   <div className="tab-pane fade " id="more-information">
                     <br />
-                    <p>@Model.Course.CoursesDescription</p>
+                    <p>{course?.courseName}</p>
                   </div>
 
                   <div className="tab-pane fade" id="reviews">
@@ -203,10 +248,6 @@ const CourseDetail: React.FC = () => {
                         </a>
                       </div>
                     </form>
-
-                    <div className="chat-body no-padding profile-message">
-                      <ul></ul>
-                    </div>
                   </div>
                 </div>
               </div>

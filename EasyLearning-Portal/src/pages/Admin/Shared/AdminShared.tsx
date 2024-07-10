@@ -4,6 +4,7 @@ import React, { ReactNode, useState } from "react";
 import AdminHeader from "../AdminHeader/AdminHeader";
 import style from "./adminshared.module.css";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../../../components/navbar/Navbar";
 interface AdminSharedProps {
   children: ReactNode;
 }
@@ -128,7 +129,7 @@ const AdminShared: React.FC<AdminSharedProps> = ({ children }) => {
 
   return (
     <div>
-      <AdminHeader />
+      <Navbar />
       <div className={`${style.admin_container}`}>
         <Menu
           onClick={onClick}

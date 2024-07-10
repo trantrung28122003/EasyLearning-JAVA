@@ -24,6 +24,7 @@ const GET_USER_INFO_URL = BASE_URL_USER + "/myInfo";
  */
 const GET_COURSES_MOST_REGISTERED = BASE_URL + "/topThreeMostRegisteredCourses";
 const GET_ALL_CATEGORY = BASE_URL + "/getAllCategoryWithCourse";
+const GET_COURSE_DETAIL = BASE_URL + "/detailCourse";
 /**
  * home
  */
@@ -59,4 +60,5 @@ export {
   REMOVE_FROM_CART,
   DO_PAYMENT_MOMO,
   CONFIRM_PAYMENT,
+  GET_COURSE_DETAIL,
 };

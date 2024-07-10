@@ -11,7 +11,8 @@ import { HTTP_OK } from "../../../constants/HTTPCode";
 import { GET_COURSES_MOST_REGISTERED } from "../../../constants/API";
 import { ApplicationResponse } from "../../../model/BaseResponse";
 import Card from "../../../components/card/Card";
-import { Course, Feedback } from "../../../model/Course";
+import { Course } from "../../../model/Course";
+import { Feedback } from "../../../model/FeedBack";
 const Home: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const doGetCourses = () => {
@@ -340,7 +341,13 @@ const Home: React.FC = () => {
               >
                 <div className="team-item bg-light">
                   <div className="overflow-hidden">
-                    <img className="img-fluid" src="img/team-2.jpg" alt="" />
+                    <img
+                      className="img-fluid"
+                      src={
+                        "https://www.facebook.com/23cfdcc4-9f2c-4db9-978a-91e7df1f65fe"
+                      }
+                      alt=""
+                    />
                   </div>
                   <div
                     className="position-relative d-flex justify-content-center"

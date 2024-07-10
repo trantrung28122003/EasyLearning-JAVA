@@ -86,10 +86,5 @@ public class CustomerController {
     }
 
 
-    @GetMapping("/detailCourse/{courseId}")
-    public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {
-        return ApiResponse.<DetailCourseResponse>builder()
-                .result(courseService.getDetailCourse(courseId))
-                .build();
-    }
+
 }

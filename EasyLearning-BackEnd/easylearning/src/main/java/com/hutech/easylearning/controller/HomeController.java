@@ -2,6 +2,7 @@ package com.hutech.easylearning.controller;
 
 
 import com.hutech.easylearning.dto.reponse.CategoryWithCourseResponse;
+import com.hutech.easylearning.dto.reponse.DetailCourseResponse;
 import com.hutech.easylearning.dto.reponse.RoleResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
 import com.hutech.easylearning.dto.request.RoleRequest;
@@ -43,6 +44,13 @@ public class HomeController {
     ApiResponse<List<CategoryWithCourseResponse>> getAllCategoryWithCourse() {
         return ApiResponse.<List<CategoryWithCourseResponse>>builder()
                 .result(categoryService.getAllCategoryWithCourse())
+                .build();
+    }
+
+    @GetMapping("/detailCourse/{courseId}")
+    public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {
+        return ApiResponse.<DetailCourseResponse>builder()
+                .result(courseService.getDetailCourse(courseId))
                 .build();
     }
 
