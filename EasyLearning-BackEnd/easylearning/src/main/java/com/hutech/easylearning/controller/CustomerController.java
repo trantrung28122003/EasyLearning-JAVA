@@ -1,13 +1,14 @@
 package com.hutech.easylearning.controller;
 
 
-import com.hutech.easylearning.dto.reponse.FeedbackResponse;
+import com.hutech.easylearning.dto.reponse.*;
 import com.hutech.easylearning.dto.request.ApiResponse;
 import com.hutech.easylearning.dto.request.FeedbackCreationRequest;
 import com.hutech.easylearning.dto.request.FeedbackUpdateRequest;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.Feedback;
 import com.hutech.easylearning.enums.CourseType;
+import com.hutech.easylearning.service.CourseEventService;
 import com.hutech.easylearning.service.CourseService;
 import com.hutech.easylearning.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ public class CustomerController {
 
     @Autowired
     private FeedbackService feedbackService;
+    @Autowired
+    private CourseEventService courseEventService;
 
     @PostMapping("/addToFeedback")
     ApiResponse<Feedback> createFeedback(@RequestBody FeedbackCreationRequest request) {
@@ -39,6 +42,7 @@ public class CustomerController {
                 .result(feedbackService.updateFeedback(feedbackId, request))
                 .build();
     }
+
     @GetMapping("/getAllFeedback/{courseId}")
     public ApiResponse<FeedbackResponse> getFeedbackForCourse(@PathVariable("courseId") String courseId) {
         return ApiResponse.<FeedbackResponse>builder()
@@ -47,27 +51,9 @@ public class CustomerController {
     }
 
     @GetMapping("/purchasedCourses")
-    public ApiResponse<List<Course>> purchasedCourses() {
-        return ApiResponse.<List<Course>>builder()
+    public ApiResponse<List<PurchasedCourseResponse>> purchasedCourses() {
+        return ApiResponse.<List<PurchasedCourseResponse>>builder()
                 .result(courseService.getCoursePurchasedByUser())
-                .build();
-    }
-
-    @GetMapping("/purchasedOfflineCourses")
-    public ApiResponse<List<Course>> purchasedOfflineCourses() {
-        return ApiResponse.<List<Course>>builder()
-                .result(courseService.getCoursePurchasedByUser().stream()
-                        .filter(course -> course.getCourseType() == CourseType.OFFLINE)
-                        .collect(Collectors.toList()))
-                .build();
-    }
-
-    @GetMapping("/purchasedOnlineCourses")
-    public ApiResponse<List<Course>> purchasedOnlineCourses() {
-        return ApiResponse.<List<Course>>builder()
-                .result(courseService.getCoursePurchasedByUser().stream()
-                        .filter(course -> course.getCourseType() == CourseType.ONLINE)
-                        .collect(Collectors.toList()))
                 .build();
     }
 
@@ -85,5 +71,25 @@ public class CustomerController {
                 .build();
     }
 
+    @GetMapping("/schedule/{courseId}")
+    public ApiResponse<ScheduleResponse> getScheduleByUser(@PathVariable("courseId") String courseId) {
+        return ApiResponse.<ScheduleResponse>builder()
+                .result(courseService.getPurchasedCoursesSchedule(courseId))
+                .build();
+    }
 
+    @GetMapping("/schedule/detailCourseEvent/{courseEventId}")
+    public ApiResponse<ScheduleDetailEventResponse> getDetailCourseEvent(@PathVariable("courseEventId") String courseEventId) {
+        return ApiResponse.<ScheduleDetailEventResponse>builder()
+                .result(courseEventService.getDetailCourseEvent(courseEventId))
+                .build();
+    }
+
+
+    @GetMapping("/detailCourse/{courseId}")
+    public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {
+        return ApiResponse.<DetailCourseResponse>builder()
+                .result(courseService.getDetailCourse(courseId))
+                .build();
+    }
 }

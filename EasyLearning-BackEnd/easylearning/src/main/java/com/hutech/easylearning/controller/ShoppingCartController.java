@@ -52,7 +52,4 @@ public class ShoppingCartController {
     public boolean isCourseInCart(@PathVariable("courseId") String courseId) {
         return shoppingCartService.isCourseInCart(courseId);
     }
-
-
-
 }

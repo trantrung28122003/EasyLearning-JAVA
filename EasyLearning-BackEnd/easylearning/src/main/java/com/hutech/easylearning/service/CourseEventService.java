@@ -1,11 +1,14 @@
 package com.hutech.easylearning.service;
 
+import com.hutech.easylearning.dto.reponse.CourseEventResponse;
+import com.hutech.easylearning.dto.reponse.ScheduleDetailEventResponse;
 import com.hutech.easylearning.dto.request.CourseCreationRequest;
 import com.hutech.easylearning.dto.request.CourseEventCreationRequest;
 import com.hutech.easylearning.dto.request.CourseEventUpdateRequest;
 import com.hutech.easylearning.entity.Category;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.CourseEvent;
+import com.hutech.easylearning.entity.TrainingPart;
 import com.hutech.easylearning.enums.CourseEventType;
 import com.hutech.easylearning.repository.CourseEventRepository;
 import com.hutech.easylearning.repository.CourseRepository;
@@ -19,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +43,8 @@ public class CourseEventService {
 
     @Autowired
     TrainingPartService trainingPartService;
+    @Autowired
+    private TrainingPartRepository trainingPartRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -111,5 +119,24 @@ public class CourseEventService {
         courseEvent.setDeleted(false);
         courseEvent.setDateChange(LocalDateTime.now());
         courseEventRepository.save(courseEvent);
+    }
+
+    public ScheduleDetailEventResponse getDetailCourseEvent (String courseEventId)
+    {
+        String nameInstructor;
+        var getCourseEventById = courseEventRepository.findById(courseEventId)
+                .orElseThrow(() -> new RuntimeException("CourseEVent not found with id: " + courseEventId));
+        var trainingParts = trainingPartRepository.findTrainingPartByCourseEventId(courseEventId).stream()
+                .sorted(Comparator.comparing(TrainingPart::getStartTime))
+                .collect(Collectors.toList());;
+        var course = courseRepository.findById(trainingParts.getFirst().getCourseId());
+        nameInstructor = course.get().getInstructor();
+
+        ScheduleDetailEventResponse scheduleDetailEventResponse = ScheduleDetailEventResponse.builder()
+                .nameInstructor(nameInstructor)
+                .startDate(getCourseEventById.getDateStart())
+                .trainingParts(trainingParts)
+                .build();
+        return scheduleDetailEventResponse;
     }
 }

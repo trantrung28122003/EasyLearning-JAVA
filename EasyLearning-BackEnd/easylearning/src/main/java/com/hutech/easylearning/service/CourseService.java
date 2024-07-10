@@ -1,5 +1,9 @@
 package com.hutech.easylearning.service;
 
+import com.hutech.easylearning.dto.reponse.CourseEventResponse;
+import com.hutech.easylearning.dto.reponse.DetailCourseResponse;
+import com.hutech.easylearning.dto.reponse.PurchasedCourseResponse;
+import com.hutech.easylearning.dto.reponse.ScheduleResponse;
 import com.hutech.easylearning.dto.request.CourseCreationRequest;
 import com.hutech.easylearning.dto.request.CourseUpdateRequest;
 import com.hutech.easylearning.entity.*;
@@ -14,8 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -41,10 +46,24 @@ public class CourseService {
 
     @Autowired
     private UploaderService uploaderService;
+
     @Autowired
     private TrainingPartService trainingPartService;
+
     @Autowired
     private ShoppingCartItemService shoppingCartItemService;
+
+    @Autowired
+    private CourseEventRepository courseEventRepository;
+
+    @Autowired
+    private TrainingPartRepository trainingPartRepository;
+
+    @Autowired
+    private CourseDetailRepository courseDetailRepository;
+
+    @Autowired
+    private FeedbackRepository feedbackRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -188,32 +207,161 @@ public class CourseService {
     }
 
     @Transactional
-    public List<Course> getCoursePurchasedByUser() {
-        List<Course> courses = new ArrayList<>();
-        List<String> courseIds = new ArrayList<>();
+    public List<PurchasedCourseResponse> getCoursePurchasedByUser() {
+
+        List<PurchasedCourseResponse> purchasedCourseResponses = new ArrayList<>();
         var currentUser = userService.getMyInfo();
         if (currentUser != null) {
             List<Order> orders = orderRepository.findOrderByUserId(currentUser.getId());
             for (Order order : orders) {
                 List<OrderDetail> orderDetails = order.getOrderDetails().stream().toList();
-
                 for (OrderDetail orderDetail : orderDetails) {
                     String courseId = orderDetail.getCourseId();
                     Course course = courseRepository.findById(courseId).orElse(null);
-                    if (course != null) {
-                        courseIds.add(course.getId());
-                    } else {
-                        System.err.println("Course with id " + courseId + " not found.");
+
+                    var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(course.getId());
+                    int totalTrainingPartByCourse = trainingPartByCourse.size();
+                    List<CourseEventResponse> courseEventResponses = new ArrayList<>();
+                    for(var trainingPartId : trainingPartByCourse)
+                    {
+                        for(var courseEvent : courseEventRepository.findAll())
+                        {
+                            if(courseEvent.getId().equals(trainingPartId.getCourseEventId())) {
+                                CourseEventResponse courseEventResponse = CourseEventResponse.builder()
+                                        .id(courseEvent.getId())
+                                        .courseEventName(courseEvent.getEventName())
+                                        .startTime(courseEvent.getDateStart())
+                                        .endTime(courseEvent.getDateEnd())
+                                        .build();
+                                if (courseEventResponses.stream()
+                                        .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
+                                    var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
+                                    courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                                    courseEventResponses.add(courseEventResponse);
+                                }
+                            }
+                        }
                     }
+                    Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
+
+                    PurchasedCourseResponse purchasedCourseResponse = PurchasedCourseResponse.builder()
+                            .courseId(course.getId())
+                            .courseName(course.getCourseName())
+                            .courseImage(course.getImageUrl())
+                            .totalTrainingPartByCourse(totalTrainingPartByCourse)
+                            .courseEventResponses(courseEventResponses)
+                            .build();
+                    purchasedCourseResponses.add(purchasedCourseResponse);
                 }
             }
         } else {
             System.err.println("Current user not found.");
         }
-        return courseRepository.findAllById(courseIds);
+        return purchasedCourseResponses;
     }
 
     public List<Course> searchCoursesByName(String courseName) {
         return courseRepository.findByCourseNameContainingIgnoreCase(courseName);
     }
+
+    public ScheduleResponse getPurchasedCoursesSchedule(String courseId)
+    {
+        var user = userService.getUserById("c6d703c2-7fab-4e0c-86f2-a5778ee8c60d");
+        var avatarInstructor = user.getImageUrl();
+
+        Course courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+
+        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseId);
+
+        List<CourseEventResponse> courseEventResponses = new ArrayList<>();
+        for(var trainingPartId : trainingPartByCourse)
+        {
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if(courseEvent.getId().equals(trainingPartId.getCourseEventId())) {
+                    CourseEventResponse courseEventResponse = CourseEventResponse.builder()
+                            .id(courseEvent.getId())
+                            .courseEventName(courseEvent.getEventName())
+                            .startTime(courseEvent.getDateStart())
+                            .endTime(courseEvent.getDateEnd())
+                            .build();
+                    if (courseEventResponses.stream()
+                            .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
+                        var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
+                        courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                        courseEventResponses.add(courseEventResponse);
+                    }
+                }
+            }
+
+        }
+        Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
+
+        ScheduleResponse scheduleResponse = ScheduleResponse.builder()
+                .courseId(courseById.getId())
+                .courseName(courseById.getCourseName())
+                .avatarInstructor(avatarInstructor)
+                .CourseEventResponse(courseEventResponses)
+                .build();
+        return scheduleResponse;
+    }
+    public DetailCourseResponse getDetailCourse(String courseId)
+    {
+        var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseById.getId());
+        List<CourseEventResponse> courseEventResponses = new ArrayList<>();
+        for(var trainingPartId : trainingPartByCourse)
+        {
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if(courseEvent.getId().equals(trainingPartId.getCourseEventId())) {
+                    CourseEventResponse courseEventResponse = CourseEventResponse.builder()
+                            .id(courseEvent.getId())
+                            .courseEventName(courseEvent.getEventName())
+                            .startTime(courseEvent.getDateStart())
+                            .endTime(courseEvent.getDateEnd())
+                            .build();
+                    if (courseEventResponses.stream()
+                            .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
+                        var trainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).stream()
+                                .sorted(Comparator.comparing(TrainingPart::getStartTime))
+                                .collect(Collectors.toList());;
+                        var totalTrainingPartByCourseEvent = trainingPartByCourseEvent.size();
+                        courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                        courseEventResponse.setTrainingParts(trainingPartByCourseEvent);
+                        courseEventResponses.add(courseEventResponse);
+                    }
+                }
+            }
+        }
+        Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
+
+        int totalFeedback = 0;
+        int averageRating = 0;
+        var feedbacksByCourseId = feedbackRepository.findByCourseId(courseById.getId());
+        totalFeedback = feedbacksByCourseId.size();
+        if (totalFeedback > 0) {
+            int totalRating = 0;
+            for (Feedback feedback : feedbacksByCourseId) {
+                totalRating += feedback.getFeedbackRating();
+            }
+            averageRating = totalRating / totalFeedback;
+        }else {
+        }
+
+        DetailCourseResponse detailCourseResponse = DetailCourseResponse.builder()
+                .courseId(courseById.getId())
+                .courseName(courseById.getCourseName())
+                .coursePrice(courseById.getCoursePrice())
+                .courseImage(courseById.getImageUrl())
+                .nameInstructor(courseById.getInstructor())
+                .courseEventResponses(courseEventResponses)
+                .totalFeedback(totalFeedback)
+                .averageRating(averageRating)
+                .build();
+
+        return detailCourseResponse;
+
+    }
+
 }
