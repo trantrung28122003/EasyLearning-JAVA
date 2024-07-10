@@ -11,8 +11,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const auth: boolean = isUserLogin();
   const isAdminUser: boolean = hasAdminRole();
-  console.log(isAdminUser);
-  //const auth: boolean = true;
   if (!auth) return <Navigate to="/login" />;
   if (isAdmin && !isAdminUser) {
     return <Navigate to="/403" />;

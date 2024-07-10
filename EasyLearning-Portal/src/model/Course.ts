@@ -64,5 +64,14 @@ export interface CourseSlim {
   coursePrice: number;
   totalFeedback: number;
   averageRating: number;
+  totalTrainingPartByCourse: number;
   courseEventResponses: EventSlim[];
+}
+
+export interface GetUserEventsResponse {
+  courseId: string;
+  courseName: string;
+  avatarInstructor: string;
+  courseEventResponse: EventSlim[];
+  nameInstructor: string;
 }

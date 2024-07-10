@@ -15,6 +15,8 @@ const REGISTER_URL = BASE_URL_AUTHEN + "/register";
 */
 const BASE_URL_USER = BASE_URL + "/users";
 const GET_USER_INFO_URL = BASE_URL_USER + "/myInfo";
+const BASE_URL_CUSTOMER = BASE_URL + "/customer";
+const GET_COURSE_BY_COURSE = BASE_URL_CUSTOMER + "/purchasedCourses";
 /*
   user
 */
@@ -61,4 +63,5 @@ export {
   DO_PAYMENT_MOMO,
   CONFIRM_PAYMENT,
   GET_COURSE_DETAIL,
+  GET_COURSE_BY_COURSE,
 };

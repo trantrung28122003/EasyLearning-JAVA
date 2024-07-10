@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import ClientShared from "../Shared/ClientShared";
+import ClientShared from "../../Shared/ClientShared";
 import { useParams } from "react-router-dom";
-import { CourseSlim } from "../../../model/Course";
-import { GET_COURSE_DETAIL } from "../../../constants/API";
-import { DoCallAPIWithOutToken } from "../../../services/HttpService";
+import { CourseSlim } from "../../../../model/Course";
+import { GET_COURSE_DETAIL } from "../../../../constants/API";
+import { DoCallAPIWithOutToken } from "../../../../services/HttpService";
 import "./CourseDetail.css";
 const CourseDetail: React.FC = () => {
   const { courseId } = useParams();
