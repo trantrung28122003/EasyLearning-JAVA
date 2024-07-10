@@ -1,6 +1,7 @@
 package com.hutech.easylearning.dto.reponse;
 
 
+import com.hutech.easylearning.entity.Feedback;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,6 +22,6 @@ public class DetailCourseResponse {
     int totalFeedback;
     int averageRating;
     List<CourseEventResponse> courseEventResponses;
-
+    List<FeedbackInfoResponse> feedFeedbackInfoResponses;
 
 }

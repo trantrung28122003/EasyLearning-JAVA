@@ -29,7 +29,7 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<Category> createCategory(@RequestBody @Valid CategoryCreationRequest request , @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ApiResponse<Category> createCategory(@Valid CategoryCreationRequest request , @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<Category>builder()
                 .result(categoryService.createCategory(request, file))
                 .build();

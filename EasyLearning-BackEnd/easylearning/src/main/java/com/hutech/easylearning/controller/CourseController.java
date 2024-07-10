@@ -32,7 +32,7 @@ public class CourseController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<Course> createCourse(@RequestBody  @Valid CourseCreationRequest request,
+    public ApiResponse<Course> createCourse(@Valid CourseCreationRequest request,
                                             @RequestParam(value = "file", required = false) MultipartFile file) {
     return ApiResponse.<Course>builder()
                 .result(courseService.createCourse(request, file))
