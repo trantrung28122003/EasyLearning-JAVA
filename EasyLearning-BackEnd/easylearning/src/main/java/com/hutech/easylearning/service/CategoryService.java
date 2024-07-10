@@ -1,10 +1,14 @@
 package com.hutech.easylearning.service;
 
+import com.hutech.easylearning.dto.reponse.CategoryWithCourseResponse;
 import com.hutech.easylearning.dto.request.CategoryCreationRequest;
 import com.hutech.easylearning.dto.request.CategoryUpdateRequest;
 import com.hutech.easylearning.entity.Category;
 import com.hutech.easylearning.entity.Course;
+import com.hutech.easylearning.entity.CourseDetail;
 import com.hutech.easylearning.repository.CategoryRepository;
+import com.hutech.easylearning.repository.CourseDetailRepository;
+import com.hutech.easylearning.repository.CourseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -31,6 +35,10 @@ public class CategoryService {
 
     @Autowired
     private UploaderService uploaderService;
+    @Autowired
+    private CourseDetailRepository courseDetailRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -106,4 +114,33 @@ public class CategoryService {
     public List<Category> getCategoriesByNames(List<String> categoryNames) {
         return categoryRepository.findCategoriesByCategoryNameIn(categoryNames);
     }
+
+    public List<Category> findTop4BySortOrderNotNull() {
+        List<Integer> sortOrder = Arrays.asList(1, 2, 3, 4);
+        return categoryRepository.findTop4BySortOrderInOrderBySortOrderAsc(sortOrder);
+    }
+
+    public List<CategoryWithCourseResponse> getAllCategoryWithCourse() {
+        List<CategoryWithCourseResponse> categoryWithCourseResponses = new ArrayList<>();
+        Set<String> courseIdSet = new HashSet<>();
+        List<Category> categories = categoryRepository.findAll();
+
+        for(var category :categories)
+        {
+            var courseDetails = courseDetailRepository.findCourseDetailByCategoryId(category.getId());
+            for (CourseDetail courseDetail : courseDetails) {
+                courseIdSet.add(courseDetail.getCourseId());
+            }
+            List<String> courseIds = new ArrayList<>(courseIdSet);
+            List<Course> courses = courseRepository.findAllByIdIn(courseIds);
+            CategoryWithCourseResponse categoryWithCourseResponse = CategoryWithCourseResponse.builder()
+                    .id(category.getId())
+                    .categoryName(category.getCategoryName())
+                    .courses(courses)
+                    .build();
+            categoryWithCourseResponses.add(categoryWithCourseResponse);
+        }
+        return categoryWithCourseResponses;
+    }
+
 }
