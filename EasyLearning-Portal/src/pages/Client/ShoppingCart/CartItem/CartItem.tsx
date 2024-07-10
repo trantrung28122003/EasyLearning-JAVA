@@ -1,9 +1,21 @@
 import React from "react";
 import style from "./CartItem.module.css";
+import { REMOVE_FROM_CART } from "../../../../constants/API";
+import { DoCallAPIWithToken } from "../../../../services/HttpService";
+import { HTTP_OK } from "../../../../constants/HTTPCode";
+import { useNavigate } from "react-router-dom";
 interface CartItemProps {
   item: ShoppingCartItem;
 }
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
+  const removeCartItem = () => {
+    const URL = REMOVE_FROM_CART + "/" + item.id;
+    DoCallAPIWithToken(URL, "post").then((res) => {
+      if (res.status === HTTP_OK) {
+        window.location.reload();
+      }
+    });
+  };
   return (
     <>
       <div className={`card mb-4 ${style.item_wrapper}`}>
@@ -41,7 +53,12 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
             </div>
             <div className="col-md-2 d-flex justify-content-center">
               <div>
-                <button className={`btn btn-danger ${style.btn_delete}`}>
+                <button
+                  className={`btn btn-danger ${style.btn_delete}`}
+                  onClick={() => {
+                    removeCartItem();
+                  }}
+                >
                   <i className="fas fa-trash-alt"></i> Xóa
                 </button>
               </div>

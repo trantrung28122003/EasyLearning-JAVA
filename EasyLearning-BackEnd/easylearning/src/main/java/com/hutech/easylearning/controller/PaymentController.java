@@ -2,6 +2,7 @@ package com.hutech.easylearning.controller;
 
 
 
+import com.hutech.easylearning.dto.request.ConfirmPaymentSuccessRequest;
 import com.hutech.easylearning.dto.request.MomoRequest;
 import com.hutech.easylearning.dto.request.OrderRequest;
 import com.hutech.easylearning.dto.request.TrainingPartCreationRequest;
@@ -34,48 +35,33 @@ public class PaymentController {
         return paymentService.doPayment(request.getAmount(), request.getNote());
     }
 
-    @GetMapping("/confirmPaymentMomoClient")
-    public String confirmPaymentMomoClient(
-            @RequestParam String partnerCode,
-            @RequestParam String accessKey,
-            @RequestParam String requestId,
-            @RequestParam String amount,
-            @RequestParam String orderId,
-            @RequestParam String orderInfo,
-            @RequestParam String orderType,
-            @RequestParam String transId,
-            @RequestParam String message,
-            @RequestParam String localMessage,
-            @RequestParam String responseTime,
-            @RequestParam String errorCode,
-            @RequestParam String payType,
-            @RequestParam String extraData,
-            @RequestParam String signature) {
+    @PostMapping("/confirmPaymentMomoClient")
+    public String confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentSuccessRequest request) {
 
-        System.out.println("partnerCode: " + partnerCode);
-        System.out.println("accessKey: " + accessKey);
-        System.out.println("requestId: " + requestId);
-        System.out.println("amount: " + amount);
-        System.out.println("orderId: " + orderId);
-        System.out.println("orderInfo: " + orderInfo);
-        System.out.println("orderType: " + orderType);
-        System.out.println("transId: " + transId);
-        System.out.println("message: " + message);
-        System.out.println("localMessage: " + localMessage);
-        System.out.println("responseTime: " + responseTime);
-        System.out.println("errorCode: " + errorCode);
-        System.out.println("payType: " + payType);
-        System.out.println("extraData: " + extraData);
-        System.out.println("signature: " + signature);
+        System.out.println("partnerCode: " + request.getPartnerCode());
+        System.out.println("accessKey: " + request.getAccessKey());
+        System.out.println("requestId: " + request.getRequestId());
+        System.out.println("amount: " + request.getAmount());
+        System.out.println("orderId: " + request.getOrderId());
+        System.out.println("orderInfo: " + request.getOrderInfo());
+        System.out.println("orderType: " + request.getOrderType());
+        System.out.println("transId: " + request.getTransId());
+        System.out.println("message: " + request.getMessage());
+        System.out.println("localMessage: " + request.getLocalMessage());
+        System.out.println("responseTime: " + request.getResponseTime());
+        System.out.println("errorCode: " + request.getErrorCode());
+        System.out.println("payType: " + request.getPayType());
+        System.out.println("extraData: " + request.getExtraData());
+        System.out.println("signature: " + request.getSignature());
 
-        if ("0".equals(errorCode)) {
+        if ("0".equals(request.getErrorCode())) {
             OrderRequest orderRequest = OrderRequest.builder()
-                    .amount(amount)
+                    .amount(request.getAmount())
                     .note("Thanh toán thành công").build();
             orderService.createOrder(orderRequest);
             return "Payment successful";
         } else {
-            return "Payment failed: " + message;
+            return "Payment failed: " + request.getMessage();
         }
     }
 }

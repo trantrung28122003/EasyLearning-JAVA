@@ -1,4 +1,4 @@
-interface Course {
+export interface Course {
   id: string;
   courseName: string;
   courseDescription: string;
@@ -25,7 +25,7 @@ interface Course {
   addOns: any[];
   deleted: boolean;
 }
-interface Feedback {
+export interface Feedback {
   id: string;
   feedbackUserId: string;
   feedbackContent: string;
@@ -36,7 +36,7 @@ interface Feedback {
   courseId: string;
   deleted: boolean;
 }
-interface TrainingPart {
+export interface TrainingPart {
   id: string;
   trainingPartName: string;
   startTime: string;
@@ -53,7 +53,7 @@ interface TrainingPart {
   free: boolean;
   deleted: boolean;
 }
-interface CoursesDetail {
+export interface CoursesDetail {
   id: string;
   courseId: string;
   categoryId: string;

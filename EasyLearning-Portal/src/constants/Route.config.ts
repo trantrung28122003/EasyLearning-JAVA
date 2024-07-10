@@ -139,4 +139,34 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: true,
     isAdmin: true,
   },
+  {
+    path: "/courses/",
+    component: LazyLoadComponent(import("../pages/Client/Course/Course")),
+    isProtected: false,
+    isAdmin: false,
+  },
+  {
+    path: "/course/:courseId",
+    component: LazyLoadComponent(import("../pages/Client/Course/CourseDetail")),
+    isProtected: false,
+    isAdmin: false,
+  },
+  {
+    path: "/checkout",
+    component: LazyLoadComponent(import("../pages/Client/CheckOut/CheckOut")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    //http://localhost:5173/checkout/confirmPaymentMomoClient?partnerCode=MOMOOJOI20210710&accessKey=iPXneGmrJH0G8FOP&requestId=1720598874729&amount=299000&orderId=1720598874729&orderInfo=Thanh%20toan%20khoa%20hoc&orderType=momo_wallet&transId=4082269315&message=Success&localMessage=Th%C3%A0nh%20c%C3%B4ng&responseTime=2024-07-10%2015:10:41&errorCode=0&payType=web&extraData=&signature=86d3927d6c28955416a0f220a71ce5de1706326dfa99eeb6a0018336820ce491
+    //path: "/checkout/confirmPaymentMomoClient",
+    path: "/checkout/confirmPaymentMomoClient",
+    //&accessKey=:accessKey&requestId=:requestId&amount=:amount&orderId=:orderId&orderInfo=:orderInfo&orderType=:orderType&transId=:transId&message=:message&localMessage=:localMessage&responseTime=:responseTime&errorCode=:errorCode&payType=:payType&extraData=:extraData&signature=:signature",
+
+    component: LazyLoadComponent(
+      import("../pages/Client/CheckOut/CheckoutResult")
+    ),
+    isProtected: true,
+    isAdmin: false,
+  },
 ];

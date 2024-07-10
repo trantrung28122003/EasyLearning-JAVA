@@ -21,7 +21,7 @@ public class PaymentService {
         String partnerCode = "MOMOOJOI20210710";
         String accessKey = "iPXneGmrJH0G8FOP";
         String secretKey = "sFcbSGRSJjwGxwhhcEktCHWYUuTuPNDB";
-        String returnUrl = "http://localhost:8080/payment/confirmPaymentMomoClient";
+        String returnUrl = "http://localhost:5173/checkout/confirmPaymentMomoClient";
         String notifyUrl = "https://a0be-171-240-253-237.ngrok-free.app/payment/confirmPaymentMomoClient";
         String orderId = String.valueOf(System.currentTimeMillis());
         String requestId = String.valueOf(System.currentTimeMillis());
