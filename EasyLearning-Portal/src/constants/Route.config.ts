@@ -168,10 +168,16 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: false,
   },
   {
-    path: "/userCourse",
+    path: "/userCourses",
     component: LazyLoadComponent(
       import("../pages/Client/Course/UserCourse/UserCourse")
     ),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/userEvents/:courseId",
+    component: LazyLoadComponent(import("../pages/Client/Event/UserEvents")),
     isProtected: true,
     isAdmin: false,
   },

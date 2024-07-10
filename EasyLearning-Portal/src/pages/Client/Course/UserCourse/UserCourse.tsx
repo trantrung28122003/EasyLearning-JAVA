@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { GET_COURSE_BY_COURSE } from "../../../../constants/API";
+import { GET_COURSE_BY_USER } from "../../../../constants/API";
 import { ApplicationResponse } from "../../../../model/BaseResponse";
 import { CourseSlim } from "../../../../model/Course";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
@@ -8,7 +8,7 @@ import "./UserCourse.css";
 const UserCourse: React.FC = () => {
   const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
   const doCallGetCourseByUser = () => {
-    DoCallAPIWithToken(GET_COURSE_BY_COURSE, "get").then((res) => {
+    DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
       const response: ApplicationResponse<CourseSlim[]> = res.data;
       console.log(response.result);
       getUserCourse(response.result);
@@ -19,13 +19,28 @@ const UserCourse: React.FC = () => {
   }, []);
   return (
     <ClientShared>
-      <div className="col-lg-12 text-header" style={{ marginBottom: "80px" }}>
-        <div className="section-title text-center">
-          <div className="title-text">
-            <h2 className="h2-text-center">Các khóa học trực tuyến của bạn</h2>
+      {userCourse.length === 0 ? (
+        <div
+          className="col-lg-12 text-header"
+          style={{ marginTop: "120px", marginBottom: "120px" }}
+        >
+          <div className="section-title text-center">
+            <div className="title-text">
+              <h2 className="h2-text-center">
+                Bạn chưa đăng kí bất kì một khóa học trực tiếp nào cả
+              </h2>
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="col-lg-12 text-header" style={{ marginBottom: "80px" }}>
+          <div className="section-title text-center">
+            <div className="title-text">
+              <h2 className="h2-text-center">Các khóa học của bạn</h2>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="container">
         <div className="row accordion" id="accordion">

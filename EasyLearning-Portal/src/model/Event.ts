@@ -5,6 +5,7 @@ export interface EventSlim {
   courseEventName: string;
   startTime: string;
   endTime: string;
+  location: string;
   totalTrainingPartByCourseEvent: number;
   trainingParts: TrainingPart[];
 }
