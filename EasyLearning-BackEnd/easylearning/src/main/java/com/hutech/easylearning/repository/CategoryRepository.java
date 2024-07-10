@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, String> {
     List<Category> findCategoriesByCategoryNameIn(List<String> categoryNames);
-
-
+    List<Category> findTop4BySortOrderIsNotNullOrderBySortOrderAsc();
 }

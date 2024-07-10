@@ -106,4 +106,8 @@ public class CategoryService {
     public List<Category> getCategoriesByNames(List<String> categoryNames) {
         return categoryRepository.findCategoriesByCategoryNameIn(categoryNames);
     }
+
+    public List<Category> findTop4BySortOrderNotNull() {
+        return categoryRepository.findTop4BySortOrderIsNotNullOrderBySortOrderAsc();
+    }
 }
