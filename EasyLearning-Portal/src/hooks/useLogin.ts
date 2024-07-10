@@ -1,24 +1,29 @@
 import { LoginResponse } from "../model/Authentication";
-import { ApplicationResponse } from "../model/BaseResponse";
 import { User } from "../model/User";
 
-const authenticationInfo: LoginResponse = JSON.parse(
-  localStorage.getItem("authentication") || ""
-);
-
 const isUserLogin = (): boolean => {
+  const authenticationInfo: LoginResponse = JSON.parse(
+    localStorage.getItem("authentication") || ""
+  );
   return authenticationInfo.authenticated || false;
 };
 
 const getCredentials = (): string => {
+  const authenticationInfo: LoginResponse = JSON.parse(
+    localStorage.getItem("authentication") || ""
+  );
   return authenticationInfo.token || "";
 };
 
 const getUserInfo = () => {
-  const userInfo: ApplicationResponse<User> = JSON.parse(
-    localStorage.getItem("user_info") || ""
-  );
-  return userInfo.result;
+  const userInfo: User = JSON.parse(localStorage.getItem("user_info") || "");
+  return userInfo;
 };
 
-export { isUserLogin, getUserInfo, getCredentials };
+const hasAdminRole = () => {
+  const res: User = JSON.parse(localStorage.getItem("user_info") || "");
+  console.log(res.roles);
+  return res.roles.some((role) => role.name === "ADMIN");
+};
+
+export { isUserLogin, getUserInfo, getCredentials, hasAdminRole };

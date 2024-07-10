@@ -1,6 +1,7 @@
 package com.hutech.easylearning.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,7 +37,8 @@ public class User {
     @Column(name = "full_name")
     String fullName;
 
-    @Column(name = "day_of_birth")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @Column(name = "day_of_birth", nullable = true)
     LocalDate dayOfBirth;
 
     @Column(name = "images_Url")

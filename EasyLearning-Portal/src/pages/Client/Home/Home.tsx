@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "./Home.module.css";
 import ClientShared from "../Shared/ClientShared";
 import AboutImg from "../../../assets/img/about.jpg";
@@ -6,7 +6,31 @@ import Cat1Img from "../../../assets/img/cat-1.jpg";
 import Cat2Img from "../../../assets/img/cat-2.jpg";
 import Cat3Img from "../../../assets/img/cat-3.jpg";
 import Cat4Img from "../../../assets/img/cat-4.jpg";
+import { DoCallAPIWithOutToken } from "../../../services/HttpService";
+import { HTTP_OK } from "../../../constants/HTTPCode";
+import { GET_COURSES_MOST_REGISTERED } from "../../../constants/API";
+import { ApplicationResponse } from "../../../model/BaseResponse";
+import Card from "../../../components/card/Card";
 const Home: React.FC = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const doGetCourses = () => {
+    DoCallAPIWithOutToken(GET_COURSES_MOST_REGISTERED, "get").then((res) => {
+      if (res.status === HTTP_OK) {
+        const response: ApplicationResponse<Course[]> = res.data;
+        setCourses(response.result);
+      }
+    });
+  };
+
+  const feedbacks: Feedback[] = [];
+  courses.forEach((course) => {
+    feedbacks.concat(course.feedbacks);
+  });
+
+  useEffect(() => {
+    doGetCourses();
+  }, []);
+
   return (
     <ClientShared>
       <div className={styled.home}>
@@ -263,168 +287,9 @@ const Home: React.FC = () => {
               <h1 className="mb-5">Các Khóa Học Nổi Tiếng</h1>
             </div>
             <div className="row g-4 justify-content-center">
-              <div
-                className="col-lg-4 col-md-6 wow fadeInUp"
-                data-wow-delay="0.1s"
-              >
-                <div className="course-item bg-light">
-                  <div className="position-relative overflow-hidden">
-                    <img className="img-fluid" src="img/course-1.jpg" alt="" />
-                    <div className="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                        style={{ borderRadius: "30px 0 0 30px" }}
-                      >
-                        Xem Thêm
-                      </a>
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3"
-                        style={{ borderRadius: "0 30px 30px 0" }}
-                      >
-                        Tham Gia Ngay
-                      </a>
-                    </div>
-                  </div>
-                  <div className="text-center p-4 pb-0">
-                    <h3 className="mb-0">549.000 VNĐ</h3>
-                    <div className="mb-3">
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small>(102)</small>
-                    </div>
-                    <h5 className="mb-4">
-                      Khóa học Thiết kế và Phát triển Web dành cho Người mới bắt
-                      đầu
-                    </h5>
-                  </div>
-                  <div className="d-flex border-top">
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-user-tie text-primary me-2"></i>Trần
-                      Anh Tuấn
-                    </small>
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-clock text-primary me-2"></i>1.49 Giờ
-                    </small>
-                    <small className="flex-fill text-center py-2">
-                      <i className="fa fa-user text-primary me-2"></i>30 Học
-                      Viên
-                    </small>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="col-lg-4 col-md-6 wow fadeInUp"
-                data-wow-delay="0.3s"
-              >
-                <div className="course-item bg-light">
-                  <div className="position-relative overflow-hidden">
-                    <img className="img-fluid" src="img/course-2.jpg" alt="" />
-                    <div className="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                        style={{ borderRadius: "30px 0 0 30px" }}
-                      >
-                        Xem Thêm
-                      </a>
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3"
-                        style={{ borderRadius: "0 30px 30px 0" }}
-                      >
-                        Tham Gia Ngay
-                      </a>
-                    </div>
-                  </div>
-                  <div className="text-center p-4 pb-0">
-                    <h3 className="mb-0">599.000 VNĐ</h3>
-                    <div className="mb-3">
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small>(133)</small>
-                    </div>
-                    <h5 className="mb-4">
-                      Chinh Phục Thiết Kế Đồ Họa - AI, Photoshop, Illustrator,
-                      Indesign
-                    </h5>
-                  </div>
-                  <div className="d-flex border-top">
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-user-tie text-primary me-2"></i>Trần
-                      Anh Tuấn
-                    </small>
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-clock text-primary me-2"></i>1.49 Giờ
-                    </small>
-                    <small className="flex-fill text-center py-2">
-                      <i className="fa fa-user text-primary me-2"></i>30 Học
-                      Viên
-                    </small>
-                  </div>
-                </div>
-              </div>
-              <div
-                className="col-lg-4 col-md-6 wow fadeInUp"
-                data-wow-delay="0.5s"
-              >
-                <div className="course-item bg-light">
-                  <div className="position-relative overflow-hidden">
-                    <img className="img-fluid" src="img/course-3.jpg" alt="" />
-                    <div className="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
-                        style={{ borderRadius: "30px 0 0 30px" }}
-                      >
-                        Xem Thêm
-                      </a>
-                      <a
-                        href="#"
-                        className="flex-shrink-0 btn btn-sm btn-primary px-3"
-                        style={{ borderRadius: "0 30px 30px 0" }}
-                      >
-                        Tham Gia Ngay
-                      </a>
-                    </div>
-                  </div>
-                  <div className="text-center p-4 pb-0">
-                    <h3 className="mb-0">249.000 VNĐ</h3>
-                    <div className="mb-3">
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small className="fa fa-star text-primary"></small>
-                      <small>(143)</small>
-                    </div>
-                    <h5 className="mb-4">
-                      Hướng Dẫn Digital Marketing Toàn Diện - 24 Khóa Học trong
-                      1
-                    </h5>
-                  </div>
-                  <div className="d-flex border-top">
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-user-tie text-primary me-2"></i>Trần
-                      Anh Tuấn
-                    </small>
-                    <small className="flex-fill text-center border-end py-2">
-                      <i className="fa fa-clock text-primary me-2"></i>1.49 Giờ
-                    </small>
-                    <small className="flex-fill text-center py-2">
-                      <i className="fa fa-user text-primary me-2"></i>30 Học
-                      Viên
-                    </small>
-                  </div>
-                </div>
-              </div>
+              {courses.map((course, index: number) => {
+                return <Card course={course} key={index} />;
+              })}
             </div>
           </div>
         </div>
@@ -562,7 +427,7 @@ const Home: React.FC = () => {
           </div>
         </div>
 
-        <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+        {/* <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
           <div className="container">
             <div className="text-center">
               <h6 className="section-title bg-white text-center text-primary px-3">
@@ -647,7 +512,7 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </ClientShared>
   );
