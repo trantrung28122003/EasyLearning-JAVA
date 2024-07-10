@@ -3,7 +3,10 @@ import React from "react";
 const Navbar: React.FC = () => {
   return (
     <>
-      <nav className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+      <nav
+        className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0"
+        style={{ marginBottom: "3rem" }}
+      >
         <a
           href="index.html"
           className="navbar-brand d-flex align-items-center px-4 px-lg-5"
@@ -22,13 +25,25 @@ const Navbar: React.FC = () => {
         </button>
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <div className="navbar-nav ms-auto p-4 p-lg-0">
-            <a href="index.html" className="nav-item nav-link active">
+            <a
+              asp-controller="Home"
+              asp-action="Index"
+              className="nav-item nav-link active"
+            >
               Trang Chủ
             </a>
-            <a href="about.html" className="nav-item nav-link">
+            <a
+              asp-controller="About"
+              asp-action="IndexAbout"
+              className="nav-item nav-link"
+            >
               Thông Tin Về Chúng Tôi
             </a>
-            <a href="courses.html" className="nav-item nav-link">
+            <a
+              asp-controller="CustomerCourses"
+              asp-action="ListCourse"
+              className="nav-item nav-link"
+            >
               Các Khóa Học
             </a>
             <div className="nav-item dropdown">
@@ -40,24 +55,38 @@ const Navbar: React.FC = () => {
                 Mục Lục
               </a>
               <div className="dropdown-menu fade-down m-0">
-                <a href="team.html" className="dropdown-item">
-                  Thành Viên
+                <a
+                  asp-controller="CustomerCourses"
+                  asp-action="EventSchedule"
+                  className="dropdown-item"
+                >
+                  Thời khóa biểu
                 </a>
-                <a href="testimonial.html" className="dropdown-item">
-                  Đánh Giá
+                <a
+                  asp-controller="CustomerCourses"
+                  asp-action="ListCourseOnlineByUser"
+                  className="dropdown-item"
+                >
+                  Danh sách khóa học của bạn
                 </a>
-                <a href="404.html" className="dropdown-item">
-                  404 Page
+                <a
+                  asp-controller="account"
+                  asp-action="login"
+                  className="dropdown-item"
+                >
+                  Cài đặt tài khoản
                 </a>
+                <a className="dropdown-item">Quản lý</a>
               </div>
             </div>
-            <a href="contact.html" className="nav-item nav-link">
-              Liên Hệ
+            <a
+              asp-controller="ShoppingCart"
+              asp-action="GetShoppingCart"
+              className="position-relative me-4 my-auto"
+            >
+              <i className="fa fa-shopping-bag fa-2x"></i>
             </a>
           </div>
-          <a href="" className="btn btn-primary py-4 px-lg-5 d-none d-lg-block">
-            Tham Gia Ngay<i className="fa fa-arrow-right ms-3"></i>
-          </a>
         </div>
       </nav>
     </>

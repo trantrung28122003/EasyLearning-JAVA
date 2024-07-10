@@ -21,4 +21,6 @@ const getUserInfo = () => {
   return userInfo.result;
 };
 
-export { isUserLogin, getUserInfo, getCredentials };
+const isAdmin = () => {};
+
+export { isUserLogin, getUserInfo, getCredentials, isAdmin };

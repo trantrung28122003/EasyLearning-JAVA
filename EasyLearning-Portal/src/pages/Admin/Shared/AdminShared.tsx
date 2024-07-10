@@ -1,195 +1,149 @@
-import React, { ReactNode } from "react";
+import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
+import { Menu, MenuProps } from "antd";
+import React, { ReactNode, useState } from "react";
+import AdminHeader from "../AdminHeader/AdminHeader";
+import style from "./adminshared.module.css";
+import { useNavigate } from "react-router-dom";
 interface AdminSharedProps {
   children: ReactNode;
 }
+type MenuItem = Required<MenuProps>["items"][number];
+
 const AdminShared: React.FC<AdminSharedProps> = ({ children }) => {
+  const nagivate = useNavigate();
+  const [tab, setTab] = useState<string[]>(["1"]);
+  const [key, setKey] = useState<string[]>(["sub1"]);
+
+  const handleOnClick = (key: string[], tab: string[], link: string) => {
+    setTab(tab);
+    setKey(key);
+    nagivate(link);
+  };
+
+  const handleKeyOnClick = (key: string[]) => {
+    console.log(key);
+    setTab([]);
+    setKey(key);
+  };
+
+  const items: MenuItem[] = [
+    {
+      key: "sub1",
+      label: "Khóa học",
+      icon: <AppstoreOutlined />,
+      onTitleClick: () => handleKeyOnClick(["sub1"]),
+      children: [
+        {
+          key: "1",
+          label: "Xem danh sách",
+          onClick: () => handleOnClick(["sub1"], ["1"], "/admin/course"),
+        },
+        {
+          key: "2",
+          label: "Thêm",
+          onClick: () => handleOnClick(["sub1"], ["2"], "/admin/course/create"),
+        },
+      ],
+    },
+    {
+      key: "sub2",
+      label: "Lớp",
+      icon: <SettingOutlined />,
+      onTitleClick: () => handleKeyOnClick(["sub2"]),
+      children: [
+        {
+          key: "3",
+          label: "Xem danh sách",
+          onClick: () => handleOnClick(["sub2"], ["3"], "/admin/event"),
+        },
+        {
+          key: "4",
+          label: "Thêm",
+          onClick: () => handleOnClick(["sub2"], ["4"], "/admin/event/create"),
+        },
+      ],
+    },
+    {
+      key: "sub3",
+      label: "Loại khóa học",
+      icon: <SettingOutlined />,
+      onTitleClick: () => handleKeyOnClick(["sub3"]),
+      children: [
+        {
+          key: "5",
+          label: "Xem danh sách",
+          onClick: () => handleOnClick(["sub3"], ["5"], "/admin/category"),
+        },
+        {
+          key: "6",
+          label: "Thêm",
+          onClick: () =>
+            handleOnClick(["sub3"], ["6"], "/admin/category/create"),
+        },
+      ],
+    },
+    {
+      key: "sub4",
+      label: "Người dùng",
+      icon: <SettingOutlined />,
+      onTitleClick: () => handleKeyOnClick(["sub4"]),
+      children: [
+        {
+          key: "7",
+          label: "Xem danh sách",
+          onClick: () => handleOnClick(["sub4"], ["1"], "/admin/course"),
+        },
+        {
+          key: "11",
+          label: "Thêm",
+          onClick: () => handleOnClick(["sub4"], ["1"], "/admin/course"),
+        },
+        { key: "12", label: "Xóa" },
+      ],
+    },
+    {
+      key: "sub5",
+      label: "Doanh thu",
+      icon: <SettingOutlined />,
+      onTitleClick: () => handleKeyOnClick(["sub5"]),
+      children: [
+        { key: "13", label: "Xem danh sách" },
+        { key: "14", label: "Thêm" },
+        { key: "15", label: "Xóa" },
+      ],
+    },
+    {
+      type: "divider",
+    },
+    {
+      key: "sub6",
+      label: "Thùng rác",
+      icon: <SettingOutlined />,
+      onClick: () => handleOnClick(["sub6"], ["sub6"], "/admin/course"),
+    },
+  ];
+  const onClick: MenuProps["onClick"] = (e) => {
+    console.log("click ", e);
+  };
+
   return (
     <div>
-      <div id="wrapper">
-        <ul
-          className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
-          id="accordionSidebar"
-        >
-          <a
-            className="sidebar-brand d-flex align-items-center justify-content-center"
-            href="index.html"
-          >
-            <div className="sidebar-brand-icon rotate-n-15">
-              <i className="fas fa-laugh-wink"></i>
-            </div>
-            <div className="sidebar-brand-text mx-3">Bảng điều khiển</div>
-          </a>
-
-          <hr className="sidebar-divider my-0" />
-
-          <li className="nav-item active">
-            <a className="nav-link" href="index.html">
-              <i className="fas fa-fw fa-tachometer-alt"></i>
-              <span>Quản trị viên</span>
-            </a>
-          </li>
-
-          <hr className="sidebar-divider" />
-
-          <div className="sidebar-heading">Quản lý khóa học</div>
-
-          <li className="nav-item">
-            <a
-              className="nav-link collapsed"
-              href="#"
-              data-toggle="collapse"
-              data-target="#collapseTwo"
-              aria-expanded="true"
-              aria-controls="collapseTwo"
-            >
-              <i className="fas fa-fw fa-cog"></i>
-              <span>Khóa học</span>
-            </a>
-            <div
-              id="collapseTwo"
-              className="collapse"
-              aria-labelledby="headingTwo"
-              data-parent="#accordionSidebar"
-            >
-              <div className="bg-white py-2 collapse-inner rounded">
-                <h6 className="collapse-header">Tùy chọn</h6>
-                <a
-                  className="collapse-item"
-                  asp-action="Index"
-                  asp-controller="course"
-                  asp-area="admin"
-                >
-                  Danh sách
-                </a>
-                <a
-                  className="collapse-item"
-                  asp-action="Create"
-                  asp-controller="course"
-                  asp-area="admin"
-                >
-                  Thêm
-                </a>
-              </div>
-            </div>
-          </li>
-
-          <li className="nav-item">
-            <a
-              className="nav-link collapsed"
-              href="#"
-              data-toggle="collapse"
-              data-target="#collapseUtilities"
-              aria-expanded="true"
-              aria-controls="collapseUtilities"
-            >
-              <i className="fas fa-fw fa-wrench"></i>
-              <span>Thể loại</span>
-            </a>
-            <div
-              id="collapseUtilities"
-              className="collapse"
-              aria-labelledby="headingUtilities"
-              data-parent="#accordionSidebar"
-            >
-              <div className="bg-white py-2 collapse-inner rounded">
-                <h6 className="collapse-header">Tùy chọn</h6>
-                <a
-                  className="collapse-item"
-                  asp-action="Index"
-                  asp-controller="category"
-                  asp-area="admin"
-                >
-                  Danh sách
-                </a>
-                <a
-                  className="collapse-item"
-                  asp-action="Create"
-                  asp-controller="category"
-                  asp-area="admin"
-                >
-                  Thêm
-                </a>
-              </div>
-            </div>
-          </li>
-
-          <hr className="sidebar-divider" />
-
-          <div className="sidebar-heading">Quản lý người dùng</div>
-
-          <li className="nav-item">
-            <a
-              className="nav-link collapsed"
-              href="#"
-              data-toggle="collapse"
-              data-target="#collapsePages"
-              aria-expanded="true"
-              aria-controls="collapsePages"
-            >
-              <i className="fas fa-fw fa-folder"></i>
-              <span>Người dùng</span>
-            </a>
-            <div
-              id="collapsePages"
-              className="collapse"
-              aria-labelledby="headingPages"
-              data-parent="#accordionSidebar"
-            >
-              <div className="bg-white py-2 collapse-inner rounded">
-                <h6 className="collapse-header">Tùy chọn</h6>
-                <a
-                  className="collapse-item"
-                  asp-action="Index"
-                  asp-controller="user"
-                  asp-area="admin"
-                >
-                  Danh sách
-                </a>
-              </div>
-            </div>
-          </li>
-
-          <li className="nav-item">
-            <a className="nav-link" href="charts.html">
-              <i className="fas fa-fw fa-chart-area"></i>
-              <span>Doanh thu</span>
-            </a>
-          </li>
-
-          <hr className="sidebar-divider d-none d-md-block" />
-          <div className="sidebar-heading">Chức năng</div>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              asp-action="Recycle"
-              asp-controller="course"
-              asp-area="admin"
-            >
-              <i className="fas fa-trash-alt"></i>
-              <span>thùng rác</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a
-              className="nav-link"
-              asp-action="Index"
-              asp-controller="Home"
-              asp-area=""
-            >
-              <i className="fas fa-undo"></i>
-              <span>Quay lại trang chính </span>
-            </a>
-          </li>
-          <hr className="sidebar-divider d-none d-md-block" />
-          <div className="text-center d-none d-md-inline">
-            <button
-              className="rounded-circle border-0"
-              id="sidebarToggle"
-            ></button>
+      <AdminHeader />
+      <div className={`${style.admin_container}`}>
+        <Menu
+          onClick={onClick}
+          style={{ width: 256 }}
+          // selectedKeys={tab}
+          // openKeys={key}
+          // defaultSelectedKeys={["1"]}
+          // defaultOpenKeys={["sub1"]}
+          mode="inline"
+          items={items}
+        />
+        <div className={style.wrapper}>
+          <div id="content-wrapper" className="d-flex flex-column">
+            <div className="main-container">{children}</div>
           </div>
-        </ul>
-        <div id="content-wrapper" className="d-flex flex-column">
-          <div className="main-container">{children}</div>
         </div>
       </div>
     </div>

@@ -1,16 +1,17 @@
 import React from "react";
+import ClientShared from "../Shared/ClientShared";
 
 const ShoppingCart: React.FC = () => {
   const applyCoupon = () => {};
   return (
-    <div>
+    <ClientShared>
       <div className="container h-100">
         <div className="row d-flex justify-content-center align-items-center h-100">
           <div className="col">
             <p>
               <span className="h2">Giỏ hàng </span>
               <span id="cartItemCount" className="h4">
-                t<br />
+                <br />
               </span>
             </p>
             <div className="card mb-5">
@@ -57,7 +58,7 @@ const ShoppingCart: React.FC = () => {
                     className="fas fa-arrow-circle-right"
                     style={{ color: "#2bc5d4" }}
                   ></i>{" "}
-                  tiếp tục mua hàng
+                  Tiếp tục mua hàng
                 </button>
               </a>
               <a asp-controller="Order" asp-action="Create">
@@ -75,7 +76,7 @@ const ShoppingCart: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ClientShared>
   );
 };
 
