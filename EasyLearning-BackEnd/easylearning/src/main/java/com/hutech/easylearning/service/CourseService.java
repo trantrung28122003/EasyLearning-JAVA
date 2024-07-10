@@ -284,6 +284,7 @@ public class CourseService {
                             .courseEventName(courseEvent.getEventName())
                             .startTime(courseEvent.getDateStart())
                             .endTime(courseEvent.getDateEnd())
+                            .location(courseEvent.getLocation())
                             .build();
                     if (courseEventResponses.stream()
                             .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
