@@ -10,5 +10,5 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, String> {
     List<Course> findTop3ByOrderByRegisteredUsersDesc();
     List<Course> findByCourseNameContainingIgnoreCase(String courseName);
-    List<Course> findAllByIdIn(List<String> courseId);
+    List<Course> findCoursesByIdIn(List<String> courseId);
 }

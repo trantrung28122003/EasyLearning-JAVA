@@ -104,11 +104,35 @@ public class ShoppingCartService {
     public void deleteShoppingCart(String id) {
         shoppingCartRepository.deleteById(id);
     }
+
+
     @Transactional
     public void softDeleteShoppingCart(String id) {
         ShoppingCart shoppingCart = getShoppingCartById(id);
         shoppingCart.setDeleted(true);
         shoppingCartRepository.save(shoppingCart);
+    }
+
+    public boolean isCourseInCart(String courseId) {
+        var context = SecurityContextHolder.getContext();
+        String userName = context.getAuthentication().getName();
+        var currentUser = userRepository.findByUserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
+        if (shoppingCart == null) {
+            return false;
+        }
+
+        var shoppingCartItems =  shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId())
+                .stream()
+                .filter(shoppingCartItem -> !shoppingCartItem.isDeleted())
+                .collect(Collectors.toList());
+
+        for (var shoppingCartItem : shoppingCartItems) {
+            if (shoppingCartItem.getCourseId().equals(courseId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
