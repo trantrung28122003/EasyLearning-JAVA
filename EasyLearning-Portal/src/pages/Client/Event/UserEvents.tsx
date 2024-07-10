@@ -5,7 +5,7 @@ import ClientShared from "../Shared/ClientShared";
 import { ApplicationResponse } from "../../../model/BaseResponse";
 import { DoCallAPIWithToken } from "../../../services/HttpService";
 import { useParams } from "react-router-dom";
-import "./userEvent.css";
+import "./UserEvents.css";
 const UserEvents: React.FC = () => {
   const [userCourse, setUserCourse] = useState<GetUserEventsResponse>();
   const { courseId } = useParams();
