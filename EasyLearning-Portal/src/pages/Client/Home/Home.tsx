@@ -11,7 +11,8 @@ import { HTTP_OK } from "../../../constants/HTTPCode";
 import { GET_COURSES_MOST_REGISTERED } from "../../../constants/API";
 import { ApplicationResponse } from "../../../model/BaseResponse";
 import Card from "../../../components/card/Card";
-import { Course, Feedback } from "../../../model/Course";
+import { Course } from "../../../model/Course";
+import { Feedback } from "../../../model/FeedBack";
 const Home: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
   const doGetCourses = () => {
@@ -309,8 +310,18 @@ const Home: React.FC = () => {
                 data-wow-delay="0.1s"
               >
                 <div className="team-item bg-light">
-                  <div className="overflow-hidden">
-                    <img className="img-fluid" src="img/team-1.jpg" alt="" />
+                  <div
+                    className="overflow-hidden"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <img
+                      className="img-fluid"
+                      src={
+                        "https://easylearning.blob.core.windows.net/images-videos/download (1).jpeg"
+                      }
+                      style={{ height: "10rem", width: "7.5rem" }}
+                      alt=""
+                    />
                   </div>
                   <div
                     className="position-relative d-flex justify-content-center"
@@ -329,8 +340,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Trần Anh Tuấn</h5>
-                    <small>Vị Trí/ Chức Vụ</small>
+                    <h5 className="mb-0">Vũ Thùy Linh</h5>
+                    <small>Ăn rồi báo</small>
                   </div>
                 </div>
               </div>
@@ -339,8 +350,18 @@ const Home: React.FC = () => {
                 data-wow-delay="0.3s"
               >
                 <div className="team-item bg-light">
-                  <div className="overflow-hidden">
-                    <img className="img-fluid" src="img/team-2.jpg" alt="" />
+                  <div
+                    className="overflow-hidden"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <img
+                      className="img-fluid"
+                      src={
+                        "https://easylearning.blob.core.windows.net/images-videos/download.jpeg"
+                      }
+                      style={{ height: "10rem", width: "7.5rem" }}
+                      alt=""
+                    />
                   </div>
                   <div
                     className="position-relative d-flex justify-content-center"
@@ -359,8 +380,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Trần Anh Tuấn</h5>
-                    <small>Vị Trí/ Chức Vụ</small>
+                    <h5 className="mb-0">Cat Cat</h5>
+                    <small>Ăn rồi báo</small>
                   </div>
                 </div>
               </div>
@@ -369,8 +390,18 @@ const Home: React.FC = () => {
                 data-wow-delay="0.5s"
               >
                 <div className="team-item bg-light">
-                  <div className="overflow-hidden">
-                    <img className="img-fluid" src="img/team-3.jpg" alt="" />
+                  <div
+                    className="overflow-hidden"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <img
+                      className="img-fluid"
+                      src={
+                        "https://easylearning.blob.core.windows.net/images-videos/download (2).jpeg"
+                      }
+                      style={{ height: "10rem", width: "7.5rem" }}
+                      alt=""
+                    />
                   </div>
                   <div
                     className="position-relative d-flex justify-content-center"
@@ -389,8 +420,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Trần Anh Tuấn</h5>
-                    <small>Vị Trí/ Chức Vụ</small>
+                    <h5 className="mb-0">Cat Cat</h5>
+                    <small>Ăn rồi báo</small>
                   </div>
                 </div>
               </div>
@@ -399,8 +430,18 @@ const Home: React.FC = () => {
                 data-wow-delay="0.7s"
               >
                 <div className="team-item bg-light">
-                  <div className="overflow-hidden">
-                    <img className="img-fluid" src="img/team-4.jpg" alt="" />
+                  <div
+                    className="overflow-hidden"
+                    style={{ display: "flex", justifyContent: "center" }}
+                  >
+                    <img
+                      className="img-fluid"
+                      src={
+                        "https://easylearning.blob.core.windows.net/images-videos/download (3).jpeg"
+                      }
+                      style={{ height: "10rem", width: "7.5rem" }}
+                      alt=""
+                    />
                   </div>
                   <div
                     className="position-relative d-flex justify-content-center"
@@ -419,101 +460,14 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Trần Anh Tuấn</h5>
-                    <small>Vị Trí/ Chức Vụ</small>
+                    <h5 className="mb-0">Cat Cat</h5>
+                    <small>Ăn rồi báo</small>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-          <div className="container">
-            <div className="text-center">
-              <h6 className="section-title bg-white text-center text-primary px-3">
-                Phản Hồi
-              </h6>
-              <h1 className="mb-5">Đánh Giá Từ Các Học Viên</h1>
-            </div>
-            <div className="owl-carousel testimonial-carousel position-relative">
-              <div className="testimonial-item text-center">
-                <img
-                  className="border rounded-circle p-2 mx-auto mb-3"
-                  src="../../../assets/img/testimonial-1.jpg"
-                  style={{ width: "80px", height: "80px" }}
-                />
-                <h5 className="mb-0">Trần Anh Tuấn</h5>
-                <p>Profession</p>
-                <div className="testimonial-text bg-light text-center p-4">
-                  <p className="mb-0">
-                    Tôi rất ấn tượng với chất lượng của khóa học. Giảng viên rất
-                    am hiểu và dễ thương, luôn sẵn lòng giải đáp mọi thắc mắc
-                    của tôi. Các tài liệu và tài nguyên hỗ trợ rất phong phú và
-                    hữu ích. Tôi đã cảm thấy tự tin hơn trong lĩnh vực này sau
-                    khi hoàn thành khóa học.
-                  </p>
-                </div>
-              </div>
-              <div className="testimonial-item text-center">
-                <img
-                  className="border rounded-circle p-2 mx-auto mb-3"
-                  src="img/testimonial-2.jpg"
-                  style={{ width: "80px", height: "80px" }}
-                />
-                <h5 className="mb-0">Trần Anh Tuấn</h5>
-                <p>Profession</p>
-                <div className="testimonial-text bg-light text-center p-4">
-                  <p className="mb-0">
-                    Tôi đã tìm kiếm một khóa học về Digital Marketing lâu nay và
-                    cuối cùng tôi đã tìm thấy nó ở đây! Khóa học cung cấp một
-                    cái nhìn toàn diện về Digital Marketing và hướng dẫn từ cơ
-                    bản đến nâng cao. Các bài giảng được trình bày một cách sinh
-                    động và dễ hiểu, giúp tôi tiếp cận với những khái niệm khó
-                    hiểu một cách dễ dàng. Tôi rất hài lòng với trải nghiệm học
-                    tập của mình ở đây
-                  </p>
-                </div>
-              </div>
-              <div className="testimonial-item text-center">
-                <img
-                  className="border rounded-circle p-2 mx-auto mb-3"
-                  src="img/testimonial-3.jpg"
-                  style={{ width: "80px", height: "80px" }}
-                />
-                <h5 className="mb-0">Trần Anh Tuấn</h5>
-                <p>Profession</p>
-                <div className="testimonial-text bg-light text-center p-4">
-                  <p className="mb-0">
-                    Đây là một trang web tuyệt vời cho những ai muốn phát triển
-                    kỹ năng cá nhân và chuyên môn. Khóa học rất thú vị và thách
-                    thức, giúp tôi mở rộng kiến thức và nâng cao khả năng của
-                    mình. Tôi đã học được rất nhiều điều mới và không thể chờ
-                    đợi để áp dụng chúng vào thực tế.
-                  </p>
-                </div>
-              </div>
-              <div className="testimonial-item text-center">
-                <img
-                  className="border rounded-circle p-2 mx-auto mb-3"
-                  src="img/testimonial-4.jpg"
-                  style={{ width: "80px", height: "80px" }}
-                />
-                <h5 className="mb-0">Trần Anh Tuấn</h5>
-                <p>Profession</p>
-                <div className="testimonial-text bg-light text-center p-4">
-                  <p className="mb-0">
-                    Khóa học này là một nguồn thông tin quý báu về Thiết kế Đồ
-                    họa!. Nội dung của khóa học rất thú vị và được trình bày một
-                    cách dễ hiểu, giúp tôi tiếp cận những khái niệm khó khăn một
-                    cách dễ dàng. Tôi đã học được nhiều kỹ thuật mới và cảm thấy
-                    tự tin hơn trong việc thực hiện các dự án thiết kế của mình.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
       </div>
     </ClientShared>
   );

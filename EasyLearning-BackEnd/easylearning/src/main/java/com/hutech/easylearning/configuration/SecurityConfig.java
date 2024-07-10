@@ -35,7 +35,7 @@ public class SecurityConfig {
             "/payment/confirmPaymentMomoClient",
             "/getAllCategoryWithCourse",
             "/topFourMostCategory",
-            "/detailCourse"
+            "/detailCourse/{param}",
     };
 
 

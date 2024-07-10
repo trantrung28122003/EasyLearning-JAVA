@@ -1,3 +1,6 @@
+import { EventSlim } from "./Event";
+import { Feedback } from "./FeedBack";
+
 export interface Course {
   id: string;
   courseName: string;
@@ -25,17 +28,7 @@ export interface Course {
   addOns: any[];
   deleted: boolean;
 }
-export interface Feedback {
-  id: string;
-  feedbackUserId: string;
-  feedbackContent: string;
-  feedbackRating: number;
-  dateCreate: string;
-  dateChange: string;
-  changedBy: string;
-  courseId: string;
-  deleted: boolean;
-}
+
 export interface TrainingPart {
   id: string;
   trainingPartName: string;
@@ -61,4 +54,24 @@ export interface CoursesDetail {
   dateChange?: string;
   changedBy: string;
   deleted: boolean;
+}
+
+export interface CourseSlim {
+  courseId: string;
+  courseName: string;
+  courseImage: string;
+  nameInstructor: string;
+  coursePrice: number;
+  totalFeedback: number;
+  averageRating: number;
+  totalTrainingPartByCourse: number;
+  courseEventResponses: EventSlim[];
+}
+
+export interface GetUserEventsResponse {
+  courseId: string;
+  courseName: string;
+  avatarInstructor: string;
+  courseEventResponse: EventSlim[];
+  nameInstructor: string;
 }

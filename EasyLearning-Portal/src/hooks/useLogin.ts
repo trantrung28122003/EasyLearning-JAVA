@@ -2,28 +2,43 @@ import { LoginResponse } from "../model/Authentication";
 import { User } from "../model/User";
 
 const isUserLogin = (): boolean => {
-  const authenticationInfo: LoginResponse = JSON.parse(
-    localStorage.getItem("authentication") || ""
-  );
-  return authenticationInfo.authenticated || false;
+  if (localStorage.getItem("authentication") != null) {
+    const authenticationInfo: LoginResponse = JSON.parse(
+      localStorage.getItem("authentication") || ""
+    );
+    return authenticationInfo.authenticated || false;
+  } else {
+    return false;
+  }
 };
 
 const getCredentials = (): string => {
-  const authenticationInfo: LoginResponse = JSON.parse(
-    localStorage.getItem("authentication") || ""
-  );
-  return authenticationInfo.token || "";
+  if (localStorage.getItem("authentication") != null) {
+    const authenticationInfo: LoginResponse = JSON.parse(
+      localStorage.getItem("authentication") || ""
+    );
+    return authenticationInfo.token || "";
+  } else {
+    return "";
+  }
 };
 
 const getUserInfo = () => {
-  const userInfo: User = JSON.parse(localStorage.getItem("user_info") || "");
-  return userInfo;
+  if (localStorage.getItem("user_info") != null) {
+    const userInfo: User = JSON.parse(localStorage.getItem("user_info") || "");
+    return userInfo;
+  } else {
+    return null;
+  }
 };
 
 const hasAdminRole = () => {
-  const res: User = JSON.parse(localStorage.getItem("user_info") || "");
-  console.log(res.roles);
-  return res.roles.some((role) => role.name === "ADMIN");
+  if (localStorage.getItem("user_info") != null) {
+    const res: User = JSON.parse(localStorage.getItem("user_info") || "");
+    return res.roles.some((role) => role.name === "ADMIN");
+  } else {
+    return false;
+  }
 };
 
 export { isUserLogin, getUserInfo, getCredentials, hasAdminRole };

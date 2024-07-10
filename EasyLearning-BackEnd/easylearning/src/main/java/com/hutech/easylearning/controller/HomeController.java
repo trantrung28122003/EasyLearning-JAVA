@@ -53,7 +53,8 @@ public class HomeController {
                 .build();
     }
 
-
-
-
+    @GetMapping("/isCourseInSchedule/{courseId}")
+    public boolean isCourseInSchedule(@PathVariable("courseId") String courseId) {
+        return courseService.isCourseInSchedule(courseId);
+    }
 }
