@@ -301,6 +301,7 @@ public class CourseService {
                 .courseId(courseById.getId())
                 .courseName(courseById.getCourseName())
                 .avatarInstructor(avatarInstructor)
+                .nameInstructor(courseById.getInstructor())
                 .CourseEventResponse(courseEventResponses)
                 .build();
         return scheduleResponse;

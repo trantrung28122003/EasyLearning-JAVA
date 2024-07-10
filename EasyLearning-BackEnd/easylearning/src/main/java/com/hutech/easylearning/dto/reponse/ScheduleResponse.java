@@ -17,5 +17,6 @@ public class ScheduleResponse {
     String courseId;
     String courseName;
     String avatarInstructor;
+    String nameInstructor;
     List<CourseEventResponse> CourseEventResponse;
 }
