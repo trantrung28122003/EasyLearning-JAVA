@@ -3,12 +3,14 @@ package com.hutech.easylearning.service;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.CourseDetail;
 import com.hutech.easylearning.repository.CourseDetailRepository;
+import com.hutech.easylearning.repository.CourseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,6 +19,8 @@ public class CourseDetailService {
 
     @Autowired
     CourseDetailRepository courseDetailRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Transactional(readOnly = true)
     public List<CourseDetail> getAllCourseDetails() {
@@ -30,7 +34,7 @@ public class CourseDetailService {
     }
 
     @Transactional
-    public CourseDetail createCourseDetails(CourseDetail courseDetail) {
+    public CourseDetail createCourseDetail(CourseDetail courseDetail) {
         return courseDetailRepository.save(courseDetail);
     }
 
@@ -77,9 +81,42 @@ public class CourseDetailService {
         for(var courseDetail : courseDetailsByCategoryId)
         {
             courseDetail.setDeleted(true);
+            courseDetail.setDateChange(LocalDateTime.now());
             courseDetailRepository.save(courseDetail);
         }
     }
 
+    @Transactional
+    public void softDeleteCourseDetailsByCourseId(String CourseId) {
+        var courseDetailsByCourseId = courseDetailRepository.findCourseDetailByCourseId(CourseId);
+        for(var courseDetail : courseDetailsByCourseId)
+        {
+            courseDetail.setDeleted(true);
+            courseDetail.setDateChange(LocalDateTime.now());
+            courseDetailRepository.save(courseDetail);
+        }
+    }
+
+    @Transactional
+    public void restoreCourseDetailsByCategoryId(String categoryId) {
+        var courseDetailsByCategoryId = courseDetailRepository.findCourseDetailByCategoryId(categoryId);
+        for(var courseDetail : courseDetailsByCategoryId)
+        {
+            courseDetail.setDeleted(false);
+            courseDetail.setDateChange(LocalDateTime.now());
+            courseDetailRepository.save(courseDetail);
+        }
+    }
+
+    @Transactional
+    public void restoreCourseDetailsByCourseId(String CourseId) {
+        var courseDetailsByCourseId = courseDetailRepository.findCourseDetailByCourseId(CourseId);
+        for(var courseDetail : courseDetailsByCourseId)
+        {
+            courseDetail.setDeleted(false);
+            courseDetail.setDateChange(LocalDateTime.now());
+            courseDetailRepository.save(courseDetail);
+        }
+    }
 }
 

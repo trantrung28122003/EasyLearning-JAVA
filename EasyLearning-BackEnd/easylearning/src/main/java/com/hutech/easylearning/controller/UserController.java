@@ -66,4 +66,17 @@ public class UserController {
         return "user has been deleted";
     }
 
+    @PostMapping("/block/{userId}")
+    public String blockUser(@PathVariable("userId") String userId) {
+        userService.blockUser(userId);
+        return "user has been block";
+    }
+
+    @PostMapping("/unblock/{userId}")
+    public String unblockUser(@PathVariable("userId") String userId) {
+        userService.unblockUser(userId);
+        return "user has been unblock";
+    }
+
+
 }

@@ -57,6 +57,20 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    public void blockUser(String userId) {
+       User userById = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+       userById.setIsDeleted(true);
+       userRepository.save(userById);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void unblockUser(String userId) {
+        User userById = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        userById.setIsDeleted(false);
+        userRepository.save(userById);
+    }
+
     public UserResponse getMyInfo()
     {
         var context = SecurityContextHolder.getContext();
@@ -70,6 +84,7 @@ public class UserService {
         var user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
+
     public UserResponse createUser(UserCreationRequest request, MultipartFile file) {
         User user = userMapper.toUser(request);
         String userImageUrl = "http://res.cloudinary.com/dofr3xzmi/image/upload/v1720255836/aoy4tixw5shd9cxh5ep1.jpg";
@@ -99,6 +114,7 @@ public class UserService {
         }
         return userMapper.toUserResponse(user);
     }
+
     public UserResponse updateUser(String userId , UserUpdateRequest request) {
         User getUserById = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(getUserById, request);
