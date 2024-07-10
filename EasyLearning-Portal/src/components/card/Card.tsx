@@ -24,7 +24,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
           <img className="img-fluid" src={course.imageUrl} alt="" />
           <div className="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
             <a
-              href="#"
+              href={"/course/" + course.id}
               className="flex-shrink-0 btn btn-sm btn-primary px-3 border-end"
               style={{ borderRadius: "30px 0 0 30px" }}
             >

@@ -5,8 +5,10 @@ import { CourseSlim } from "../../../../model/Course";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import ClientShared from "../../Shared/ClientShared";
 import "./UserCourse.css";
+import { useNavigate } from "react-router-dom";
 const UserCourse: React.FC = () => {
   const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
+  const navigator = useNavigate();
   const doCallGetCourseByUser = () => {
     DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
       const response: ApplicationResponse<CourseSlim[]> = res.data;
@@ -49,7 +51,10 @@ const UserCourse: React.FC = () => {
               {userCourse.map((course) => (
                 <>
                   <div className="col-lg-12">
-                    <div className="card product_list accordion-item">
+                    <div
+                      className="card product_list accordion-item"
+                      onClick={() => navigator("/course/" + course.courseId)}
+                    >
                       <div className="card-header accordion-header">
                         <div
                           className="btn btn-link collapsed"
