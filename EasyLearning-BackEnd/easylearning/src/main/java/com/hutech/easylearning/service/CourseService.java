@@ -266,8 +266,7 @@ public class CourseService {
 
     public ScheduleResponse getPurchasedCoursesSchedule(String courseId)
     {
-        var user = userService.getUserById("c6d703c2-7fab-4e0c-86f2-a5778ee8c60d");
-        var avatarInstructor = user.getImageUrl();
+        var avatarInstructor = "https://easylearning.blob.core.windows.net/images-videos/user1.jpgea0c0be2-11c0-4948-b908-fcfa615b7835";
 
         Course courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
 
@@ -310,7 +309,7 @@ public class CourseService {
     public DetailCourseResponse getDetailCourse(String courseId)
     {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
-        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseById.getId());
+        var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseById.getId());
         List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
         for(var trainingPartId : trainingPartByCourse)
