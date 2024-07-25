@@ -1,10 +1,9 @@
 import { AppstoreOutlined, SettingOutlined } from "@ant-design/icons";
 import { Menu, MenuProps } from "antd";
 import React, { ReactNode, useState } from "react";
-import AdminHeader from "../AdminHeader/AdminHeader";
-import style from "./adminshared.module.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../../components/navbar/Navbar";
+import style from "./adminshared.module.css";
 interface AdminSharedProps {
   children: ReactNode;
 }
