@@ -266,8 +266,8 @@ public class CourseService {
 
     public ScheduleResponse getPurchasedCoursesSchedule(String courseId)
     {
-        var avatarInstructor = "https://bootdey.com/img/Content/avatar/avatar1.png";
 
+        var avatarInstructor = "https://easylearning.blob.core.windows.net/images-videos/user1.jpgea0c0be2-11c0-4948-b908-fcfa615b7835";
         Course courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
 
         var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseId);
