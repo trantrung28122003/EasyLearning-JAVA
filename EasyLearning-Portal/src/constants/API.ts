@@ -28,6 +28,7 @@ const GET_EVENTS_BY_USER = BASE_URL_CUSTOMER + "/schedule";
 const GET_COURSES_MOST_REGISTERED = BASE_URL + "/topThreeMostRegisteredCourses";
 const GET_ALL_CATEGORY = BASE_URL + "/getAllCategoryWithCourse";
 const GET_COURSE_DETAIL = BASE_URL + "/detailCourse";
+
 /**
  * home
  */
@@ -38,6 +39,7 @@ const GET_COURSE_DETAIL = BASE_URL + "/detailCourse";
 const BASE_URL_SHOPPING_CART = BASE_URL + "/shoppingCart";
 const ADD_TO_CART = BASE_URL_SHOPPING_CART + "/addToCart";
 const REMOVE_FROM_CART = BASE_URL_SHOPPING_CART + "/remove";
+
 /**
  * Shopping cart
  */

@@ -102,7 +102,7 @@ const Login: React.FC = () => {
                 >
                   Đăng Nhập
                 </button>
-                <p className="text-center" style={{ marginTop: "10px" }}>
+                <p className="text-center" style={{ marginTop: "10px", color: "red" } }>
                   <a style={{ textDecoration: "underline", color: "#06BBCC" }}>
                     Bạn quên mật khẩu?
                   </a>
@@ -110,16 +110,16 @@ const Login: React.FC = () => {
 
                 <p className="text-center">
                   <span>Chưa có tài khoản ? </span>
-                  <a>
-                    <button
+                  <a
+                 
                       style={{
-                        backgroundColor: "#06BBCC",
+              
                         padding: "0.5rem",
                         border: "none",
-                      }}
-                    >
+                      }}>
+                    
                       Đăng ký{" "}
-                    </button>{" "}
+                   
                   </a>
                 </p>
 

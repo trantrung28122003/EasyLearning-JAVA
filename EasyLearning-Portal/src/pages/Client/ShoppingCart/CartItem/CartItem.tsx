@@ -3,7 +3,6 @@ import style from "./CartItem.module.css";
 import { REMOVE_FROM_CART } from "../../../../constants/API";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
-import { useNavigate } from "react-router-dom";
 interface CartItemProps {
   item: ShoppingCartItem;
 }

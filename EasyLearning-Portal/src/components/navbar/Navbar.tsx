@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
     <>
       <nav
         className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0"
-        style={{ marginBottom: "3rem" }}
+        // style={{ marginBottom: "3rem" }}
       >
         <a
           href="/"
@@ -48,28 +48,35 @@ const Navbar: React.FC = () => {
               Các Khóa Học
             </a>
             {isLogin && (
-              <div className="nav-item dropdown">
-                <a
-                  href="#"
-                  className="nav-link dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                >
-                  Mục Lục
-                </a>
-                <div className="dropdown-menu fade-down m-0">
-                  <a className="dropdown-item">Danh sách khóa học của bạn</a>
-                  <a className="dropdown-item">Cài đặt tài khoản</a>
-                  {isAdmin && (
-                    <a className="dropdown-item" href="admin/dashboard">
-                      Quản lý
+              <>
+                <div className="nav-item dropdown">
+                  <a
+                    href="#"
+                    className="nav-link dropdown-toggle"
+                    data-bs-toggle="dropdown"
+                  >
+                    Mục Lục
+                  </a>
+                  <div className="dropdown-menu fade-down m-0">
+                    <a className="dropdown-item" href="/userCourses">
+                      Danh sách khóa học của bạn
                     </a>
-                  )}
+                    <a className="dropdown-item">Cài đặt tài khoản</a>
+                    {isAdmin && (
+                      <a className="dropdown-item" href="admin/dashboard">
+                        Quản lý
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
+                <a
+                  className="position-relative me-4 my-auto"
+                  href="/shoppingCart"
+                >
+                  <i className="fa fa-shopping-bag fa-2x"></i>
+                </a>
+              </>
             )}
-            <a className="position-relative me-4 my-auto" href="/shoppingCart">
-              <i className="fa fa-shopping-bag fa-2x"></i>
-            </a>
             {isLogin ? (
               <button
                 className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"

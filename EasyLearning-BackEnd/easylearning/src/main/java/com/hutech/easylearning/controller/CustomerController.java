@@ -46,7 +46,7 @@ public class CustomerController {
     @GetMapping("/getAllFeedback/{courseId}")
     public ApiResponse<FeedbackResponse> getFeedbackForCourse(@PathVariable("courseId") String courseId) {
         return ApiResponse.<FeedbackResponse>builder()
-                .result(feedbackService.getFeedbackByCourse(courseId))
+                .result(feedbackService.getFeedbacksByCourse(courseId))
                 .build();
     }
 

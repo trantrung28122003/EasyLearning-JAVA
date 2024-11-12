@@ -15,6 +15,7 @@ import { Course } from "../../../model/Course";
 import { Feedback } from "../../../model/FeedBack";
 const Home: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+
   const doGetCourses = () => {
     DoCallAPIWithOutToken(GET_COURSES_MOST_REGISTERED, "get").then((res) => {
       if (res.status === HTTP_OK) {
@@ -36,6 +37,27 @@ const Home: React.FC = () => {
   return (
     <ClientShared>
       <div className={styled.home}>
+
+        <div className="container-fluid p-0 mb-5">
+            <div className="header-carousel position-relative">
+                <div className="owl-carousel-item position-relative">
+                    <img className="img-fluid" src="https://easylearning.blob.core.windows.net/images-videos/carousel.jpg" alt="" style ={{width: "100%"}}/>
+                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style={{background: "rgba(24, 29, 56, .7)"}}>
+                        <div className="container">
+                            <div className="row justify-content-start">
+                                <div className="col-sm-10 col-lg-8">
+                                    <h5 className="text-primary text-uppercase mb-3 animated slideInDown">Các Khóa Học Tốt Nhất</h5>
+                                    <h1 className="display-3 text-white animated slideInDown">Nền Tảng Bán Khóa Học Tốt Nhất Hiện Nay</h1>
+                                    <a asp-controller="About" asp-action="IndexAbout" className="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Xem Thêm</a>
+                                    <a asp-controller="CustomerCourses" asp-action="Listcourse" className="btn btn-light py-md-3 px-md-5 animated slideInRight">Tham Gia Ngay</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-4">
@@ -48,8 +70,7 @@ const Home: React.FC = () => {
                     <i className="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
                     <h5 className="mb-3">Giảng Viên Chuyên Nghiệp</h5>
                     <p>
-                      Phơng pháp giảng dạy linh hoạt và có kinh nghiệm trong
-                      lĩnh vực chuyên môn
+                      Phơng pháp giảng dạy linh hoạt và có kinh nghiệm trong lĩnh vực chuyên môn
                     </p>
                   </div>
                 </div>
@@ -63,8 +84,8 @@ const Home: React.FC = () => {
                     <i className="fa fa-3x fa-globe text-primary mb-4"></i>
                     <h5 className="mb-3">Đăng Ký Trực Tuyến</h5>
                     <p>
-                      Thuận tiện cho việc đăng ký, lựa chọn thời gian và lịch
-                      học phù hợp với lịch trình cá nhân
+                    Thuận tiện cho việc đăng ký, lựa chọn thời gian và lịch học phù hợp với lịch trình cá nhân. 
+                    Bạn có thể theo dõi và quản lý các khóa học đã đăng ký một cách dễ dàng. 
                     </p>
                   </div>
                 </div>
@@ -78,9 +99,8 @@ const Home: React.FC = () => {
                     <i className="fa fa-3x fa-home text-primary mb-4"></i>
                     <h5 className="mb-3">Các Dự Án Tại Nhà</h5>
                     <p>
-                      Không bị giới hạn bởi môi trường làm việc truyền thống, có
-                      thể chọn thời gian làm việc phù hợp với lịch trình cá nhân
-                      và tạo điều kiện tốt nhất để sáng tạo
+                    Không bị giới hạn bởi môi trường làm việc truyền thống, có thể chọn thời gian làm việc phù hợp với lịch trình cá nhân và tạo điều kiện tốt nhất để sáng tạo. 
+                    Hãy phát huy tối đa khả năng của bạn từ không gian quen thuộc!
                     </p>
                   </div>
                 </div>
@@ -94,9 +114,8 @@ const Home: React.FC = () => {
                     <i className="fa fa-3x fa-book-open text-primary mb-4"></i>
                     <h5 className="mb-3">Thư Viện Tài Liệu</h5>
                     <p>
-                      Cung cấp một loạt các tài liệu và tài nguyên khác nhau, từ
-                      sách, bài báo, đến bản ghi và hướng dẫn, giúp bạn nắm vững
-                      thông tin cần thiết cho dự án của mình
+                    Cung cấp một loạt các tài liệu và tài nguyên khác nhau, từ sách, bài báo, đến bản ghi và hướng dẫn, giúp bạn nắm vững thông tin cần thiết cho dự án của mình. 
+                    Chúng tôi cam kết hỗ trợ bạn trong suốt quá trình học tập và phát triển bền vững, tạo ra giá trị thiết thực và lâu dài!
                     </p>
                   </div>
                 </div>
@@ -191,7 +210,7 @@ const Home: React.FC = () => {
               <h6 className="section-title bg-white text-center text-primary px-3">
                 Danh Mục
               </h6>
-              <h1 className="mb-5">Danh Mục Các Khóa Học</h1>
+              <h1 className="mb-5">Các Danh Mục Có Nhiều Khóa Học</h1>
             </div>
             <div className="row g-3">
               <div className="col-lg-7 col-md-6">
@@ -317,10 +336,9 @@ const Home: React.FC = () => {
                     <img
                       className="img-fluid"
                       src={
-                        "https://easylearning.blob.core.windows.net/images-videos/download (1).jpeg"
+                        "https://easylearning.blob.core.windows.net/images-videos/user1.jpgea0c0be2-11c0-4948-b908-fcfa615b7835"
                       }
-                      style={{ height: "10rem", width: "7.5rem" }}
-                      alt=""
+                    
                     />
                   </div>
                   <div
@@ -340,8 +358,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Vũ Thùy Linh</h5>
-                    <small>Ăn rồi báo</small>
+                    <h5 className="mb-0">Bùi Phú Khuyên</h5>
+                  
                   </div>
                 </div>
               </div>
@@ -357,10 +375,9 @@ const Home: React.FC = () => {
                     <img
                       className="img-fluid"
                       src={
-                        "https://easylearning.blob.core.windows.net/images-videos/download.jpeg"
+                        "https://easylearning.blob.core.windows.net/images-videos/user2.jpg"
                       }
-                      style={{ height: "10rem", width: "7.5rem" }}
-                      alt=""
+                    
                     />
                   </div>
                   <div
@@ -380,8 +397,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Cat Cat</h5>
-                    <small>Ăn rồi báo</small>
+                    <h5 className="mb-0">Nguyễn Vũ Hoàng Hiệp</h5>
+                  
                   </div>
                 </div>
               </div>
@@ -397,7 +414,7 @@ const Home: React.FC = () => {
                     <img
                       className="img-fluid"
                       src={
-                        "https://easylearning.blob.core.windows.net/images-videos/download (2).jpeg"
+                        "https://easylearning.blob.core.windows.net/images-videos/userDefault.jpg81716900-b5dd-468a-97eb-ca2678f03288"
                       }
                       style={{ height: "10rem", width: "7.5rem" }}
                       alt=""
@@ -420,8 +437,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Cat Cat</h5>
-                    <small>Ăn rồi báo</small>
+                    <h5 className="mb-0">Đặng Ngọc Sơn</h5>
+                
                   </div>
                 </div>
               </div>
@@ -437,10 +454,9 @@ const Home: React.FC = () => {
                     <img
                       className="img-fluid"
                       src={
-                        "https://easylearning.blob.core.windows.net/images-videos/download (3).jpeg"
+                        "https://easylearning.blob.core.windows.net/images-videos/user1.jpgea0c0be2-11c0-4948-b908-fcfa615b7835"
                       }
-                      style={{ height: "10rem", width: "7.5rem" }}
-                      alt=""
+                    
                     />
                   </div>
                   <div
@@ -460,8 +476,8 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                   <div className="text-center p-4">
-                    <h5 className="mb-0">Cat Cat</h5>
-                    <small>Ăn rồi báo</small>
+                    <h5 className="mb-0">Đặng Ngọc Sơn</h5>
+            
                   </div>
                 </div>
               </div>

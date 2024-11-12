@@ -4,10 +4,11 @@ import { DoCallAPIWithToken } from "../../../services/HttpService";
 import { BASE_URL_SHOPPING_CART } from "../../../constants/API";
 import { HTTP_OK } from "../../../constants/HTTPCode";
 import CartItem from "./CartItem/CartItem";
+import { useNavigate } from "react-router-dom";
 
 const ShoppingCart: React.FC = () => {
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>();
-
+  const navigator = useNavigate();
   const applyCoupon = () => {};
   const doGetShoppingCart = () => {
     DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get").then((res) => {
@@ -70,6 +71,9 @@ const ShoppingCart: React.FC = () => {
             <div className="d-flex justify-content-end">
               <a>
                 <button
+                  onClick={() => {
+                    navigator("/courses");
+                  }}
                   type="button"
                   data-mdb-button-init
                   data-mdb-ripple-init
@@ -86,9 +90,10 @@ const ShoppingCart: React.FC = () => {
               <a>
                 <button
                   type="button"
-                  data-mdb-button-init
-                  data-mdb-ripple-init
                   className="btn btn-primary btn-lg"
+                  onClick={() => {
+                    navigator("/checkout");
+                  }}
                 >
                   <i className="fas fa-shopping-cart"></i> Thanh toán
                 </button>
