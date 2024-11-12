@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const UserCourse: React.FC = () => {
   const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
   const navigator = useNavigate();
+  
   const doCallGetCourseByUser = () => {
     DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
       const response: ApplicationResponse<CourseSlim[]> = res.data;
@@ -53,7 +54,7 @@ const UserCourse: React.FC = () => {
                   <div className="col-lg-12">
                     <div
                       className="card product_list accordion-item"
-                      onClick={() => navigator("/course/" + course.courseId)}
+                      onClick={() => navigator("/UserEvents/" + course.courseId)}
                     >
                       <div className="card-header accordion-header">
                         <div

@@ -20,6 +20,7 @@ const Course: React.FC = () => {
   useEffect(() => {
     doCallGetAllCourseByCategory();
   }, []);
+  
   return (
     <ClientShared>
       <div className="container">

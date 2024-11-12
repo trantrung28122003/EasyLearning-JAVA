@@ -219,7 +219,7 @@ public class CourseService {
                     String courseId = orderDetail.getCourseId();
                     Course course = courseRepository.findById(courseId).orElse(null);
 
-                    var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(course.getId());
+                    var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(course.getId());
                     int totalTrainingPartByCourse = trainingPartByCourse.size();
                     List<CourseEventResponse> courseEventResponses = new ArrayList<>();
                     for(var trainingPartId : trainingPartByCourse)
@@ -266,12 +266,11 @@ public class CourseService {
 
     public ScheduleResponse getPurchasedCoursesSchedule(String courseId)
     {
-        var user = userService.getUserById("c6d703c2-7fab-4e0c-86f2-a5778ee8c60d");
-        var avatarInstructor = user.getImageUrl();
+        var avatarInstructor = "https://bootdey.com/img/Content/avatar/avatar1.png";
 
         Course courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
 
-        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseId);
+        var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseId);
 
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
         for(var trainingPartId : trainingPartByCourse)
@@ -310,7 +309,7 @@ public class CourseService {
     public DetailCourseResponse getDetailCourse(String courseId)
     {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
-        var trainingPartByCourse = trainingPartService.getTrainingPartsByCourseId(courseById.getId());
+        var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseById.getId());
         List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
         for(var trainingPartId : trainingPartByCourse)
@@ -351,7 +350,6 @@ public class CourseService {
             averageRating = totalRating / totalFeedback;
         }else {
         }
-
 
         for (var feedback : feedbacksByCourseId) {
             var userWithFeedback = userRepository.findById(feedback.getFeedbackUserId()).orElseThrow(() -> new RuntimeException("User not found with id: " + feedback.getFeedbackUserId()));
@@ -404,5 +402,4 @@ public class CourseService {
         }
         return false;
     }
-
 }

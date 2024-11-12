@@ -4,11 +4,18 @@ import { useParams } from "react-router-dom";
 import { CourseSlim } from "../../../../model/Course";
 import { GET_COURSE_DETAIL } from "../../../../constants/API";
 import { DoCallAPIWithOutToken } from "../../../../services/HttpService";
+
+
 import "./CourseDetail.css";
+
+
 const CourseDetail: React.FC = () => {
+
+  
   const { courseId } = useParams();
   const [course, setCourse] = useState<CourseSlim>();
   const numbers = [1, 2, 3, 4, 5];
+  
   useEffect(() => {
     const URL = GET_COURSE_DETAIL + "/" + courseId;
     DoCallAPIWithOutToken(URL, "get")
@@ -22,6 +29,16 @@ const CourseDetail: React.FC = () => {
   }, []);
 
   const LESSON = "LESSON";
+
+  const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
+  const toggleEventDetails = (eventName: string) => {
+    setOpenEvents((prev) => ({
+      ...prev,
+      [eventName]: !prev[eventName], // Đảo ngược trạng thái hiển thị chi tiết
+    }));
+  };
+
+
 
   return (
     <ClientShared>
@@ -117,16 +134,25 @@ const CourseDetail: React.FC = () => {
                     <dl>
                       {course?.courseEventResponses.map((classEvent) => (
                         <>
-                          <dt className="toggle-details">
-                            <span className="icon">
-                              {classEvent.courseEventName} &nbsp;
-                              {/* <i className="fas fa-chevron-down"></i> */}
+                          <br/>
+                          <dt className="toggle-details"  onClick={() => toggleEventDetails(classEvent.courseEventName)}>
+                          {classEvent.courseEventName} &nbsp;
+                            <span className="icon" >
+                            <i
+                                className={`fas ${
+                                  openEvents[classEvent.courseEventName]
+                                    ? "fa-chevron-up"
+                                    : "fa-chevron-down"
+                                }`}
+                              ></i>
                             </span>
                           </dt>
+                          {openEvents[classEvent.courseEventName] && (
                           <div className="details">
                             {classEvent.trainingParts.map((part) => (
                               <>
                                 <dd>
+                                  
                                   <span>
                                     {part.trainingPartType == LESSON ? (
                                       <i className="fas fa-tv"></i>
@@ -139,6 +165,7 @@ const CourseDetail: React.FC = () => {
                               </>
                             ))}
                           </div>
+                          )}
                         </>
                       ))}
                       <br />

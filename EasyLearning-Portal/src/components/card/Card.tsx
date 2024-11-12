@@ -1,12 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Course } from "../../model/Course";
 import { DoCallAPIWithToken } from "../../services/HttpService";
 import { ADD_TO_CART } from "../../constants/API";
 import { HTTP_OK } from "../../constants/HTTPCode";
 import { useNavigate } from "react-router-dom";
+import { Feedback } from "../../model/FeedBack";
 interface CardProps {
   course: Course;
 }
+
+
 const Card: React.FC<CardProps> = ({ course }) => {
   const navigate = useNavigate();
   const addToCart = () => {
@@ -17,6 +20,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
       }
     });
   };
+
   return (
     <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
       <div className="course-item bg-light">
@@ -37,6 +41,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
             >
               Tham Gia Ngay
             </a>
+
           </div>
         </div>
         <div className="text-center p-4 pb-0">
@@ -54,8 +59,8 @@ const Card: React.FC<CardProps> = ({ course }) => {
         <div className="d-flex border-top">
           <small className="flex-fill text-center border-end py-2">
             <i className="fa fa-user-tie text-primary me-2">
-              &nbsp;{course.instructor}
             </i>
+            &nbsp;{course.instructor}
           </small>
           <small className="flex-fill text-center border-end py-2">
             <i className="fa fa-clock text-primary me-2"></i>

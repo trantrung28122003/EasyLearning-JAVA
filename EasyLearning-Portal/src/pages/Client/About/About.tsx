@@ -4,6 +4,10 @@ const About = () => {
   return (
     <>
       <ClientShared>
+
+        
+
+
         <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-4">
@@ -72,6 +76,7 @@ const About = () => {
             </div>
           </div>
         </div>
+
         <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-5">
@@ -148,6 +153,7 @@ const About = () => {
             </div>
           </div>
         </div>
+
         <div className="container-xxl py-5">
           <div className="container">
             <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
@@ -300,6 +306,8 @@ const About = () => {
             </div>
           </div>
         </div>
+
+
       </ClientShared>
     </>
   );

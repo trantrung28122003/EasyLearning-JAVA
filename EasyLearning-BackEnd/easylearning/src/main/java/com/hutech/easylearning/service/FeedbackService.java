@@ -41,7 +41,7 @@ public class FeedbackService {
 
 
     @Transactional(readOnly = true)
-    public FeedbackResponse getFeedbackByCourse(String courseId) {
+    public FeedbackResponse getFeedbacksByCourse(String courseId) {
         List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
         var feedbacks = feedbackRepository.findByCourseId(courseId);
         var currentUser = userService.getMyInfo();

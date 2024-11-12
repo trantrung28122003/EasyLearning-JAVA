@@ -28,7 +28,6 @@ const Categories: React.FC = () => {
             <td></td>
             <td></td>
             <td></td>
-
             <td>
               <button className="btn btn-info">Sửa</button>
               <button className="btn btn-warning">Chi tiết</button>

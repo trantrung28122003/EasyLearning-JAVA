@@ -18,7 +18,7 @@ const Navbar: React.FC = () => {
     <>
       <nav
         className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0"
-        style={{ marginBottom: "3rem" }}
+        // style={{ marginBottom: "3rem" }}
       >
         <a
           href="/"
