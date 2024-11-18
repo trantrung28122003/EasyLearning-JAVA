@@ -86,8 +86,23 @@ public class CustomerController {
     }
 
 
-    @GetMapping("/isCourseInSchedule/{courseId}")
-    public boolean isCourseInSchedule(@PathVariable("courseId") String courseId) {
-        return courseService.isCourseInSchedule(courseId);
+    @GetMapping("/CourseStatus/{courseId}")
+    public ApiResponse<CourseStatusResponse> getCourseStatus(@PathVariable("courseId") String courseId) {
+        return ApiResponse.<CourseStatusResponse>builder()
+                .result(courseService.getCourseStatus(courseId))
+                .build();
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
 }

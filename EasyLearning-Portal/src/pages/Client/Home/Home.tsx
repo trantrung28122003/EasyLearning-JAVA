@@ -8,19 +8,30 @@ import Cat3Img from "../../../assets/img/cat-3.jpg";
 import Cat4Img from "../../../assets/img/cat-4.jpg";
 import { DoCallAPIWithOutToken } from "../../../services/HttpService";
 import { HTTP_OK } from "../../../constants/HTTPCode";
-import { GET_COURSES_MOST_REGISTERED } from "../../../constants/API";
+import { GET_COURSES_MOST_REGISTERED, GET_TOP_FOUR_MOST_CATEGORY } from "../../../constants/API";
 import { ApplicationResponse } from "../../../model/BaseResponse";
 import Card from "../../../components/card/Card";
 import { Course } from "../../../model/Course";
 import { Feedback } from "../../../model/FeedBack";
+import { Category, CategoryWithCourse } from "../../../model/Category";
 const Home: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-
+  const [categories, setCategories] = useState<Category[]>([]);
   const doGetCourses = () => {
     DoCallAPIWithOutToken(GET_COURSES_MOST_REGISTERED, "get").then((res) => {
       if (res.status === HTTP_OK) {
-        const response: ApplicationResponse<Course[]> = res.data;
-        setCourses(response.result);
+        const data: ApplicationResponse<Course[]> = res.data;
+        setCourses(data.result);
+      }
+    });
+  };
+
+  const doGetTopMostCategory = () => {
+    DoCallAPIWithOutToken(GET_TOP_FOUR_MOST_CATEGORY, "get").then(response =>{
+      if(response.status=== HTTP_OK){
+          const data: ApplicationResponse<Category[]> = response.data;
+          setCategories(data.result);
+         
       }
     });
   };
@@ -32,6 +43,8 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     doGetCourses();
+    doGetTopMostCategory();
+
   }, []);
 
   return (
@@ -215,62 +228,69 @@ const Home: React.FC = () => {
             <div className="row g-3">
               <div className="col-lg-7 col-md-6">
                 <div className="row g-3">
-                  <div
-                    className="col-lg-12 col-md-12 wow zoomIn"
-                    data-wow-delay="0.1s"
-                  >
-                    <a
-                      className="position-relative d-block overflow-hidden"
-                      href=""
+                  {categories[0] &&(
+                    <div
+                      className="col-lg-12 col-md-12 wow zoomIn"
+                      data-wow-delay="0.1s"
                     >
-                      <img className="img-fluid" src={Cat1Img} alt="" />
-                      <div
-                        className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
-                        style={{ margin: "1px" }}
+                      <a
+                        className="position-relative d-block overflow-hidden"
+                        href={"/courses/" + categories[0].id}
                       >
-                        <h5 className="m-0">Thiết Kế Web</h5>
-                        <small className="text-primary">49 Courses</small>
-                      </div>
-                    </a>
-                  </div>
+                        <img className="img-fluid" src={Cat1Img} alt="" />
+                        <div
+                          className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
+                          style={{ margin: "1px" }}
+                        >
+                          <h5 className="m-0">{categories[0].categoryName}</h5>
+                          <small className="text-primary">{categories[0].coursesDetails?.length || 0 } Khóa học</small>
+                        </div>
+                      </a>
+                    </div>
+                  )}
+                {categories[1] &&(
                   <div
                     className="col-lg-6 col-md-12 wow zoomIn"
                     data-wow-delay="0.3s"
                   >
                     <a
                       className="position-relative d-block overflow-hidden"
-                      href=""
+                      href={"/courses/" + categories[1].id}
                     >
                       <img className="img-fluid" src={Cat2Img} alt="" />
                       <div
                         className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                         style={{ margin: "1px" }}
                       >
-                        <h5 className="m-0">Thiết Kế Đồ Họa</h5>
-                        <small className="text-primary">49 Courses</small>
+                        <h5 className="m-0">{categories[1].categoryName}</h5>
+                        <small className="text-primary">{categories[1].coursesDetails?.length || 0 } Khóa học</small>
                       </div>
                     </a>
                   </div>
+                  )}
+                  {categories[2] &&(
                   <div
                     className="col-lg-6 col-md-12 wow zoomIn"
                     data-wow-delay="0.5s"
                   >
                     <a
                       className="position-relative d-block overflow-hidden"
-                      href=""
+                      href={"/courses/" + categories[2].id}
                     >
                       <img className="img-fluid" src={Cat3Img} alt="" />
                       <div
                         className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                         style={{ margin: "1px" }}
                       >
-                        <h5 className="m-0">Chỉnh Sửa Video</h5>
-                        <small className="text-primary">49 Courses</small>
+                        <h5 className="m-0">{categories[2].categoryName}</h5>
+                        <small className="text-primary">{categories[2].coursesDetails?.length || 0 } Khóa học</small>
                       </div>
                     </a>
                   </div>
+                  )}
                 </div>
               </div>
+              {categories[3] &&(
               <div
                 className="col-lg-5 col-md-6 wow zoomIn"
                 data-wow-delay="0.7s"
@@ -278,7 +298,7 @@ const Home: React.FC = () => {
               >
                 <a
                   className="position-relative d-block h-100 overflow-hidden"
-                  href=""
+                  href={"/courses/" + categories[3].id}
                 >
                   <img
                     className="img-fluid position-absolute w-100 h-100"
@@ -290,11 +310,12 @@ const Home: React.FC = () => {
                     className="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3"
                     style={{ margin: "1px" }}
                   >
-                    <h5 className="m-0">Tiếp Thị Trực Tuyến</h5>
-                    <small className="text-primary">49 Courses</small>
+                    <h5 className="m-0">{categories[3].categoryName}</h5>
+                    <small className="text-primary">{categories[3].coursesDetails?.length || 0 } Khóa học</small>
                   </div>
                 </a>
               </div>
+              )}
             </div>
           </div>
         </div>

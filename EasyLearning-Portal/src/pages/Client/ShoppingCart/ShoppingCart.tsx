@@ -18,13 +18,22 @@ const ShoppingCart: React.FC = () => {
       }
     });
   };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN").format(value * 1000);
+  };
+
   useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+
     doGetShoppingCart();
   }, []);
   return (
     <ClientShared>
-      <div className="container h-100">
-        <div className="row d-flex justify-content-center align-items-center h-100">
+      <div className="container" style={{ minHeight: "100vh" }}>
+        <div className="row d-flex justify-content-center align-items-center ">
           <div className="col">
             <p>
               <span className="h2">Giỏ hàng: </span>
@@ -41,8 +50,12 @@ const ShoppingCart: React.FC = () => {
               <div className="card-body p-4">
                 <div className="float-end">
                   <p className="mb-0 me-5 d-flex align-items-center">
-                    <span id="order-total" className="small text-muted me-2">
-                      Tổng tiền: {shoppingCart?.totalPrice}.000 VND
+                    <span id="order-total">
+                      <strong style={{ fontSize: "24px" }}>
+                        Tổng tiền:{" "}
+                        {formatCurrency(shoppingCart?.totalPrice || 0)}{" "}
+                        <span>VNĐ</span>
+                      </strong>
                     </span>{" "}
                     <span className="lead fw-normal"></span>
                   </p>
@@ -68,11 +81,14 @@ const ShoppingCart: React.FC = () => {
                 Áp dụng
               </button>
             </div>
-            <div className="d-flex justify-content-end">
+            <div
+              className="d-flex justify-content-end"
+              style={{ marginBottom: "28px" }}
+            >
               <a>
                 <button
                   onClick={() => {
-                    navigator("/courses");
+                    navigator("/courses/search");
                   }}
                   type="button"
                   data-mdb-button-init
@@ -87,17 +103,20 @@ const ShoppingCart: React.FC = () => {
                   Tiếp tục mua hàng
                 </button>
               </a>
-              <a>
-                <button
-                  type="button"
-                  className="btn btn-primary btn-lg"
-                  onClick={() => {
-                    navigator("/checkout");
-                  }}
-                >
-                  <i className="fas fa-shopping-cart"></i> Thanh toán
-                </button>
-              </a>
+
+              {(shoppingCart?.shoppingCartItems?.length ?? 0) > 0 && (
+                <a>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-lg"
+                    onClick={() => {
+                      navigator("/checkout");
+                    }}
+                  >
+                    <i className="fas fa-shopping-cart"></i> Thanh toán
+                  </button>
+                </a>
+              )}
             </div>
             <div id="error-message" className="text-danger"></div>
           </div>

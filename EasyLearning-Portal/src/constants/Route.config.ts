@@ -146,6 +146,12 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: false,
   },
   {
+    path: "/courses/:categoryId",
+    component: LazyLoadComponent(import("../pages/Client/Course/Course")),
+    isProtected: false,
+    isAdmin: false,
+  },
+  {
     path: "/course/:courseId",
     component: LazyLoadComponent(
       import("../pages/Client/Course/CourseDetail/CourseDetail")
@@ -162,8 +168,20 @@ export const RoutesConfig: ApplicationRoute[] = [
   {
     path: "/checkout/confirmPaymentMomoClient",
     component: LazyLoadComponent(
-      import("../pages/Client/CheckOut/CheckoutResult")
+      import("../pages/Client/CheckOut/CheckOutResult/CheckoutResult")
     ),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/paymentFailure",
+    component: LazyLoadComponent(import("../pages/Client/CheckOut/CheckOutResult/PaymentFailure")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/paymentSuccess",
+    component: LazyLoadComponent(import("../pages/Client/CheckOut/CheckOutResult/PaymentSuccess")),
     isProtected: true,
     isAdmin: false,
   },
@@ -181,4 +199,19 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: true,
     isAdmin: false,
   },
+
+  {
+    path: "/schedule",
+    component: LazyLoadComponent(import("../pages/Client/Schedule/UserSchedule")),
+    isProtected: true,
+    isAdmin: false,
+  },
+
+  {
+    path: "/courses/search",
+    component: LazyLoadComponent(import("../pages/Client/Course/Search/SearchCourse")),
+    isProtected: true,
+    isAdmin: false,
+  },
+
 ];

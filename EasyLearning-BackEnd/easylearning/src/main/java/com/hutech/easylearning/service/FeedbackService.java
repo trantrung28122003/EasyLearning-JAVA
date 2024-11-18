@@ -10,6 +10,7 @@ import com.hutech.easylearning.exception.AppException;
 import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.repository.FeedbackRepository;
 import com.hutech.easylearning.repository.OrderDetailRepository;
+import com.hutech.easylearning.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +30,8 @@ public class FeedbackService {
     FeedbackRepository feedbackRepository;
 
     OrderDetailRepository orderDetailRepository;
+
+    UserRepository userRepository;
 
     @Autowired
     UserService userService;
@@ -70,6 +73,46 @@ public class FeedbackService {
                 .build();
         return feedbackResponse;
     }
+
+    @Transactional(readOnly = true)
+    public FeedbackResponse getFeedbacksByCourseWithoutUser(String courseId) {
+        List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
+
+        var feedbacks = feedbackRepository.findByCourseId(courseId);
+        String fullName = "Khách hàng";
+        String avatar = "";
+
+
+        for (var feedback : feedbacks) {
+            var user = userRepository.findById(feedback.getFeedbackUserId()).orElse(null);
+            if (user != null) {
+                fullName = user.getFullName();
+                avatar = "https://easylearning.blob.core.windows.net/images-videos/userDefault.jpg81716900-b5dd-468a-97eb-ca2678f03288";  // Tạo ảnh đại diện nếu người dùng có thông tin
+            }
+            FeedbackInfoResponse feedbackResponse = FeedbackInfoResponse.builder()
+                    .feedbackId(feedback.getId())
+                    .courseId(feedback.getCourseId())
+                    .userId(feedback.getFeedbackUserId())
+                    .content(feedback.getFeedbackContent())
+                    .fullNameUser(fullName)  // Mặc định là "Khách hàng" nếu chưa đăng nhập
+                    .typeUser("Khách hàng")      // Mặc định là "Khách hàng"
+                    .avatar(avatar)
+                    .feedbackRating(feedback.getFeedbackRating())
+                    .dateChange(feedback.getDateChange())
+                    .build();
+
+            feedbackInfos.add(feedbackResponse);
+        }
+
+        // Trả về kết quả phản hồi mà không có thông tin về người dùng
+        FeedbackResponse feedbackResponse = FeedbackResponse.builder()
+                .feedbacks(feedbackInfos)
+                .setHasGivenFeedback(false)  // Vì người dùng chưa đăng nhập, không có phản hồi
+                .build();
+
+        return feedbackResponse;
+    }
+
 
     @Transactional
     public Feedback createFeedback(FeedbackCreationRequest request) {

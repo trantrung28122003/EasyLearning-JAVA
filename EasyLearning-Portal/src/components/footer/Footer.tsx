@@ -1,11 +1,10 @@
 import React from "react";
-
+import imgcourse1 from "../../assets/img/course-1.jpg";
+import imgcourse2 from "../../assets/img/course-2.jpg";
+import imgcourse3 from "../../assets/img/course-3.jpg";
 const Footer: React.FC = () => {
   return (
-    <div
-      className="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn"
-      data-wow-delay="0.1s"
-    >
+    <div className="container-fluid bg-dark text-light footer pt-5  wow fadeIn">
       <div className="container py-5">
         <div className="row g-5">
           <div className="col-lg-3 col-md-6">
@@ -61,42 +60,42 @@ const Footer: React.FC = () => {
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-1.jpg"
+                  src={imgcourse1}
                   alt=""
                 />
               </div>
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-2.jpg"
+                  src={imgcourse2}
                   alt=""
                 />
               </div>
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-3.jpg"
+                  src={imgcourse3}
                   alt=""
                 />
               </div>
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-2.jpg"
+                  src={imgcourse2}
                   alt=""
                 />
               </div>
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-3.jpg"
+                  src={imgcourse3}
                   alt=""
                 />
               </div>
               <div className="col-4">
                 <img
                   className="img-fluid bg-light p-1"
-                  src="img/course-1.jpg"
+                  src={imgcourse1}
                   alt=""
                 />
               </div>
@@ -134,17 +133,14 @@ const Footer: React.FC = () => {
               &copy;{" "}
               <a className="border-bottom" href="#">
                 eLEARNING
-              </a>
-              Code bởi
+              </a>{" "}
+              code bởi
               <a className="border-bottom" href="https://htmlcodex.com">
-                Bé Trân Đùng
+                {" "}
+                Trung đẹp trai
               </a>
               <br />
               <br />
-              Distributed By
-              <a className="border-bottom" href="https://themewagon.com">
-                ThemeWagon
-              </a>
             </div>
             <div className="col-md-6 text-center text-md-end">
               <div className="footer-menu">

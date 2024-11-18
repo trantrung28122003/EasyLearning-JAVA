@@ -1,0 +1,49 @@
+/* PaymentFailure.css */
+
+.payment-container {
+    display        : flex;
+    justify-content: center;
+    align-items    : center;
+    flex-direction : column;
+    height         : 80vh;
+    text-align     : center;
+    padding        : 20px;
+}
+
+.payment-container img {
+    width        : 100px;
+    margin-bottom: 20px;
+}
+
+.payment-container h1 {
+    font-size    : 2rem;
+    color        : #721c24;
+    margin-bottom: 10px;
+}
+
+.payment-success-container {
+    display        : flex;
+    justify-content: center;
+    align-items    : center;
+    flex-direction : column;
+    height         : 80vh;
+    text-align     : center;
+    padding        : 20px;
+}
+
+.payment-success-container img {
+    width        : 100px;
+    margin-bottom: 20px;
+}
+
+.payment-success-container h1 {
+    font-size    : 2rem;
+    color        : #155724;
+    margin-bottom: 10px;
+}
+
+.btn-payment {
+    font-size    : 20px;
+    border-radius: 30px;
+    width        : 1200px;
+}

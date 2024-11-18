@@ -10,6 +10,7 @@ import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,7 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<Course> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();

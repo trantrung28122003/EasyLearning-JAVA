@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,7 +66,13 @@ public class CourseService {
     @Autowired
     private UserRepository userRepository;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @Autowired
+    private  ShoppingCartRepository shoppingCartRepository;
+
+    @Autowired
+    private  ShoppingCartItemRepository shoppingCartItemRepository;
+
+
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -232,6 +239,7 @@ public class CourseService {
                                         .courseEventName(courseEvent.getEventName())
                                         .startTime(courseEvent.getDateStart())
                                         .endTime(courseEvent.getDateEnd())
+                                        .location(courseEvent.getLocation())
                                         .build();
                                 if (courseEventResponses.stream()
                                         .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
@@ -248,6 +256,8 @@ public class CourseService {
                             .courseId(course.getId())
                             .courseName(course.getCourseName())
                             .courseImage(course.getImageUrl())
+                            .instructor(course.getInstructor())
+                            .courseType(course.getCourseType())
                             .totalTrainingPartByCourse(totalTrainingPartByCourse)
                             .courseEventResponses(courseEventResponses)
                             .build();
@@ -306,12 +316,33 @@ public class CourseService {
                 .build();
         return scheduleResponse;
     }
+
+    public String calculateTotalLearningTime(List<CourseEventResponse> courseEventResponses) {
+        long totalTimeInSeconds = 0;
+
+        for (var courseEventResponse : courseEventResponses) {
+
+            LocalDateTime startTime = courseEventResponse.getStartTime();
+            LocalDateTime endTime = courseEventResponse.getEndTime();
+
+
+            long eventDurationInSeconds = Duration.between(startTime, endTime).getSeconds();
+            totalTimeInSeconds += eventDurationInSeconds;
+        }
+
+        long totalHours = totalTimeInSeconds / 3600;
+        long totalMinutes = (totalTimeInSeconds % 3600) / 60;
+
+
+        return totalHours + ":" + totalMinutes;
+    }
     public DetailCourseResponse getDetailCourse(String courseId)
     {
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
         var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseById.getId());
         List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
         List<CourseEventResponse> courseEventResponses = new ArrayList<>();
+
         for(var trainingPartId : trainingPartByCourse)
         {
             for(var courseEvent : courseEventRepository.findAll())
@@ -323,6 +354,10 @@ public class CourseService {
                             .startTime(courseEvent.getDateStart())
                             .endTime(courseEvent.getDateEnd())
                             .build();
+
+
+
+
                     if (courseEventResponses.stream()
                             .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
                         var trainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).stream()
@@ -332,9 +367,11 @@ public class CourseService {
                         courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
                         courseEventResponse.setTrainingParts(trainingPartByCourseEvent);
                         courseEventResponses.add(courseEventResponse);
+
                     }
                 }
             }
+
         }
         Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
 
@@ -366,6 +403,12 @@ public class CourseService {
                     .build();
             feedbackInfos.add(feedbackResponse);
         }
+
+
+
+        String totalLearningTime = calculateTotalLearningTime(courseEventResponses);
+
+
         DetailCourseResponse detailCourseResponse = DetailCourseResponse.builder()
                 .courseId(courseById.getId())
                 .courseName(courseById.getCourseName())
@@ -376,11 +419,34 @@ public class CourseService {
                 .totalFeedback(totalFeedback)
                 .averageRating(averageRating)
                 .feedFeedbackInfoResponses(feedbackInfos)
+                .totalLearningTime(totalLearningTime)
                 .build();
 
         return detailCourseResponse;
 
     }
+    public boolean isCourseInCart(String courseId) {
+        var context = SecurityContextHolder.getContext();
+        String userName = context.getAuthentication().getName();
+        var currentUser = userRepository.findByUserName(userName).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
+        if (shoppingCart == null) {
+            return false;
+        }
+
+        var shoppingCartItems =  shoppingCartItemRepository.findShoppingCartItemByShoppingCartId(shoppingCart.getId())
+                .stream()
+                .filter(shoppingCartItem -> !shoppingCartItem.isDeleted())
+                .collect(Collectors.toList());
+
+        for (var shoppingCartItem : shoppingCartItems) {
+            if (shoppingCartItem.getCourseId().equals(courseId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public boolean isCourseInSchedule(String courseId) {
         var currentUser = userService.getMyInfo();
@@ -393,13 +459,77 @@ public class CourseService {
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
                 }
             }
         }
         return false;
     }
+    @Transactional
+    public CourseStatusResponse getCourseStatus(String courseId) {
+        boolean isPurchased = false;
+        boolean isLearning = false;
+        boolean isInCart = false;
+        if(isCourseInCart(courseId)){
+            isInCart = true;
+        }
+        if(isCourseInSchedule(courseId)){
+            isLearning = true;
+            isPurchased = true;
+        }
+        CourseStatusResponse courseStatusResponse = new CourseStatusResponse().builder()
+                .isLearning(isLearning)
+                .isInCart(isInCart)
+                .isPurchased(isPurchased)
+                .build();
+
+        return courseStatusResponse;
+    }
+
+    public List<Course> searchByQuery(String query) {
+        if (query != null && !query.trim().isEmpty()) {
+            return courseRepository.findByCourseNameContainingIgnoreCase(query);
+        } else {
+            return courseRepository.findAll();  // Trả về tất cả khóa học nếu không có query
+        }
+    }
+
+    public List<Course> searchCourses(String query, String sortBy, String courseType, Integer rating) {
+        List<Course> courses  = searchByQuery(query);
+
+        if (courseType != null && !courseType.isEmpty()) {
+            courses = courses.stream()
+                    .filter(course -> course.getCourseType().name().equalsIgnoreCase(courseType))
+                    .collect(Collectors.toList());
+        }
+
+
+        if (rating != null) {
+//            courses = courses.stream()
+//                    .filter(course -> course.getRating() != null && course.getRating() >= rating)
+//                    .collect(Collectors.toList());
+        }
+
+
+        if (sortBy != null && !sortBy.isEmpty()) {
+            switch (sortBy.toLowerCase()) {
+                case "az":
+                    courses.sort(Comparator.comparing(Course::getCourseName));
+                    break;
+                case "za":
+                    courses.sort(Comparator.comparing(Course::getCourseName).reversed());
+                    break;
+                case "priceasc":
+                    courses.sort(Comparator.comparing(Course::getCoursePrice));
+                    break;
+                case "pricedesc":
+                    courses.sort(Comparator.comparing(Course::getCoursePrice).reversed());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return courses;
+    }
+
 }

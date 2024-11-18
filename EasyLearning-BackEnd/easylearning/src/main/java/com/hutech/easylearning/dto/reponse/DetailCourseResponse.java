@@ -19,6 +19,7 @@ public class DetailCourseResponse {
     String courseImage;
     String nameInstructor;
     BigDecimal coursePrice;
+    String totalLearningTime;
     int totalFeedback;
     int averageRating;
     List<CourseEventResponse> courseEventResponses;

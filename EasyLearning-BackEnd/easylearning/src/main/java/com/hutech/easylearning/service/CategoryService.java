@@ -12,6 +12,7 @@ import com.hutech.easylearning.repository.CourseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,7 +118,8 @@ public class CategoryService {
 
     public List<Category> findTop4BySortOrderNotNull() {
         List<Integer> sortOrder = Arrays.asList(1, 2, 3, 4);
-        return categoryRepository.findTop4BySortOrderInOrderBySortOrderAsc(sortOrder);
+
+        return categoryRepository.findTop4CategoriesWithMostCourses(PageRequest.of(0, 5));
     }
 
     public List<CategoryWithCourseResponse> getAllCategoryWithCourse() {
@@ -151,5 +153,29 @@ public class CategoryService {
         }
         return categoryWithCourseResponses;
     }
+    public CategoryWithCourseResponse getCoursesByCategory(String categoryId) {
+
+        List<Course> coursesInCategory = new ArrayList<>();
+        var courseDetails = courseDetailRepository.findCourseDetailByCategoryId(categoryId);
+        for (CourseDetail courseDetail : courseDetails) {
+            for(var course : courseRepository.findAll())
+            {
+                if(course.getId().equals(courseDetail.getCourseId())) {
+                    coursesInCategory.add(course);
+                }
+            }
+        }
+            //List<Course> courses = courseRepository.findCoursesByIdIn(courseIds);
+        Category category = categoryRepository.findById(categoryId).orElseThrow();
+        CategoryWithCourseResponse categoryWithCourseResponse = CategoryWithCourseResponse.builder()
+                .id(categoryId)
+                .categoryName(category.getCategoryName())
+                .courses(coursesInCategory)
+                .build();
+
+        return categoryWithCourseResponse;
+    }
+
+
 
 }

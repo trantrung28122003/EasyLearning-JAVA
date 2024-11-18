@@ -3,6 +3,7 @@ package com.hutech.easylearning.controller;
 
 import com.hutech.easylearning.dto.reponse.CategoryWithCourseResponse;
 import com.hutech.easylearning.dto.reponse.DetailCourseResponse;
+import com.hutech.easylearning.dto.reponse.FeedbackResponse;
 import com.hutech.easylearning.dto.reponse.RoleResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
 import com.hutech.easylearning.dto.request.RoleRequest;
@@ -11,6 +12,7 @@ import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.Feedback;
 import com.hutech.easylearning.service.CategoryService;
 import com.hutech.easylearning.service.CourseService;
+import com.hutech.easylearning.service.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,9 @@ public class HomeController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private FeedbackService feedbackService;
+
     @GetMapping("/topThreeMostRegisteredCourses")
     ApiResponse<List<Course>> topThreeCourse() {
         return ApiResponse.<List<Course>>builder()
@@ -40,12 +45,27 @@ public class HomeController {
                 .build();
     }
 
+    @GetMapping("/getAllCourse")
+    ApiResponse<List<Course>> getAllCourse() {
+        return ApiResponse.<List<Course>>builder()
+                .result(courseService.getAllCourses())
+                .build();
+    }
+
     @GetMapping("/getAllCategoryWithCourse")
     ApiResponse<List<CategoryWithCourseResponse>> getAllCategoryWithCourse() {
         return ApiResponse.<List<CategoryWithCourseResponse>>builder()
                 .result(categoryService.getAllCategoryWithCourse())
                 .build();
     }
+
+    @GetMapping("/getCoursesByCategory/{categoryId}")
+    ApiResponse<CategoryWithCourseResponse> getCoursesByCategory(@PathVariable("categoryId") String categoryId) {
+        return ApiResponse.<CategoryWithCourseResponse>builder()
+                .result(categoryService.getCoursesByCategory(categoryId))
+                .build();
+    }
+
     @GetMapping("/detailCourse/{courseId}")
     public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {
         return ApiResponse.<DetailCourseResponse>builder()
@@ -53,8 +73,22 @@ public class HomeController {
                 .build();
     }
 
-    @GetMapping("/isCourseInSchedule/{courseId}")
-    public boolean isCourseInSchedule(@PathVariable("courseId") String courseId) {
-        return courseService.isCourseInSchedule(courseId);
+    @GetMapping("/getFeedbacksByCourseWithoutUser/{courseId}")
+    ApiResponse<FeedbackResponse> getFeedbacksByCourseWithoutUser(@PathVariable("courseId") String courseId) {
+        return ApiResponse.<FeedbackResponse>builder()
+                .result(feedbackService.getFeedbacksByCourseWithoutUser(courseId))
+                .build();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<Course>> searchCourses(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String courseType,
+            @RequestParam(required = false) Integer rating
+    ) {
+        return ApiResponse.<List<Course>>builder()
+                .result(courseService.searchCourses(query, sortBy, courseType, rating))
+                .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.hutech.easylearning.dto.reponse;
 
+import com.hutech.easylearning.enums.CourseType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +15,8 @@ public class PurchasedCourseResponse {
     String courseId;
     String courseName;
     String courseImage;
+    String instructor;
+    CourseType courseType;
     int totalTrainingPartByCourse;
     List<CourseEventResponse> courseEventResponses;
 }

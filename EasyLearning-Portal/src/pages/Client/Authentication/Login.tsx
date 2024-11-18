@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AuthenticationShared from "./Shared/AuthenticationShared";
 import {
   DoCallAPIWithOutToken,
@@ -11,30 +11,49 @@ import { useNavigate } from "react-router-dom";
 import { getCredentials } from "../../../hooks/useLogin";
 import { HTTP_OK } from "../../../constants/HTTPCode";
 import { LoginRequest } from "../../../model/Authentication";
+
 const Login: React.FC = () => {
+  const [loginError, setLoginError] = useState<string | null>(null); // State lưu lỗi đăng nhập
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
     userName: yup
       .string()
-      .min(8, "Must be 8 characters")
-      .max(24, "Maxinum be 24 characters")
-      .required("UserName is required"),
-    password: yup.string().required("Password is required"),
+      .min(8, "Tên ài khoản phải có ít nhất 8 ký tự")
+      .max(24, "Tên tài khoản tối đa 24 ký tự")
+      .required("Tên tài khoản không được để trống"),
+    password: yup.string().required("Mật khẩu không được để trống"),
   });
 
   const doLogin = (user: LoginRequest) => {
-    DoCallAPIWithOutToken<LoginRequest>(LOGIN_URL, "post", user).then((res) => {
-      if (res.status === HTTP_OK) {
-        localStorage.setItem("authentication", JSON.stringify(res.data.result));
-        fetchCurrentUser();
-      }
-    });
+    DoCallAPIWithOutToken<LoginRequest>(LOGIN_URL, "post", user)
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          localStorage.setItem(
+            "authentication",
+            JSON.stringify(res.data.result)
+          );
+          fetchCurrentUser();
+        } else {
+          setLoginError("Tài khoản hoặc mật khẩu không đúng.");
+        }
+      })
+
+      .catch((err) => {
+        if (
+          err.response &&
+          (err.response.status === 404 || err.response.status === 500)
+        ) {
+          console.log(err.response.status);
+          setLoginError("Tài khoản hoặc mật khẩu không đúng.");
+        } else {
+          setLoginError("Đăng nhập thất bại. Vui lòng thử lại sau.");
+        }
+      });
   };
 
   const fetchCurrentUser = () => {
     const token = getCredentials();
-    console.log(token);
     DoCallAPIWithToken(GET_USER_INFO_URL, "get").then((res) => {
       if (res.status === HTTP_OK) {
         localStorage.setItem("user_info", JSON.stringify(res.data.result));
@@ -45,12 +64,18 @@ const Login: React.FC = () => {
     });
   };
 
+  const handleRegister = () => {
+    localStorage.clear();
+    navigate("/register");
+  };
+
   return (
     <AuthenticationShared>
       <Formik
         initialValues={{ userName: "", password: "" }}
         validationSchema={schema}
         onSubmit={(values: LoginRequest) => {
+          setLoginError(null); // Xóa lỗi cũ khi người dùng gửi form
           doLogin(values);
         }}
         validateOnChange
@@ -66,10 +91,10 @@ const Login: React.FC = () => {
                     type="text"
                     style={{ borderColor: "#06BBCC" }}
                     id="userName"
-                    placeholder="Nhập UserName"
+                    placeholder="Nhập Tài Khoản"
                   />
                   <label style={{ color: "#06BBCC" }} htmlFor="userName">
-                    UserName
+                    Tài Khoản
                   </label>
                   {errors.userName && touched.userName ? (
                     <div className="text-danger">{errors.userName}</div>
@@ -92,6 +117,14 @@ const Login: React.FC = () => {
                     <div className="text-danger">{errors.password}</div>
                   ) : null}
                 </div>
+
+                {/* Hiển thị thông báo lỗi nếu có */}
+                {loginError && (
+                  <div className="text-danger text-center mb-3">
+                    {loginError}
+                  </div>
+                )}
+
                 <button
                   style={{
                     backgroundColor: "#06BBCC",
@@ -100,35 +133,47 @@ const Login: React.FC = () => {
                   type="submit"
                   className="btn btn-primary d-grid w-100"
                 >
-                  Đăng Nhập
+                  ĐĂNG NHẬP
                 </button>
-                <p className="text-center" style={{ marginTop: "10px", color: "red" } }>
-                  <a style={{ textDecoration: "underline", color: "#06BBCC" }}>
+
+                <p
+                  className="text-center"
+                  style={{ marginTop: "10px", color: "red" }}
+                >
+                  <a
+                    style={{
+                      textDecoration: "underline",
+                      color: "#06BBCC",
+                      cursor: "pointer",
+                    }}
+                  >
                     Bạn quên mật khẩu?
                   </a>
                 </p>
 
                 <p className="text-center">
-                  <span>Chưa có tài khoản ? </span>
+                  <span>Chưa có tài khoản ?</span>
                   <a
-                 
-                      style={{
-              
-                        padding: "0.5rem",
-                        border: "none",
-                      }}>
-                    
-                      Đăng ký{" "}
-                   
+                    style={{
+                      padding: "0.5rem",
+                      color: "#06BBCC",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleRegister}
+                  >
+                    Đăng ký
                   </a>
                 </p>
 
-                <a
-                  style={{ backgroundColor: "#06BBCC", borderColor: "#06BBCC" }}
+                <button
+                  style={{
+                    backgroundColor: "#06BBCC",
+                    borderColor: "#06BBCC",
+                  }}
                   className="btn btn-primary d-grid w-100"
                 >
-                  Log In With Google
-                </a>
+                  ĐĂNG NHẬP VỚI GOOGLE
+                </button>
               </Form>
             </div>
           </div>

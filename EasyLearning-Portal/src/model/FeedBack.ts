@@ -1,8 +1,11 @@
 
 export interface Feedback {
-  id: string;
-  feedbackUserId: string;
-  feedbackContent: string;
+  feedbackId: string;
+  userId: string;
+  fullNameUser: string;
+  typeUser:string;
+  avatar: string;
+  content: string;
   feedbackRating: number;
   dateCreate: string;
   dateChange: string;

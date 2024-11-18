@@ -1,19 +1,80 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { hasAdminRole, isUserLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
-
+import "./test.css";
 const Navbar: React.FC = () => {
   const isAdmin = hasAdminRole();
   const isLogin = isUserLogin();
   const navigator = useNavigate();
+  const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      message: "Bài học Tham gia cộng đồng F8 trên Discord mới được thêm vào.",
+      time: "8 tháng trước",
+      isRead: false,
+    },
+    {
+      id: 2,
+      message: "Bài học Mua áo F8 | Đăng ký học Offline mới được thêm vào.",
+      time: "1 năm trước",
+      isRead: false,
+    },
+    {
+      id: 3,
+      message: "Bài học CSS selectors cơ bản #1 mới được thêm vào.",
+      time: "2 năm trước",
+      isRead: false,
+    },
+  ]);
+
+  const unreadCount = notifications.filter((notif) => !notif.isRead).length;
+
+  // Đánh dấu tất cả là đã đọc
+  const markAllAsRead = () => {
+    setNotifications((prev) =>
+      prev.map((notif) => ({ ...notif, isRead: true }))
+    );
+  };
+
+  // Đánh dấu một thông báo là đã đọc
+  const markAsRead = (id: number) => {
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === id ? { ...notif, isRead: true } : notif
+      )
+    );
+  };
+
   const handleLogout = () => {
     localStorage.clear();
+    window.location.reload();
     navigator("/");
   };
   const handleLogin = () => {
     localStorage.clear();
     navigator("/login");
   };
+
+  // Đóng thông báo khi nhấn ngoài
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Kiểm tra nếu click không thuộc vào khung thông báo
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target as Node)
+      ) {
+        setNotificationOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <>
       <nav
@@ -44,9 +105,10 @@ const Navbar: React.FC = () => {
             <a href="/about" className="nav-item nav-link">
               Thông Tin Về Chúng Tôi
             </a>
-            <a className="nav-item nav-link" href="/courses">
+            <a className="nav-item nav-link" href="/courses/search">
               Các Khóa Học
             </a>
+
             {isLogin && (
               <>
                 <div className="nav-item dropdown">
@@ -57,7 +119,11 @@ const Navbar: React.FC = () => {
                   >
                     Mục Lục
                   </a>
+
                   <div className="dropdown-menu fade-down m-0">
+                    <a className="dropdown-item" href="/schedule">
+                      Thời khóa biểu
+                    </a>
                     <a className="dropdown-item" href="/userCourses">
                       Danh sách khóa học của bạn
                     </a>
@@ -75,6 +141,51 @@ const Navbar: React.FC = () => {
                 >
                   <i className="fa fa-shopping-bag fa-2x"></i>
                 </a>
+
+                {/* <a
+                  className="position-relative me-4 my-auto"
+                  href="/notifications"
+                >
+                  <i className="fa fa-bell fa-2x"></i>
+                  <span className="notification-count">3</span>{" "}
+                </a> */}
+                <div className="position-relative me-4 my-auto">
+                  <i
+                    className="fa fa-bell fa-2x"
+                    onClick={() => setNotificationOpen(!isNotificationOpen)}
+                    ref={notificationsRef}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {unreadCount > 0 && (
+                      <span className="notification-badge">{unreadCount}</span>
+                    )}
+                  </i>
+                  {isNotificationOpen && (
+                    <div
+                      className="notification-dropdown"
+                      ref={notificationsRef}
+                    >
+                      <div className="notification-header">
+                        <h5>Thông báo</h5>
+                        <button className="mark-read">Đánh dấu đã đọc</button>
+                      </div>
+                      <div className="notification-list">
+                        {notifications.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={`notification-item ${
+                              notif.isRead ? "read" : ""
+                            }`}
+                            onClick={() => markAsRead(notif.id)} // Đánh dấu đã đọc khi nhấn vào
+                          >
+                            <p>{notif.message}</p>
+                            <span>{notif.time}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </>
             )}
             {isLogin ? (
