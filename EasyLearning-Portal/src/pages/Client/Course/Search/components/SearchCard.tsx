@@ -71,6 +71,10 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
     }
   };
 
+  const handleNavigateToCourseDetail = (courseId: string) => {
+    navigate("/course/" + courseId);
+  };
+
   useEffect(() => {
     if (course?.id) {
       fetchCourseDetail(course.id);
@@ -79,7 +83,10 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
   }, [course.id]);
 
   return (
-    <div className="course-card">
+    <div
+      className="course-card"
+      onClick={() => handleNavigateToCourseDetail(course.id)}
+    >
       <div
         key={course.id}
         className="mb-3 p-3 border rounded d-flex align-items-center justify-content-between"

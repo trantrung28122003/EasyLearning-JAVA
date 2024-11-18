@@ -17,6 +17,7 @@ public class PurchasedCourseResponse {
     String courseImage;
     String instructor;
     CourseType courseType;
+    int completedPartsByCourse;
     int totalTrainingPartByCourse;
     List<CourseEventResponse> courseEventResponses;
 }

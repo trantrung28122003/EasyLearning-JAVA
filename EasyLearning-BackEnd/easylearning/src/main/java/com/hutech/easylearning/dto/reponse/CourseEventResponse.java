@@ -18,7 +18,8 @@ public class CourseEventResponse {
      LocalDateTime startTime;
      LocalDateTime endTime;
      String location;
-     int totalTrainingPartByCourseEvent;
+     int completedPartsByCourseEvent;
+     int totalPartsByCourseEvent;
      List<TrainingPart> trainingParts;
 
 }
