@@ -2,12 +2,14 @@ package com.hutech.easylearning.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hutech.easylearning.enums.TrainingPartType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "training_part")
@@ -63,6 +65,16 @@ public class TrainingPart{
     @JoinColumn(name = "training_part_event_id", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonBackReference
     CourseEvent courseEvent;
+
+
+    @OneToMany(mappedBy = "trainingPart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserTrainingProgress> userTrainingProgress;
+
+
+    @OneToMany(mappedBy = "trainingPart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<Comment> comments;
 
     @Column(name = "date_create")
     LocalDateTime dateCreate;

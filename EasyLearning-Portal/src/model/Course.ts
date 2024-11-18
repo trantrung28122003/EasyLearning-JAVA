@@ -27,6 +27,7 @@ export interface Course {
   feedbacks: Feedback[];
   addOns: any[];
   deleted: boolean;
+  averageRating: number;
 }
 
 export interface TrainingPart {
@@ -60,11 +61,13 @@ export interface CourseSlim {
   courseId: string;
   courseName: string;
   courseImage: string;
-  nameInstructor: string;
+  courseType: string;
+  instructor: string;
   coursePrice: number;
   totalFeedback: number;
   averageRating: number;
   totalTrainingPartByCourse: number;
+  totalLearningTime: string;
   courseEventResponses: EventSlim[];
 }
 
@@ -75,3 +78,6 @@ export interface GetUserEventsResponse {
   courseEventResponse: EventSlim[];
   nameInstructor: string;
 }
+
+
+

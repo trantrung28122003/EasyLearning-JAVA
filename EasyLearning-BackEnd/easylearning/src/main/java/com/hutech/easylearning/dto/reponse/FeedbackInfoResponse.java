@@ -19,5 +19,6 @@ public class FeedbackInfoResponse {
     String fullNameUser;
     String typeUser;
     String content;
+    int feedbackRating;
     LocalDateTime dateChange;
 }

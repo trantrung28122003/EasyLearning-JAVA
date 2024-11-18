@@ -18,6 +18,13 @@ const GET_USER_INFO_URL = BASE_URL_USER + "/myInfo";
 const BASE_URL_CUSTOMER = BASE_URL + "/customer";
 const GET_COURSE_BY_USER = BASE_URL_CUSTOMER + "/purchasedCourses";
 const GET_EVENTS_BY_USER = BASE_URL_CUSTOMER + "/schedule";
+const GET_COURSE_STATUS = BASE_URL + "/customer/CourseStatus"
+/* 
+  Training Progress
+*/
+const BASE_URL_TRAINING_PROGRESS = BASE_URL + "/trainingProgress";
+const GET_COMPLETED_PARTS_BY_COURSE = BASE_URL_TRAINING_PROGRESS + "/completedPartsByCourse";
+const GET_COMPLETED_PARTS_BY_COURSE_EVENT = BASE_URL_TRAINING_PROGRESS + "/completedPartsByCourseEvent";
 /*
   user
 */
@@ -26,8 +33,14 @@ const GET_EVENTS_BY_USER = BASE_URL_CUSTOMER + "/schedule";
  * home
  */
 const GET_COURSES_MOST_REGISTERED = BASE_URL + "/topThreeMostRegisteredCourses";
-const GET_ALL_CATEGORY = BASE_URL + "/getAllCategoryWithCourse";
+const GET_ALL_CATEGORY_WITH_COURSE = BASE_URL + "/getAllCategoryWithCourse";
+const GET_ALL_COURSE = BASE_URL + "/getAllCourse";
+const GET_COURSE_BY_CATEGORY = BASE_URL + "/getCoursesByCategory";
 const GET_COURSE_DETAIL = BASE_URL + "/detailCourse";
+const GET_FEEDBACKS_FOR_COURSE = BASE_URL + "/getFeedbacksByCourseWithoutUser";
+const GET_TOP_FOUR_MOST_CATEGORY = BASE_URL + "/topFourMostCategory";
+const SEARCH_COURSES = BASE_URL + "/search";
+
 
 /**
  * home
@@ -60,7 +73,7 @@ export {
   GET_COURSES_MOST_REGISTERED,
   BASE_URL_SHOPPING_CART,
   REGISTER_URL,
-  GET_ALL_CATEGORY,
+  GET_ALL_CATEGORY_WITH_COURSE,
   ADD_TO_CART,
   REMOVE_FROM_CART,
   DO_PAYMENT_MOMO,
@@ -68,4 +81,12 @@ export {
   GET_COURSE_DETAIL,
   GET_COURSE_BY_USER,
   GET_EVENTS_BY_USER,
+  GET_FEEDBACKS_FOR_COURSE,
+  GET_COURSE_BY_CATEGORY,
+  GET_TOP_FOUR_MOST_CATEGORY,
+  GET_ALL_COURSE,
+  SEARCH_COURSES,
+  GET_COURSE_STATUS,
+  GET_COMPLETED_PARTS_BY_COURSE,
+  GET_COMPLETED_PARTS_BY_COURSE_EVENT
 };

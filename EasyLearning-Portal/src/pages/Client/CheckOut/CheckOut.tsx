@@ -19,6 +19,9 @@ const CheckOut: React.FC = () => {
     });
   };
 
+  const formarCurrency = (value: number) => {
+    return new Intl.NumberFormat("vi-VN").format(value * 1000);
+  };
   const doPayment = () => {
     if (shoppingCart) {
       const payload: MomoPaymentRequest = {
@@ -28,7 +31,6 @@ const CheckOut: React.FC = () => {
       DoCallAPIWithToken(DO_PAYMENT_MOMO, "post", payload).then((res) => {
         if (res.status === HTTP_OK) {
           console.log(res.data);
-          //window.open(res.data, "_newtab");
           window.location.href = res.data;
         }
       });
@@ -40,8 +42,8 @@ const CheckOut: React.FC = () => {
   }, []);
   return (
     <ClientShared>
-      <div className="snippet-body">
-        <div className="py-5 text-center ">
+      <div className="snippet-body" style={{ marginBottom: "28px" }}>
+        <div className="py-4 text-center ">
           <h2 style={{ color: "#06bbcc" }}>Phương thức thanh toán</h2>
         </div>
 
@@ -64,7 +66,7 @@ const CheckOut: React.FC = () => {
                         <small className="text-muted"></small>
                       </div>
                       <span className="text-muted">
-                        {item.cartItemPrice}.000 VNĐ
+                        {formarCurrency(item.cartItemPrice)} VNĐ
                       </span>
                     </li>
                   );
@@ -75,22 +77,17 @@ const CheckOut: React.FC = () => {
                 style={{ width: "500px" }}
               >
                 <span>Tổng</span>
-                <strong>{shoppingCart?.totalPrice}.000 VND</strong>
+                <strong>
+                  {formarCurrency(shoppingCart?.totalPrice ?? 0)} VND
+                </strong>
               </li>
             </ul>
           </div>
           <h4 className="mb-3" style={{ color: "#06bbcc" }}>
-            Địa chỉ thanh toán
+            Ghi chú
           </h4>
           <div>
             <div className="col-sm-6">
-              <label
-                htmlFor="firstName"
-                className="form-label"
-                style={{ color: "#06bbcc" }}
-              >
-                Ghi chú
-              </label>
               <input
                 type="text"
                 className="form-control"

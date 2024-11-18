@@ -30,6 +30,7 @@
    display     : inline-block;
    text-align  : center;
    margin-right: 12px;
+   margin-left : 12px;
  }
 
  .details {
@@ -38,12 +39,12 @@
    margin-bottom: 10px;
  }
 
- .training-part {
+ /* .training-part {
    border-top      : 1px solid #ccc;
    padding         : 12px 12px 0px 0px;
    margin          : 0;
    background-color: #ffffff;
- }
+ } */
 
  .product-content {
    border       : 1px solid #dfe5e9;
@@ -270,9 +271,9 @@
  }
 
  .product-deatil .price-container {
-   font-size  : 24px;
-   margin     : 0;
-   font-weight: 300;
+   font-size  : 28px;
+   text-align : center;
+   font-weight: bold;
  }
 
  .product-deatil .price-container small {
@@ -370,4 +371,46 @@
  .message img.online {
    width : 40px;
    height: 40px;
+ }
+
+
+
+ /* tessttt */
+
+ .training-part {
+   display        : flex;
+   justify-content: space-between;
+   align-items    : center;
+   padding        : 12px 10px 0px 0px;
+ }
+
+ .training-part.free {
+   color : #06BBCC;
+   cursor: pointer;
+ }
+
+ .training-part.not-free {}
+
+ .training-part .underline {
+   text-decoration: underline;
+ }
+
+ .training-part .preview-text {
+   margin-left : auto;
+   margin-right: 18px;
+   cursor      : pointer;
+ }
+
+ .star-rating {
+   margin-right: 20px;
+ }
+
+ .feedback-userName-background {
+
+
+   background-color: #06BBCC;
+   color           : white;
+   padding         : 2px 6px;
+   border-radius   : 8px;
+   border          : 1px solid #ddd;
  }

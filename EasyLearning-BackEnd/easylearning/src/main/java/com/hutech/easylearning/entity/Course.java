@@ -88,6 +88,8 @@ public class Course {
     @JsonManagedReference
     Set<CourseDetail> coursesDetails;
 
+
+
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     Set<TrainerDetail> trainerDetails;

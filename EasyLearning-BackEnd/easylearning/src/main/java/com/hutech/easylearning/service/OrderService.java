@@ -4,7 +4,9 @@ package com.hutech.easylearning.service;
 import com.hutech.easylearning.dto.request.OrderRequest;
 import com.hutech.easylearning.entity.Order;
 import com.hutech.easylearning.entity.OrderDetail;
+import com.hutech.easylearning.entity.UserTrainingProgress;
 import com.hutech.easylearning.repository.OrderRepository;
+import com.hutech.easylearning.repository.TrainingPartRepository;
 import jakarta.validation.constraints.Email;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,12 @@ public class OrderService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    TrainingPartService trainingPartService;
+
+    @Autowired
+    UserTrainingProgressService userTrainingProgressService;
+
 
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
@@ -50,9 +58,9 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createOrder(OrderRequest request) {
+    public Order processPaymentAndCreateOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
-
+        var currentUser = userService.getMyInfo();
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)
@@ -77,10 +85,25 @@ public class OrderService {
                     .isDeleted(false)
                     .build();
             orderDetailService.createOrderDetail(orderDetail);
+
+            var trainingpartsByCourse = trainingPartService.getTrainingPartsByCourseId(itemShoppingCart.getCourseId());
+            for(var itemTrainingPart : trainingpartsByCourse)
+            {
+                UserTrainingProgress userTrainingProgress = new UserTrainingProgress().builder()
+                        .userId(currentUser.getId())
+                        .trainingPartId(itemTrainingPart.getId())
+                        .isCompleted(false)
+                        .changedBy(currentUser.getId())
+                        .dateChange(LocalDateTime.now())
+                        .dateCreate(LocalDateTime.now())
+                        .build();
+
+                userTrainingProgressService.createUserTrainingProgress(userTrainingProgress);
+            }
             shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
 
-        var currentUser = userService.getMyInfo();
+
         var toEmail = currentUser.getEmail();
         var subject = "Thanh toán thành công trên trang eLearning";
         var customerName = currentUser.getFullName();

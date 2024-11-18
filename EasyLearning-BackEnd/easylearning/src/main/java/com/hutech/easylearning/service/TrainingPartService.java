@@ -37,10 +37,14 @@ public class TrainingPartService {
         return trainingPartRepository.findAll();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @Transactional(readOnly = true)
     public List<TrainingPart> getTrainingPartsByCourseId(String courseId) {
         return trainingPartRepository.findTrainingPartByCourseId(courseId);
+    }
+    @Transactional(readOnly = true)
+    public List<TrainingPart> getTrainingPartsByCourseEventId(String courseEventId) {
+        return trainingPartRepository.findTrainingPartByCourseEventId(courseEventId);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

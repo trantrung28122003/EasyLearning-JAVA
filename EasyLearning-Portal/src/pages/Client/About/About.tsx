@@ -4,10 +4,6 @@ const About = () => {
   return (
     <>
       <ClientShared>
-
-        
-
-
         <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-4">
@@ -306,8 +302,54 @@ const About = () => {
             </div>
           </div>
         </div>
-
-
+        <div className="container-xxl py-5 bg-light">
+          <div className="container">
+            <div className="text-center wow fadeInUp" data-wow-delay="0.1s">
+              <h6 className="section-title text-center text-primary px-3">
+                Điều Khoản Và Chính Sách
+              </h6>
+              <h1 className="mb-5">Chính Sách Của Chúng Tôi</h1>
+            </div>
+            <div className="row g-4">
+              <div className="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <h5 className="text-primary mb-3">
+                  1. Quyền và Nghĩa vụ của Người Dùng
+                </h5>
+                <p>
+                  Khi đăng ký và sử dụng dịch vụ của chúng tôi, bạn cần cung cấp
+                  thông tin chính xác và tuân thủ các quy định về việc sử dụng
+                  nền tảng.
+                </p>
+              </div>
+              <div className="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                <h5 className="text-primary mb-3">2. Chính Sách Bảo Mật</h5>
+                <p>
+                  Thông tin cá nhân của bạn sẽ được bảo mật và chỉ sử dụng cho
+                  các mục đích liên quan đến việc cung cấp dịch vụ.
+                </p>
+              </div>
+              <div className="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                <h5 className="text-primary mb-3">3. Chính Sách Hoàn Tiền</h5>
+                <p>
+                  Chúng tôi có chính sách hoàn tiền nếu bạn không hài lòng với
+                  dịch vụ trong vòng 7 ngày kể từ ngày đăng ký.
+                </p>
+              </div>
+              <div className="col-lg-6 wow fadeInUp" data-wow-delay="0.5s">
+                <h5 className="text-primary mb-3">4. Điều Khoản Sử Dụng</h5>
+                <p>
+                  Bạn không được phép sử dụng nền tảng cho các mục đích bất hợp
+                  pháp hoặc vi phạm quyền lợi của người khác.
+                </p>
+              </div>
+            </div>
+            <div className="text-center mt-4">
+              <a href="/terms" className="btn btn-primary px-4 py-2">
+                Xem Chi Tiết Điều Khoản
+              </a>
+            </div>
+          </div>
+        </div>
       </ClientShared>
     </>
   );

@@ -51,7 +51,6 @@ public class UserService {
     }
 
 
-
     @PostAuthorize("returnObject.userName == authentication.name")
     public UserResponse getUserById(String id) {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));

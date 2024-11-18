@@ -12,7 +12,7 @@ export interface APIRegisterRequest {
   userName: string;
   email: string;
   fullName: string;
-  dayOfBirth: Date | null;
+  dayOfBirth: string | null;
   file: File | null;
   password: string;
 }

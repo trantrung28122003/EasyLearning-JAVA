@@ -95,14 +95,18 @@ const AuthenticationShared: React.FC<AuthenSharedProps> = ({ children }) => {
                 <span
                   className={`${style.app_brand_text} ${style.admin} ${style.text_heading} ${style.fw_semibold}`}
                 >
-                  EasyLearning
+                  {" "}
+                  EASY LEARNING
                 </span>
               </a>
             </div>
             <div className={`card_body mt-2`}>
-              <h4 className="mb-2 text-center">Bắt đầu khám phá 🚀</h4>
-              <p className="mb-4 text-center">Học tập dễ dàng và thú vị!</p>
-
+              <h4 className="mb-1" style={{ color: "var(--bs-heading-color)" }}>
+                Bắt đầu khám phá 🚀
+              </h4>
+              <p className="mb-4" style={{ color: "#4b4b4b" }}>
+                Học tập dễ dàng và thú vị!
+              </p>
               {children}
             </div>
           </div>

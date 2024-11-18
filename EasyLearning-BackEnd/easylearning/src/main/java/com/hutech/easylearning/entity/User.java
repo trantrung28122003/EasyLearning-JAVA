@@ -69,6 +69,9 @@ public class User {
     @JsonManagedReference
     Set<TrainerDetail> trainerDetails;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserTrainingProgress> userTrainingProgress;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     ShoppingCart shoppingCart;

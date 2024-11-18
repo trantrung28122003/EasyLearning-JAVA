@@ -36,6 +36,10 @@ public class SecurityConfig {
             "/getAllCategoryWithCourse",
             "/topFourMostCategory",
             "/detailCourse/{param}",
+            "/getFeedbacksByCourseWithoutUser/{param}",
+            "/getCoursesByCategory/{param}",
+            "/search",
+            "/getAllCourse"
     };
 
 

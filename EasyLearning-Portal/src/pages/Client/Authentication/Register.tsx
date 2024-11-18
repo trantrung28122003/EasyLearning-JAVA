@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AuthenticationShared from "./Shared/AuthenticationShared";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
@@ -10,53 +10,79 @@ import { Field, Form, Formik } from "formik";
 import { DoCallAPIWithOutToken } from "../../../services/HttpService";
 import { REGISTER_URL } from "../../../constants/API";
 import { HTTP_OK } from "../../../constants/HTTPCode";
+
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const [registerError, setRegisterError] = useState<string | null>(null); // State for handling API errors
+
+  const handleLogin = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   const schema = yup.object().shape({
     userName: yup
       .string()
-      .min(8, "Must be 8 characters")
-      .max(24, "Maxinum be 24 characters")
-      .required("UserName is required"),
+      .min(8, "Tên tài khoản phải có ít nhất 8 ký tự")
+      .max(24, "Tên tài khoản không được vượt quá 24 ký tự")
+      .required("Tên tài khoản là bắt buộc"),
     email: yup
       .string()
-      .email("Must be an email")
-      .required("Day of birth is required"),
+      .email("Địa chỉ email phải hợp lệ")
+      .required("Địa chỉ email là bắt buộc"),
     fullName: yup
       .string()
-      .required("Full name is required")
-      .max(50, "Maximun be 50 characters"),
-    dayOfBirth: yup.date().required("Day of birth is required"),
-    imageName: yup.string().required("Avatar is required"),
-    password: yup.string().required("Password is required"),
+      .required("Họ và tên là bắt buộc")
+      .max(50, "Họ và tên không được vượt quá 50 ký tự"),
+    dayOfBirth: yup.date().required("Ngày sinh là bắt buộc"),
+    imageName: yup.string(), // Không yêu cầu ảnh đại diện ở đây
+    password: yup
+      .string()
+      .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+      .required("Mật khẩu là bắt buộc"),
     confirmPassword: yup
       .string()
-      .oneOf([yup.ref("password"), ""], "Passwords must match"),
+      .oneOf([yup.ref("password"), ""], "Mật khẩu không khớp")
+      .required("Xác nhận mật khẩu là bắt buộc"),
     termAndConditions: yup
       .boolean()
-      .oneOf([true], "You must accept the terms and conditions"),
+      .oneOf([true], "Bạn phải chấp nhận các điều khoản và điều kiện"),
   });
 
   const doRegister = (account: APIRegisterRequest) => {
-    var formData = new FormData();
-    var date = new Date("2003-12-28");
-    if (account.file && date) {
+    const formData = new FormData();
+
+    // Nếu có file ảnh, thêm vào FormData
+    if (account.file) {
       formData.append("file", account.file);
-      formData.append("userName", account.userName);
-      formData.append("email", account.email);
-      //formData.append("dayOfBirth", JSON.stringify(date));
-      formData.append("fullName", account.fullName);
-      formData.append("password", account.password);
     }
-    DoCallAPIWithOutToken<APIRegisterRequest>(
-      REGISTER_URL,
-      "post",
-      formData
-    ).then((res) => {
-      if (res.status === HTTP_OK) {
-        navigate("/login");
-      }
-    });
+
+    formData.append("userName", account.userName);
+    formData.append("email", account.email);
+    formData.append("fullName", account.fullName);
+    formData.append("password", account.password);
+
+    // Đảm bảo ngày sinh được định dạng đúng trước khi gửi
+    if (account.dayOfBirth) {
+      const formattedDate = new Date(account.dayOfBirth)
+        .toISOString()
+        .split("T")[0]; // Chỉ lấy phần ngày
+      formData.append("dayOfBirth", formattedDate);
+    }
+
+    DoCallAPIWithOutToken<APIRegisterRequest>(REGISTER_URL, "post", formData)
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          navigate("/login");
+        }
+      })
+      .catch((err) => {
+        if (err.response && err.response.status === 400) {
+          setRegisterError("Tài khoản hoặc email đã tồn tại."); // Thông báo lỗi nếu tài khoản đã tồn tại
+        } else {
+          setRegisterError("Đăng ký thất bại. Vui lòng thử lại sau."); // Lỗi khác (không phải 400)
+        }
+      });
   };
 
   return (
@@ -66,17 +92,25 @@ const Register: React.FC = () => {
           userName: "",
           email: "",
           fullName: "",
-          dayOfBirth: new Date("2000-01-01"),
+          dayOfBirth: new Date("2000-01-01").toISOString(),
           imageName: "",
           password: "",
+          confirmPassword: "",
           file: null,
           termAndConditions: false,
-          confirmPassword: "",
         }}
         validationSchema={schema}
         onSubmit={(values: RegisterRequest) => {
-          console.log(values);
-          doRegister(values);
+          const requestPayload: APIRegisterRequest = {
+            userName: values.userName,
+            email: values.email,
+            fullName: values.fullName,
+            dayOfBirth: values.dayOfBirth,
+            password: values.password,
+            file: values.file,
+          };
+
+          doRegister(requestPayload);
         }}
         validateOnChange
       >
@@ -92,11 +126,11 @@ const Register: React.FC = () => {
                   placeholder="Nhập UserName"
                 />
                 <label style={{ color: "#06BBCC" }} htmlFor="userName">
-                  UserName
+                  Tên tài khoản
                 </label>
-                {errors.userName && touched.userName ? (
+                {errors.userName && touched.userName && (
                   <div className="text-danger">{errors.userName}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -110,9 +144,9 @@ const Register: React.FC = () => {
                 <label style={{ color: "#06BBCC" }} htmlFor="fullName">
                   Họ Và Tên
                 </label>
-                {errors.fullName && touched.fullName ? (
+                {errors.fullName && touched.fullName && (
                   <div className="text-danger">{errors.fullName}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -126,10 +160,9 @@ const Register: React.FC = () => {
                 <label style={{ color: "#06BBCC" }} htmlFor="email">
                   Email
                 </label>
-
-                {errors.email && touched.email ? (
+                {errors.email && touched.email && (
                   <div className="text-danger">{errors.email}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -143,10 +176,9 @@ const Register: React.FC = () => {
                 <label style={{ color: "#06BBCC" }} htmlFor="dayOfBirth">
                   Ngày Sinh
                 </label>
-
-                {errors.dayOfBirth && touched.dayOfBirth ? (
-                  <div className="text-danger">{errors.dayOfBirth || ""}</div>
-                ) : null}
+                {errors.dayOfBirth && touched.dayOfBirth && (
+                  <div className="text-danger">{errors.dayOfBirth}</div>
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -161,10 +193,9 @@ const Register: React.FC = () => {
                 <label style={{ color: "#06BBCC" }} htmlFor="password">
                   Mật Khẩu
                 </label>
-
-                {errors.password && touched.password ? (
+                {errors.password && touched.password && (
                   <div className="text-danger">{errors.password}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -179,10 +210,9 @@ const Register: React.FC = () => {
                 <label style={{ color: "#06BBCC" }} htmlFor="confirmPassword">
                   Xác Nhận Mật Khẩu
                 </label>
-
-                {errors.confirmPassword && touched.confirmPassword ? (
+                {errors.confirmPassword && touched.confirmPassword && (
                   <div className="text-danger">{errors.confirmPassword}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="form-floating form-floating-outline mb-3">
@@ -197,16 +227,15 @@ const Register: React.FC = () => {
                         event.currentTarget.files[0].name
                       );
                       setFieldValue("file", event.currentTarget.files[0]);
-                      console.log(event.currentTarget.files[0].name);
                     }
                   }}
                 />
                 <label style={{ color: "#06BBCC" }} htmlFor="imageName">
                   Ảnh đại diện
                 </label>
-                {errors.imageName && touched.imageName ? (
+                {errors.imageName && touched.imageName && (
                   <div className="text-danger">{errors.imageName}</div>
-                ) : null}
+                )}
               </div>
 
               <div className="mb-3">
@@ -217,15 +246,20 @@ const Register: React.FC = () => {
                   onChange={handleChange}
                 />
                 <label className="form-check-label" htmlFor="termAndConditions">
-                  &nbsp;Tôi đồng ý với {"  "}
+                  &nbsp;Tôi đồng ý với{" "}
                   <a style={{ color: "#06BBCC" }}>
                     Chính sách bảo mật & Các điều khoản
                   </a>
                 </label>
-                {errors.termAndConditions && touched.termAndConditions ? (
+                {errors.termAndConditions && touched.termAndConditions && (
                   <div className="text-danger">{errors.termAndConditions}</div>
-                ) : null}
+                )}
               </div>
+              {registerError && (
+                <div className="text-danger text-center mb-3">
+                  {registerError}
+                </div>
+              )}
               <button
                 style={{
                   backgroundColor: "#06BBCC",
@@ -240,10 +274,13 @@ const Register: React.FC = () => {
           </div>
         )}
       </Formik>
-      <p className="text-center">
-        <span>Đã Có Tài Khoản ?</span>
-        <a>
-          <span>Đăng Nhập</span>
+      <p className="text-center" style={{ marginTop: "8px" }}>
+        <span>Đã Có Tài Khoản ? </span>
+        <a onClick={handleLogin}>
+          <span style={{ color: "#06BBCC", cursor: "pointer" }}>
+            {" "}
+            Đăng Nhập
+          </span>
         </a>
       </p>
     </AuthenticationShared>

@@ -2,10 +2,7 @@ package com.hutech.easylearning.controller;
 
 
 
-import com.hutech.easylearning.dto.request.ConfirmPaymentSuccessRequest;
-import com.hutech.easylearning.dto.request.MomoRequest;
-import com.hutech.easylearning.dto.request.OrderRequest;
-import com.hutech.easylearning.dto.request.TrainingPartCreationRequest;
+import com.hutech.easylearning.dto.request.*;
 import com.hutech.easylearning.service.OrderService;
 import com.hutech.easylearning.service.PaymentService;
 import jakarta.validation.Valid;
@@ -36,7 +33,7 @@ public class PaymentController {
     }
 
     @PostMapping("/confirmPaymentMomoClient")
-    public String confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentSuccessRequest request) {
+    public ApiResponse<String> confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentSuccessRequest request) {
 
         System.out.println("partnerCode: " + request.getPartnerCode());
         System.out.println("accessKey: " + request.getAccessKey());
@@ -55,14 +52,31 @@ public class PaymentController {
         System.out.println("signature: " + request.getSignature());
 
         if ("0".equals(request.getErrorCode())) {
+
             OrderRequest orderRequest = OrderRequest.builder()
                     .amount(request.getAmount())
-                    .note("Thanh toán thành công").build();
-            orderService.createOrder(orderRequest);
-            return "Payment successful";
+                    .note("Thanh toán thành công")
+                    .build();
+            orderService.processPaymentAndCreateOrder(orderRequest);
+
+            // Return ApiResponse with success message
+            return ApiResponse.<String>builder()
+                    .result("Payment successful")
+                    .build();
         } else {
-            return "Payment failed: " + request.getMessage();
+
+
+            OrderRequest orderRequest = OrderRequest.builder()
+                    .amount(request.getAmount())
+                    .note("Thanh toán thành công")
+                    .build();
+            orderService.processPaymentAndCreateOrder(orderRequest);
+            // Return ApiResponse with failure message
+            return ApiResponse.<String>builder()
+                    .result("Payment failed: " + request.getMessage())
+                    .build();
         }
     }
+
 }
 

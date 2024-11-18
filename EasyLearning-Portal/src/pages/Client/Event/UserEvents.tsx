@@ -1,136 +1,250 @@
 import React, { useEffect, useState } from "react";
-import { GET_EVENTS_BY_USER } from "../../../constants/API";
-import { GetUserEventsResponse } from "../../../model/Course";
+
 import ClientShared from "../Shared/ClientShared";
-import { ApplicationResponse } from "../../../model/BaseResponse";
-import { DoCallAPIWithToken } from "../../../services/HttpService";
-import { useParams } from "react-router-dom";
+
 import "./UserEvents.css";
-import { color } from "echarts";
+import { CourseSlim } from "../../../model/Course";
+import { GET_COURSE_BY_USER } from "../../../constants/API";
+import { DoCallAPIWithToken } from "../../../services/HttpService";
+import { ApplicationResponse } from "../../../model/BaseResponse";
+import dayjs from "dayjs";
+import "dayjs/locale/vi";
+
+type EventSchedule = {
+  eventId: string;
+  courseName: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  location: string;
+  instructor: string;
+};
+
+type Schedule = {
+  date: string;
+  events: EventSchedule[];
+};
+
 const UserEvents: React.FC = () => {
-  const [userCourse, setUserCourse] = useState<GetUserEventsResponse>();
-  const { courseId } = useParams();
-  const URL = GET_EVENTS_BY_USER + "/" + courseId;
-  const doCallGetEventsByUser = () => {
-    DoCallAPIWithToken(URL, "get")
-      .then((res) => {
-        const response: ApplicationResponse<GetUserEventsResponse> = res.data;
-        console.log(response.result);
-        setUserCourse(response.result);
-      })
-      .catch(() => {
-        setUserCourse(undefined);
-      });
+  const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
+  const doCallGetCourseByUser = () => {
+    DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
+      const response: ApplicationResponse<CourseSlim[]> = res.data;
+      console.log(response.result);
+      getUserCourse(response.result);
+    });
   };
+
   useEffect(() => {
-    doCallGetEventsByUser();
+    doCallGetCourseByUser();
   }, []);
 
+  const [currentWeekStart, setCurrentWeekStart] = useState(
+    dayjs().startOf("week").add(1, "day")
+  );
 
+  const [scheduleData, setScheduleData] = useState<Schedule[]>([]);
 
+  const getScheduleForWeek = (startOfWeek: dayjs.Dayjs) => {
+    const scheduleForWeek: Schedule[] = [];
+    let hasSchedule = false;
+
+    for (let i = 0; i < 7; i++) {
+      const currentDate = startOfWeek.add(i, "day").format("YYYY-MM-DD");
+      const eventsForDate: EventSchedule[] = [];
+
+      userCourse.forEach((course) => {
+        course.courseEventResponses.forEach((event) => {
+          if (dayjs(event.startTime).format("YYYY-MM-DD") === currentDate) {
+            eventsForDate.push({
+              eventId: event.id,
+              courseName: course.courseName,
+              eventDate: currentDate,
+              location: event.location,
+              instructor: course.instructor,
+              startTime: event.startTime,
+              endTime: event.endTime,
+            });
+          }
+        });
+      });
+
+      if (eventsForDate.length > 0) {
+        scheduleForWeek.push({ date: currentDate, events: eventsForDate });
+        hasSchedule = true;
+      }
+    }
+
+    if (hasSchedule) {
+      setScheduleData(scheduleForWeek);
+    } else {
+      setScheduleData([]);
+    }
+  };
+
+  const goToPreviousWeek = () => {
+    setCurrentWeekStart((prev) => prev.subtract(1, "week"));
+  };
+
+  const goToNextWeek = () => {
+    setCurrentWeekStart((prev) => prev.add(1, "week"));
+  };
+
+  const formatDateWithWeekDay = (date: string) => {
+    const formattedDate = dayjs(date)
+      .locale("vi")
+      .format("dddd, [ngày] DD/MM/YYYY");
+    return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+  };
+
+  useEffect(() => {
+    getScheduleForWeek(currentWeekStart);
+    console.log("1231232", userCourse);
+  }, [currentWeekStart]);
 
   return (
     <ClientShared>
-      <div className="event-schedule-area-two bg-color ">
-        <div className="container">
-          {!userCourse && (
-            <div
-              className="col-lg-12 text-header"
-              style={{ marginTop: "120px", marginBottom: "120px" }}
-            >
-              <div className="section-title text-center">
-                <div className="title-text">
-                  <h2 className="h2-text-center">
-                    Bạn chưa đăng kí bất kì một khóa học trực tiếp nào cả
-                  </h2>
+      <div className="page-content">
+        <div className="container px-0">
+          <div className="row">
+            <div className="col-12 col-lg-12" style={{ marginTop: "28px" }}>
+              <div className="row" style={{ marginBottom: "50px" }}>
+                <div className="col-12">
+                  <div className=" title-text text-center text-150">
+                    <span>
+                      <strong style={{ fontSize: "30px", color: "#06BBCC" }}>
+                        ---------------------------------------- Thời khóa biểu
+                        ----------------------------------------
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="row d-flex justify-content-between align-items-center">
+                <div className="col-sm-4 d-flex justify-content-start">
+                  <div className="text-grey-m2">
+                    <button
+                      className="custom-btn btn btn-primary"
+                      onClick={goToPreviousWeek}
+                    >
+                      <i
+                        className="fa fa-arrow-left mr-1"
+                        style={{ marginRight: "12px" }}
+                      ></i>
+                      Tuần trước
+                    </button>
+                  </div>
+                </div>
+                <div className="col-sm-4 d-flex justify-content-center">
+                  <div className="text-grey-m2">
+                    <span className="text-150 text-secondary-m1">
+                      Từ ngày{" "}
+                      <strong style={{ color: "black" }}>
+                        {currentWeekStart.format("DD/MM/YYYY")}
+                      </strong>{" "}
+                      đến{" "}
+                      <strong style={{ color: "black" }}>
+                        {currentWeekStart.add(6, "days").format("DD/MM/YYYY")}
+                      </strong>
+                    </span>
+                  </div>
+                </div>
+                <div className="col-sm-4 d-flex justify-content-end">
+                  <div className="text-grey-m2">
+                    <button
+                      className="custom-btn btn btn-primary"
+                      onClick={goToNextWeek}
+                    >
+                      Tuần Sau
+                      <i
+                        className="fa fa-arrow-right mr-1"
+                        style={{ marginLeft: "12px" }}
+                      ></i>{" "}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
 
-          <div className="tab-pane" style={{marginTop:"20px"}}>
-              <table className="table">
-                <thead style={{backgroundColor : "#06BBCC" , fontSize: "20px" , color:"White" }}>
-                  <tr>
-                    <th scope="col"> Ngày</th>
-                    <th scope="col">Giảng viên</th>
-                    <th scope="col">Nội dung buổi học</th>
-                    <th scope="col">Lớp học</th>
-                    <th scope="col"> Thông tin chi tiết </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userCourse?.courseEventResponse.map((event) => (
-                    <tr className="inner-box" style={{ padding: "20px" }}>
-                      <th scope="row">
-                        <div className="event-date">
-                          {/* <span> {event.startTime.substring(0, 10)} </span> */}
-                          {(() => {
-                              const date = new Date(event.startTime); // Tạo đối tượng Date từ event.startTime
-                              
-                              const daysOfWeek = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
-                              const day = date.getDate(); // Lấy ngày
-                              const month = date.getMonth() + 1; // Lấy tháng (getMonth trả về từ 0-11 nên phải +1)
-                              const year = date.getFullYear(); // Lấy năm
-                              const dayOfWeek = daysOfWeek[date.getDay()]; // Lấy thứ trong tuần
-                              
-                              return (
-                                
-                                <div>
-                                  <span>
-                                    {`${day}/${month}/${year}`} {/* Hiển thị ngày, tháng, năm */}
-                                  </span>
-                                  <p>{dayOfWeek}</p> {/* Hiển thị thứ */}
-                                </div>
-                              );
-                              
-                            })()}
+            {scheduleData.length > 0 ? (
+              <>
+                <div className="mt-4">
+                  <div className="row mb-2 mb-sm-0 py-25 bgc-default-l4">
+                    <div className="d-none d-sm-block col-2 header-text">
+                      Giờ học
+                    </div>
+                    <div className="col-6 col-sm-4 header-text">
+                      Tên khóa học
+                    </div>
+                    <div className="d-none d-sm-block col-3 header-text">
+                      Tên giảng viên
+                    </div>
+                    <div className="d-none d-sm-block col-3 text-95 header-text">
+                      Thông tin tiết học
+                    </div>
+                  </div>
+
+                  {scheduleData.map((schedule, i) => (
+                    <div key={i}>
+                      <div
+                        className="row text-600 text-white bgc-default py-25"
+                        style={{ backgroundColor: "#06BBCC" }}
+                      >
+                        <div className="d-none d-sm-block text-center">
+                          <strong style={{ fontSize: "18px " }}>
+                            {" "}
+                            {formatDateWithWeekDay(schedule.date)}{" "}
+                          </strong>
                         </div>
-                      </th>
-                      <td>
-                        <div className="event-img">
-                          <img src={userCourse.avatarInstructor} alt="" />
-                        </div>
-                      </td>
-                      <td>
-                        <div className="event-wrap">
-                          <h3>
-                            <a href="#">{event.courseEventName}</a>
-                          </h3>
-                          <div className="meta" style={{ display: "flex"}}>
-                          <div className="organizers" style={{ marginRight: "30px" }}>
-                            <a href="#">{userCourse.nameInstructor}</a>
+                      </div>
+                      {schedule.events.map((eventCourses, index) => (
+                        <div
+                          className={`row mb-2 mb-sm-0 py-25 bgc-default-l4 ${
+                            index < schedule.events.length - 1
+                              ? "border-bottom"
+                              : ""
+                          }`}
+                          key={eventCourses.eventId}
+                        >
+                          <div className="d-none d-sm-block col-2">
+                            {dayjs(eventCourses.startTime).format("hh:mm A")} -{" "}
+                            {dayjs(eventCourses.endTime).format("hh:mm A")}
                           </div>
-                          <div className="categories">
-                          <i className="fas fa-folder"></i> <a  href="#">Tài liệu</a>
+                          <div className="col-6 col-sm-4">
+                            {eventCourses.courseName}
                           </div>
-          
-                        </div>
-                        <div className="time">
-                            <span>
-                              {event.startTime.substring(0, 10)} - {event.endTime.substring(0, 10)}
-                            </span>
+                          <div className="d-none d-sm-block col-3">
+                            {eventCourses.instructor}
+                          </div>
+                          <div className="d-none d-sm-block col-3 text-95">
+                            {eventCourses.location}
                           </div>
                         </div>
-                      </td>
-                      <td>
-                        <div className="r-no">
-                          <span>{event.location}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="primary-btn">
-                          <a className="btn btn-primary" href="#">
-                            Read More
-                          </a>
-                        </div>
-                      </td>
-                    </tr>
+                      ))}
+                    </div>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </div>
+              </>
+            ) : (
+              <div className="centered-content">
+                <img
+                  src="https://api.hutech.edu.vn/file-publish/sinh-vien-edu-vn/nodata_tkb.gif"
+                  style={{ width: "200px" }}
+                  alt="No data"
+                />
+                <h2 className="warning-message">
+                  Bạn không có buổi học nào trong tuần này!
+                </h2>
+                <h1>Vui lòng chọn tuần khác để xem thời khóa biểu</h1>
+                <p>
+                  Theo dõi website thường xuyên để cập nhật lịch học mới nhất,
+                  giúp bạn không bỏ lỡ bất kỳ buổi học nào!
+                </p>
+              </div>
+            )}
           </div>
+        </div>
       </div>
     </ClientShared>
   );

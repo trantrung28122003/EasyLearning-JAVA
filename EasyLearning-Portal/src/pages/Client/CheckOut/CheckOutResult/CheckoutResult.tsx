@@ -1,12 +1,13 @@
-import { useSearchParams } from "react-router-dom";
-import ClientShared from "../Shared/ClientShared";
-import { CONFIRM_PAYMENT } from "../../../constants/API";
-import { HTTP_OK } from "../../../constants/HTTPCode";
-import { DoCallAPIWithToken } from "../../../services/HttpService";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { CONFIRM_PAYMENT } from "../../../../constants/API";
+import { HTTP_OK } from "../../../../constants/HTTPCode";
+import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { useEffect } from "react";
 
 const CheckoutResult = () => {
   let [searchParams] = useSearchParams();
+  const navigate = useNavigate(); // Khai báo hook useNavigate
+
   const request: ConfirmPaymentRequest = {
     partnerCode: searchParams.get("partnerCode") ?? "",
     accessKey: searchParams.get("accessKey") ?? "",
@@ -24,12 +25,17 @@ const CheckoutResult = () => {
     extraData: searchParams.get("extraData") ?? "",
     signature: searchParams.get("signature") ?? "",
   };
-  console.log(request);
+
   const doCallConfirmPayment = () => {
     DoCallAPIWithToken(CONFIRM_PAYMENT, "post", request).then((res) => {
       if (res.status === HTTP_OK) {
-        console.log(res.data);
-        window.location.href = res.data;
+        if (res.data.result === "Payment successful") {
+          navigate("/paymentSuccess");
+        } else {
+          navigate("/paymentFailure");
+        }
+      } else {
+        navigate("/paymentFailure");
       }
     });
   };
@@ -37,11 +43,8 @@ const CheckoutResult = () => {
   useEffect(() => {
     doCallConfirmPayment();
   }, []);
-  return (
-    <ClientShared>
-      <div>Thanh toán thành công</div>
-    </ClientShared>
-  );
+
+  return null;
 };
 
 export default CheckoutResult;
