@@ -72,6 +72,8 @@ public class CourseService {
     @Autowired
     private  ShoppingCartItemRepository shoppingCartItemRepository;
 
+    @Autowired
+    private UserTrainingProgressService userTrainingProgressService;
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
@@ -244,14 +246,16 @@ public class CourseService {
                                 if (courseEventResponses.stream()
                                         .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
                                     var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
-                                    courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                                    var completePartsByCourseEvent = userTrainingProgressService.getCompletedTrainingPartsOnCourseEvent(courseEventResponse.getId());
+                                    courseEventResponse.setCompletedPartsByCourseEvent(completePartsByCourseEvent);
+                                    courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
                                     courseEventResponses.add(courseEventResponse);
                                 }
                             }
                         }
                     }
                     Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
-
+                    var completePartsByCourse = userTrainingProgressService.getCompletedTrainingPartsOnCourses(courseId);
                     PurchasedCourseResponse purchasedCourseResponse = PurchasedCourseResponse.builder()
                             .courseId(course.getId())
                             .courseName(course.getCourseName())
@@ -259,6 +263,7 @@ public class CourseService {
                             .instructor(course.getInstructor())
                             .courseType(course.getCourseType())
                             .totalTrainingPartByCourse(totalTrainingPartByCourse)
+                            .completedPartsByCourse(completePartsByCourse)
                             .courseEventResponses(courseEventResponses)
                             .build();
                     purchasedCourseResponses.add(purchasedCourseResponse);
@@ -298,7 +303,11 @@ public class CourseService {
                     if (courseEventResponses.stream()
                             .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
                         var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
-                        courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                        var completedPartsByCourseEvent = userTrainingProgressService.getCompletedTrainingPartsOnCourseEvent(courseEventResponse.getId());
+                        courseEventResponse.setCompletedPartsByCourseEvent(completedPartsByCourseEvent);
+                        courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
+
+
                         courseEventResponses.add(courseEventResponse);
                     }
                 }
@@ -306,11 +315,12 @@ public class CourseService {
 
         }
         Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
-
+        var completedPartsByCourse = userTrainingProgressService.getCompletedTrainingPartsOnCourses(courseById.getId());
         ScheduleResponse scheduleResponse = ScheduleResponse.builder()
                 .courseId(courseById.getId())
                 .courseName(courseById.getCourseName())
                 .avatarInstructor(avatarInstructor)
+
                 .nameInstructor(courseById.getInstructor())
                 .CourseEventResponse(courseEventResponses)
                 .build();
@@ -364,7 +374,7 @@ public class CourseService {
                                 .sorted(Comparator.comparing(TrainingPart::getStartTime))
                                 .collect(Collectors.toList());;
                         var totalTrainingPartByCourseEvent = trainingPartByCourseEvent.size();
-                        courseEventResponse.setTotalTrainingPartByCourseEvent(totalTrainingPartByCourseEvent);
+                        courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
                         courseEventResponse.setTrainingParts(trainingPartByCourseEvent);
                         courseEventResponses.add(courseEventResponse);
 

@@ -16,16 +16,5 @@ public class UserTrainingProgressController {
     @Autowired
     private UserTrainingProgressService userTrainingProgressService;
 
-    @GetMapping("/completedPartsByCourse/{courseId}")
-    public CompletedTrainingPartsResponse getCompletedTrainingPartsForCourse(@PathVariable("courseId") String courseId) {
-
-        return userTrainingProgressService.getCompletedTrainingPartsOnCourses(courseId);
-    }
-
-    @GetMapping("/completedPartsByCourseEvent/{courseEventId}")
-    public CompletedTrainingPartsResponse getCompletedTrainingPartsForCourseEvent(@PathVariable("courseEventId") String courseEventId) {
-
-        return userTrainingProgressService.getCompletedTrainingPartsOnCourseEvent(courseEventId);
-    }
 }
 

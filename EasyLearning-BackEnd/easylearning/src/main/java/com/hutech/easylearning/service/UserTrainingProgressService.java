@@ -47,7 +47,7 @@ public class UserTrainingProgressService {
 
 
     @Transactional
-    public CompletedTrainingPartsResponse  getCompletedTrainingPartsOnCourses(String courseId) {
+    public int  getCompletedTrainingPartsOnCourses(String courseId) {
         var currentUserInfo  =  userService.getMyInfo();
         List<UserTrainingProgress> userTrainingProgressList = new ArrayList<>();
         List<TrainingPart> trainingPartList = trainingPartService.getTrainingPartsByCourseId(courseId);
@@ -64,14 +64,10 @@ public class UserTrainingProgressService {
                 completedTrainingParts++;
             }
         }
-        CompletedTrainingPartsResponse  completedTrainingPartsResponse  = new CompletedTrainingPartsResponse().builder()
-                .totalTrainingParts(trainingPartList.toArray().length)
-                .totalCompletedTrainingParts(completedTrainingParts)
-                .build();
-        return completedTrainingPartsResponse;
+        return completedTrainingParts;
     }
 
-    public CompletedTrainingPartsResponse getCompletedTrainingPartsOnCourseEvent(String courseEventId) {
+    int  getCompletedTrainingPartsOnCourseEvent(String courseEventId) {
         var currentUserInfo  =  userService.getMyInfo();
         List<UserTrainingProgress> userTrainingProgressList = new ArrayList<>();
         List<TrainingPart> trainingPartList = trainingPartService.getTrainingPartsByCourseEventId(courseEventId);
@@ -87,14 +83,7 @@ public class UserTrainingProgressService {
                 completedTrainingParts++;
             }
         }
-        CompletedTrainingPartsResponse completedTrainingPartsResponse = new CompletedTrainingPartsResponse().builder()
-                .totalTrainingParts(trainingPartList.size())
-                .totalCompletedTrainingParts(completedTrainingParts)
-                .build();
-        return completedTrainingPartsResponse;
+
+        return completedTrainingParts;
     }
-
-
-
-
 }

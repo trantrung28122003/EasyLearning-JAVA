@@ -67,6 +67,7 @@ export interface CourseSlim {
   totalFeedback: number;
   averageRating: number;
   totalTrainingPartByCourse: number;
+  completedPartsByCourse: number;
   totalLearningTime: string;
   courseEventResponses: EventSlim[];
 }

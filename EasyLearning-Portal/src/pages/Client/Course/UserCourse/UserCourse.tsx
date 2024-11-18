@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  GET_COMPLETED_PARTS_BY_COURSE,
-  GET_COURSE_BY_USER,
-} from "../../../../constants/API";
+import { GET_COURSE_BY_USER } from "../../../../constants/API";
 import { ApplicationResponse } from "../../../../model/BaseResponse";
 import { CourseSlim } from "../../../../model/Course";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
@@ -21,15 +18,12 @@ const UserCourse: React.FC = () => {
     });
   };
 
-  const caculateProgressPercentage = (
+  const calculateProgressPercentage = (
     completedLessons: number,
     totalLessons: number
   ) => {
     return Math.round((completedLessons / totalLessons) * 100);
   };
-  const [courseProgress, setCourseProgress] = useState<Record<string, number>>(
-    {}
-  );
 
   useEffect(() => {
     doCallGetCourseByUser();
@@ -140,18 +134,27 @@ const UserCourse: React.FC = () => {
                                     <div
                                       className="circular-progress"
                                       style={{
-                                        backgroundImage: `conic-gradient(#38c9d6 ${
-                                          courseProgress[itemCourse.courseId] ||
-                                          0
-                                        }%, #808080 ${
-                                          courseProgress[itemCourse.courseId] ||
-                                          0
-                                        }%)`,
+                                        backgroundImage: `conic-gradient(
+                                          #38c9d6 ${
+                                            calculateProgressPercentage(
+                                              itemCourse.completedPartsByCourse,
+                                              itemCourse.totalTrainingPartByCourse
+                                            ) || 0
+                                          }%,
+                                          #808080 ${
+                                            calculateProgressPercentage(
+                                              itemCourse.completedPartsByCourse,
+                                              itemCourse.totalTrainingPartByCourse
+                                            ) || 0
+                                          }%
+                                        )`,
                                       }}
                                     >
                                       <span className="progress-value">
-                                        {courseProgress[itemCourse.courseId] ||
-                                          0}
+                                        {calculateProgressPercentage(
+                                          itemCourse.completedPartsByCourse,
+                                          itemCourse.totalTrainingPartByCourse
+                                        ) || 0}
                                         %
                                       </span>
                                     </div>
@@ -164,7 +167,8 @@ const UserCourse: React.FC = () => {
                                         style={{ marginLeft: "20px" }}
                                       >
                                         <strong>
-                                          {10} / {10}
+                                          {itemCourse.completedPartsByCourse} /{" "}
+                                          {itemCourse.totalTrainingPartByCourse}
                                         </strong>{" "}
                                         bài học
                                       </h6>
@@ -202,7 +206,13 @@ const UserCourse: React.FC = () => {
                                       </p>
                                       <h6 className="title">
                                         <strong>
-                                          {2} / {2}
+                                          {
+                                            itemCourseEvent.completedPartsByCourseEvent
+                                          }{" "}
+                                          /{" "}
+                                          {
+                                            itemCourseEvent.totalPartsByCourseEvent
+                                          }
                                         </strong>{" "}
                                         bài học
                                       </h6>

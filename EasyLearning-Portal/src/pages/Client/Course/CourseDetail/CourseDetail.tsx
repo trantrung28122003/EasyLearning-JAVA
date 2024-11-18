@@ -70,6 +70,10 @@ const CourseDetail: React.FC = () => {
     if (courseId) {
       fetchCourseDetail(courseId);
       fetchCourseStatus(courseId);
+
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 0);
     } else {
       console.error("Course ID is missing!");
     }
