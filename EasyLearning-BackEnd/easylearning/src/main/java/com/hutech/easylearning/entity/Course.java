@@ -113,4 +113,17 @@ public class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     Set<AddOn> addOns;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserNote> userNotes;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<LearningOutcomes> learningOutcomes;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<CourseDiscount> courseDiscounts;
+
 }

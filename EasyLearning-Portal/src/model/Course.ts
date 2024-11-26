@@ -66,10 +66,18 @@ export interface CourseSlim {
   coursePrice: number;
   totalFeedback: number;
   averageRating: number;
+  startDate: string;
+  endDate: string;
   totalTrainingPartByCourse: number;
   completedPartsByCourse: number;
   totalLearningTime: string;
+  learningOutcomes: LearningOutcomes[];
   courseEventResponses: EventSlim[];
+}
+
+export interface LearningOutcomes {
+  outcomeName: string;
+  courseId: string;
 }
 
 export interface GetUserEventsResponse {
@@ -79,6 +87,38 @@ export interface GetUserEventsResponse {
   courseEventResponse: EventSlim[];
   nameInstructor: string;
 }
+
+export interface UserTrainingProgressStatusResponse {
+  courseName: string;
+  courseInstructor: string;
+  completedPartsByCourse: number;
+  totalPartsByCourse: number;
+  courseEventsResponses: EventSlim [];
+}
+
+export interface TrainingPartProgressResponses {
+  id: string;
+  trainingPartName: string;
+  startTime: string;
+  endTime: string;
+  description?: null | string | string;
+  trainingPartType: string;
+  imageUrl?: any;
+  videoUrl:string;
+  courseId: string;
+  courseEventId?: string | string;
+  dateCreate?: string | string;
+  dateChange: string;
+  changedBy: string;
+  free: boolean;
+  deleted: boolean;
+  completed: boolean;
+  watchedDuration: number;
+  quizScore: number;
+}
+
+
+
 
 
 

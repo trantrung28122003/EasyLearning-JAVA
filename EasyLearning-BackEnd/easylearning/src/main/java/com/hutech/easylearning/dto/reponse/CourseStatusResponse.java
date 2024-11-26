@@ -19,5 +19,8 @@ public class CourseStatusResponse {
 
     @JsonProperty("isInCart")
     private boolean isInCart;
+
+    @JsonProperty("isFeedback")
+    private boolean isFeedback;
 }
 

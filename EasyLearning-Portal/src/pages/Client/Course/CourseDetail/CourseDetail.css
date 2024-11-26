@@ -34,9 +34,9 @@
  }
 
  .details {
-   border       : 1px solid #ccc;
-   border-top   : none;
-   margin-bottom: 10px;
+   border    : 1px solid #ccc;
+   border-top: none;
+
  }
 
  /* .training-part {
@@ -172,9 +172,8 @@
    width           : 100%;
  }
 
- .product-block .product-deatil p.price-container span,
- .product-content .product-deatil p.price-container span,
- .product-entry .product-deatil p.price-container span,
+
+
  .shipping table tbody tr td p.price-container span,
  .shopping-items table tbody tr td p.price-container span {
    color      : #21c2f8;
@@ -274,6 +273,15 @@
    font-size  : 28px;
    text-align : center;
    font-weight: bold;
+
+
+ }
+
+ .price-container-discount {
+   color          : #888;
+   text-decoration: line-through;
+   font-size      : 18px;
+   margin-left    : 12px
  }
 
  .product-deatil .price-container small {
@@ -406,11 +414,37 @@
  }
 
  .feedback-userName-background {
-
-
    background-color: #06BBCC;
    color           : white;
    padding         : 2px 6px;
    border-radius   : 8px;
    border          : 1px solid #ddd;
+ }
+
+
+ .text-section {
+   margin-top: 28px;
+   padding   : 12px;
+ }
+
+ .text-section h2 {
+   font-size    : 24px;
+   font-weight  : bold;
+   margin-bottom: 10px;
+ }
+
+ .text-section ul {
+   list-style: none;
+   padding   : 0;
+ }
+
+ .text-section ul li {
+   font-size    : 16px;
+   margin-bottom: 12px;
+ }
+
+ .text-section ul li::before {
+   content     : '✔';
+   color       : #4CAF50;
+   margin-right: 10px;
  }

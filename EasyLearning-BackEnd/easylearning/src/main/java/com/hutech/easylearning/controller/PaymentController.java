@@ -26,6 +26,8 @@ public class PaymentController {
     @Autowired
     OrderService orderService;
 
+
+
     @PostMapping("/doPaymentMomo")
     public String doPayment(@RequestBody @Valid MomoRequest request) {
         request.setNote("Thanh toan khoa hoc");
@@ -34,7 +36,6 @@ public class PaymentController {
 
     @PostMapping("/confirmPaymentMomoClient")
     public ApiResponse<String> confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentSuccessRequest request) {
-
         System.out.println("partnerCode: " + request.getPartnerCode());
         System.out.println("accessKey: " + request.getAccessKey());
         System.out.println("requestId: " + request.getRequestId());
@@ -59,19 +60,16 @@ public class PaymentController {
                     .build();
             orderService.processPaymentAndCreateOrder(orderRequest);
 
-            // Return ApiResponse with success message
             return ApiResponse.<String>builder()
                     .result("Payment successful")
                     .build();
         } else {
+//            OrderRequest orderRequest = OrderRequest.builder()
+//                    .amount(request.getAmount())
+//                    .note("Thanh toán thành công")
+//                    .build();
+//            orderService.processPaymentAndCreateOrder(orderRequest);
 
-
-            OrderRequest orderRequest = OrderRequest.builder()
-                    .amount(request.getAmount())
-                    .note("Thanh toán thành công")
-                    .build();
-            orderService.processPaymentAndCreateOrder(orderRequest);
-            // Return ApiResponse with failure message
             return ApiResponse.<String>builder()
                     .result("Payment failed: " + request.getMessage())
                     .build();

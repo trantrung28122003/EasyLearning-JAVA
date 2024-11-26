@@ -26,6 +26,9 @@ public class ShoppingCart {
     @Column(name = "shopping_cart_total_price", precision = 10, scale = 3)
     BigDecimal totalPrice;
 
+    @Column(name = "shopping_cart_total_price_discount", precision = 10, scale = 3)
+    BigDecimal totalPriceDiscount;
+
     @Column(name = "user_id")
     String userId;
 

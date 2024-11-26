@@ -1,10 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CheckOutResult.css"; // Import file CSS vào component
 import ClientShared from "../../Shared/ClientShared";
+import { APPLY_DISCOUNT_USER } from "../../../../constants/API";
+import { DoCallAPIWithToken } from "../../../../services/HttpService";
+import { HTTP_OK } from "../../../../constants/HTTPCode";
 
 const PaymentSuccess = () => {
-  const navigate = useNavigate(); // Dùng hook để chuyển hướng
+  const navigate = useNavigate();
+  const [discountCode, setDiscountCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedDiscountCode = localStorage.getItem("discountCode");
+    if (storedDiscountCode) {
+      setDiscountCode(storedDiscountCode);
+    }
+  }, []);
+
+  const doCallApplyUserDiscount = async () => {
+    try {
+      if (discountCode) {
+        console.log("Calling API with discountCode:", discountCode);
+        const URL = APPLY_DISCOUNT_USER + `?discountCode=${discountCode}`;
+        const response = await DoCallAPIWithToken(URL, "POST");
+        if (response.status === HTTP_OK) {
+          const data = response.data.result;
+          console.log(data);
+          localStorage.removeItem("discountCode");
+        }
+      }
+    } catch (error) {
+      console.error("API call failed:", error);
+    }
+  };
+
+  // Gọi API chỉ khi discountCode thay đổi
+  useEffect(() => {
+    if (discountCode) {
+      doCallApplyUserDiscount();
+    }
+  }, [discountCode]); // Khi discountCode thay đổi mới gọi API
 
   return (
     <ClientShared>

@@ -10,10 +10,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackCreationRequest {
-
     String feedbackContent;
-
     int feedbackRating;
-
     String courseId;
 }

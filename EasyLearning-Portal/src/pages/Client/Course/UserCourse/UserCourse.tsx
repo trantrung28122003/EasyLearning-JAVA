@@ -6,15 +6,16 @@ import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import ClientShared from "../../Shared/ClientShared";
 import "./UserCourse.css";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
 const UserCourse: React.FC = () => {
-  const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
+  const [userCourse, setUserCourse] = useState<CourseSlim[]>([]);
 
   const navigate = useNavigate();
   const doCallGetCourseByUser = () => {
     DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
       const response: ApplicationResponse<CourseSlim[]> = res.data;
       console.log(response.result);
-      getUserCourse(response.result);
+      setUserCourse(response.result);
     });
   };
 
@@ -90,51 +91,81 @@ const UserCourse: React.FC = () => {
                           data-bs-target={`#item_${itemCourse.courseId}`}
                           aria-expanded="false"
                         >
-                          <div className="list_block">
-                            <div className="list_image">
-                              <a className="nav-item nav-link active">
-                                <img
-                                  style={{ marginBottom: "8px" }}
-                                  src={itemCourse.courseImage}
-                                  className="image-fit-contain"
-                                  alt="img"
-                                />
-                                <span>
+                          <a
+                            href={
+                              itemCourse.courseType === "ONLINE"
+                                ? `/learning/${itemCourse.courseId}`
+                                : `/schedule`
+                            }
+                          >
+                            <div className="list_block">
+                              <div className="list_image">
+                                <a className="nav-item nav-link active">
+                                  <div className="image-container">
+                                    <img
+                                      src={itemCourse.courseImage}
+                                      className="image-fit-contain"
+                                      alt="img"
+                                    />
+                                    <div className="play-button-overlay">
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24"
+                                        fill="white"
+                                        className="play-icon"
+                                      >
+                                        <circle
+                                          cx="12"
+                                          cy="12"
+                                          r="10"
+                                          fill="rgba(0, 0, 0, 0.6)"
+                                        />
+                                        <polygon
+                                          points="10,8 16,12 10,16"
+                                          fill="white"
+                                        />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  <span>
+                                    {itemCourse.courseType === "ONLINE" ? (
+                                      <>
+                                        <i
+                                          className="fas fa-globe"
+                                          style={{
+                                            marginLeft: "6px",
+                                            marginRight: "4px",
+                                          }}
+                                        ></i>
+                                        Trực tuyến
+                                      </>
+                                    ) : (
+                                      <>
+                                        <i
+                                          className="fas fa-chalkboard-teacher"
+                                          style={{ marginRight: "11px" }}
+                                        ></i>
+                                        Trực tiếp
+                                      </>
+                                    )}
+                                  </span>
+                                </a>
+                              </div>
+                              <div className="list_text">
+                                <a className="nav-item nav-link active">
+                                  <p
+                                    className="subtitle"
+                                    style={{ fontSize: "20px" }}
+                                  >
+                                    {itemCourse.courseName}
+                                  </p>
                                   {itemCourse.courseType === "ONLINE" ? (
-                                    <>
-                                      <i
-                                        className="fas fa-globe"
-                                        style={{ marginRight: "5px" }}
-                                      ></i>
-                                      Trực tuyến
-                                    </>
-                                  ) : (
-                                    <>
-                                      <i
-                                        className="fas fa-chalkboard-teacher"
-                                        style={{ marginRight: "5px" }}
-                                      ></i>
-                                      Trực tiếp
-                                    </>
-                                  )}
-                                </span>
-                              </a>
-                            </div>
-                            <div className="list_text">
-                              <a className="nav-item nav-link active">
-                                <p
-                                  className="subtitle"
-                                  style={{ fontSize: "20px" }}
-                                >
-                                  {itemCourse.courseName}
-                                </p>
-
-                                <div className="container-circular-progress">
-                                  <div style={{ display: "flex" }}>
-                                    <div
-                                      className="circular-progress"
-                                      style={{
-                                        backgroundImage: `conic-gradient(
+                                    <div className="container-circular-progress">
+                                      <div style={{ display: "flex" }}>
+                                        <div
+                                          className="circular-progress"
+                                          style={{
+                                            backgroundImage: `conic-gradient(
                                           #38c9d6 ${
                                             calculateProgressPercentage(
                                               itemCourse.completedPartsByCourse,
@@ -148,36 +179,65 @@ const UserCourse: React.FC = () => {
                                             ) || 0
                                           }%
                                         )`,
-                                      }}
-                                    >
-                                      <span className="progress-value">
-                                        {calculateProgressPercentage(
-                                          itemCourse.completedPartsByCourse,
-                                          itemCourse.totalTrainingPartByCourse
-                                        ) || 0}
-                                        %
-                                      </span>
+                                          }}
+                                        >
+                                          <span className="progress-value">
+                                            {calculateProgressPercentage(
+                                              itemCourse.completedPartsByCourse,
+                                              itemCourse.totalTrainingPartByCourse
+                                            ) || 0}
+                                            %
+                                          </span>
+                                        </div>
+                                        <div
+                                          className="complete-course"
+                                          style={{ marginTop: "20px" }}
+                                        >
+                                          <h6
+                                            className="title"
+                                            style={{ marginLeft: "20px" }}
+                                          >
+                                            <strong>
+                                              {
+                                                itemCourse.completedPartsByCourse
+                                              }{" "}
+                                              /{" "}
+                                              {
+                                                itemCourse.totalTrainingPartByCourse
+                                              }
+                                            </strong>{" "}
+                                            bài học
+                                          </h6>
+                                        </div>
+                                      </div>
                                     </div>
-                                    <div
-                                      className="complete-course"
-                                      style={{ marginTop: "20px" }}
-                                    >
+                                  ) : (
+                                    <>
                                       <h6
-                                        className="title"
-                                        style={{ marginLeft: "20px" }}
+                                        style={{
+                                          opacity: 0.6,
+                                        }}
                                       >
-                                        <strong>
-                                          {itemCourse.completedPartsByCourse} /{" "}
-                                          {itemCourse.totalTrainingPartByCourse}
-                                        </strong>{" "}
-                                        bài học
+                                        Bắt đầu từ ngày {""}
+                                        {dayjs(itemCourse.startDate).format(
+                                          "DD/MM/YYYY"
+                                        )}{" "}
+                                        đến{" "}
+                                        {dayjs(itemCourse.endDate).format(
+                                          "DD/MM/YYYY"
+                                        )}
                                       </h6>
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
+                                      <h6>
+                                        Có tổng cộng{" "}
+                                        {itemCourse.courseEventResponses.length}{" "}
+                                        buổi học
+                                      </h6>
+                                    </>
+                                  )}
+                                </a>
+                              </div>
                             </div>
-                          </div>
+                          </a>
                         </div>
                       </div>
 
@@ -204,18 +264,22 @@ const UserCourse: React.FC = () => {
                                       >
                                         {itemCourseEvent.courseEventName}
                                       </p>
-                                      <h6 className="title">
-                                        <strong>
-                                          {
-                                            itemCourseEvent.completedPartsByCourseEvent
-                                          }{" "}
-                                          /{" "}
-                                          {
-                                            itemCourseEvent.totalPartsByCourseEvent
-                                          }
-                                        </strong>{" "}
-                                        bài học
-                                      </h6>
+                                      {itemCourse.courseType === "ONLINE" ? (
+                                        <h6 className="title">
+                                          <strong>
+                                            {
+                                              itemCourseEvent.completedPartsByCourseEvent
+                                            }{" "}
+                                            /{" "}
+                                            {
+                                              itemCourseEvent.totalPartsByCourseEvent
+                                            }
+                                          </strong>{" "}
+                                          bài học
+                                        </h6>
+                                      ) : (
+                                        <div></div>
+                                      )}
                                     </div>
                                   </a>
                                 </div>

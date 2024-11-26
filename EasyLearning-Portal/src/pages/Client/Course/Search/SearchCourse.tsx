@@ -6,7 +6,6 @@ import {
   ADD_TO_CART,
   GET_ALL_CATEGORY_WITH_COURSE,
   GET_ALL_COURSE,
-  GET_COURSE_STATUS,
   SEARCH_COURSES,
 } from "../../../../constants/API";
 import {
@@ -160,7 +159,7 @@ const SearchCourse: React.FC = () => {
   }, []);
   return (
     <ClientShared>
-      <div className="container" style={{ marginBottom: "80px" }}>
+      <div className="container-search-course" style={{ marginBottom: "80px" }}>
         <div className="d-flex justify-content align-items-center mb-3">
           <div className="category-dropdown">
             <button

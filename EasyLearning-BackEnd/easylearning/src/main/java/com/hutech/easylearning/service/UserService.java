@@ -3,11 +3,13 @@ package com.hutech.easylearning.service;
 import com.hutech.easylearning.dto.reponse.UserResponse;
 import com.hutech.easylearning.dto.request.UserCreationRequest;
 import com.hutech.easylearning.dto.request.UserUpdateRequest;
+import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.User;
 import com.hutech.easylearning.exception.AppException;
 import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.mapper.UserMapper;
 import com.hutech.easylearning.repository.RoleRepository;
+import com.hutech.easylearning.repository.ShoppingCartRepository;
 import com.hutech.easylearning.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +40,11 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
 
-    @Autowired
-    private ShoppingCartService shoppingCartService;
+
 
     @Autowired
     private UploaderService uploaderService;
+    private ShoppingCartRepository shoppingCartRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
@@ -106,7 +108,15 @@ public class UserService {
         user.setRoles(new HashSet<>(roles));
         try {
             user = userRepository.save(user);
-            shoppingCartService.createShoppingCartByUser(user.getId());
+
+            ShoppingCart shoppingCart = ShoppingCart.builder()
+                    .userId(user.getId())
+                    .dateCreate(LocalDateTime.now())
+                    .dateChange(LocalDateTime.now())
+                    .changedBy(user.getId())
+                    .isDeleted(false)
+                    .build();
+            shoppingCartRepository.save(shoppingCart);
 
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);

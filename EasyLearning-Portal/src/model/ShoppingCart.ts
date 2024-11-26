@@ -1,7 +1,8 @@
 interface ShoppingCart {
   id: string;
   totalPrice: number;
-  shoppingCartItems: ShoppingCartItem[];
+  shoppingCartItemResponses: ShoppingCartItem[];
+  totalPriceDiscount : number;
   userId: string;
   dateCreate?: any;
   dateChange?: any;
@@ -14,10 +15,16 @@ interface ShoppingCartItem {
   quantity?: any;
   imageUrl: string;
   cartItemPrice: number;
+  cartItemPriceDiscount : number;
   shoppingCartId: string;
   courseId: string;
   dateCreate: string;
   dateChange: string;
   changedBy: string;
   deleted: boolean;
+}
+
+interface UserDiscountResponse {
+  discountCode : string;
+  discountDescription: string;
 }

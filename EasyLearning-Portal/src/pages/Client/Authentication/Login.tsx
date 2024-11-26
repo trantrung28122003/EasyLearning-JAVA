@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { getCredentials } from "../../../hooks/useLogin";
 import { HTTP_OK } from "../../../constants/HTTPCode";
 import { LoginRequest } from "../../../model/Authentication";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login: React.FC = () => {
   const [loginError, setLoginError] = useState<string | null>(null); // State lưu lỗi đăng nhập
@@ -51,6 +52,34 @@ const Login: React.FC = () => {
         }
       });
   };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      console.log("Google Login Success:", tokenResponse);
+      console.log("tokenResponse", tokenResponse.code);
+      // Gửi mã token đến backend
+      const response = await fetch(
+        "http://localhost:8080/auth/outbound/authentication",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: tokenResponse.code }),
+        }
+      );
+      const data = await response.json();
+
+      if (data.token) {
+        localStorage.setItem("authentication", data.token);
+        window.location.href = "/"; // Chuyển hướng đến trang chính
+      } else {
+        console.error("Login failed");
+      }
+    },
+    onError: () => {
+      console.error("Google Login failed");
+    },
+    flow: "auth-code", // Sử dụng Authorization Code Flow
+  });
 
   const fetchCurrentUser = () => {
     const token = getCredentials();
@@ -170,6 +199,7 @@ const Login: React.FC = () => {
                     backgroundColor: "#06BBCC",
                     borderColor: "#06BBCC",
                   }}
+                  onClick={() => googleLogin()}
                   className="btn btn-primary d-grid w-100"
                 >
                   ĐĂNG NHẬP VỚI GOOGLE

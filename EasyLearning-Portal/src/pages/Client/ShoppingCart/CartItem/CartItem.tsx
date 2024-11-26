@@ -4,6 +4,7 @@ import { REMOVE_FROM_CART } from "../../../../constants/API";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../../../../hooks/useCurrency";
 interface CartItemProps {
   item: ShoppingCartItem;
 }
@@ -17,9 +18,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
       }
     });
   };
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN").format(value * 1000);
-  };
+
   const handleDetailCourse = (courseId: string) => {
     navigate("/course/" + courseId);
   };
@@ -37,22 +36,47 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
             </div>
             <div className="col-md-4 d-flex justify-content">
               <div>
-                <p className="small text-muted mb-4">Tên khóa học</p>
-                <p className="lead fw-normal mb-0">{item.cartItemName}</p>
+                <p className="lead fw-normal mb-0" style={{ fontSize: "24px" }}>
+                  {item.cartItemName}
+                </p>
               </div>
             </div>
             <div className="col-md-2 d-flex justify-content-center">
-              <div>
-                <p className="small text-muted mb-4">Giá tiền</p>
-                <p id="price" className="lead fw-normal mb-0 ">
-                  {formatCurrency(item?.cartItemPrice || 0)} <span>VNĐ</span>
+              {item.cartItemPrice !== item.cartItemPriceDiscount ? (
+                <div>
+                  <p
+                    id="price"
+                    className=" lead fw-normal mb-0 "
+                    style={{ fontSize: "22px", fontWeight: "bold" }}
+                  >
+                    {formatCurrency(item?.cartItemPriceDiscount)}₫
+                  </p>
+                  <p
+                    id="price"
+                    className="lead fw-normal mb-0 "
+                    style={{
+                      fontSize: "18px",
+                      color: "#888",
+                      textDecoration: "line-through",
+                    }}
+                  >
+                    {formatCurrency(item?.cartItemPrice)}₫
+                  </p>
+                </div>
+              ) : (
+                <p
+                  id="price"
+                  className="lead fw-normal mb-0 "
+                  style={{ fontSize: "22px", fontWeight: "bold" }}
+                >
+                  {formatCurrency(item?.cartItemPrice)}₫
                 </p>
-              </div>
+              )}
             </div>
 
             <div className="col-md-2 d-flex justify-content-center">
               <div>
-                <p className="small text-muted mb-4">Thông tin khóa học</p>
+                <p className="small text-muted mb-4"></p>
                 <button
                   className="btn btn-primary"
                   onClick={() => handleDetailCourse(item.courseId)}
@@ -63,6 +87,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
             </div>
             <div className="col-md-2 d-flex justify-content-center">
               <div>
+                <p className="small text-muted mb-4"></p>
                 <button
                   className={`btn btn-danger ${style.btn_delete}`}
                   onClick={() => {

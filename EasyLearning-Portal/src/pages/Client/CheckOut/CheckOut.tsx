@@ -7,9 +7,13 @@ import {
 } from "../../../constants/API";
 import { HTTP_OK } from "../../../constants/HTTPCode";
 import style from "./CheckOut.module.css";
+import { formatCurrency } from "../../../hooks/useCurrency";
+import { useLocation } from "react-router-dom";
 
 const CheckOut: React.FC = () => {
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>();
+  const location = useLocation();
+  const { totalPriceDiscount } = location.state || {};
   const doGetShoppingCart = () => {
     DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get").then((res) => {
       if (res.status === HTTP_OK) {
@@ -19,13 +23,10 @@ const CheckOut: React.FC = () => {
     });
   };
 
-  const formarCurrency = (value: number) => {
-    return new Intl.NumberFormat("vi-VN").format(value * 1000);
-  };
   const doPayment = () => {
     if (shoppingCart) {
       const payload: MomoPaymentRequest = {
-        amount: shoppingCart?.totalPrice?.toString() + "000" || "0",
+        amount: totalPriceDiscount.toString() || "0",
         note: "",
       };
       DoCallAPIWithToken(DO_PAYMENT_MOMO, "post", payload).then((res) => {
@@ -54,7 +55,7 @@ const CheckOut: React.FC = () => {
             </h4>
             <ul className="list-group mb-3">
               {shoppingCart &&
-                shoppingCart?.shoppingCartItems.map((item, index) => {
+                shoppingCart?.shoppingCartItemResponses.map((item, index) => {
                   return (
                     <li
                       key={index}
@@ -62,12 +63,28 @@ const CheckOut: React.FC = () => {
                       style={{ width: "500px" }}
                     >
                       <div>
-                        <h6 className="my-0">{item.cartItemName}</h6>
+                        <h5 className="my-0">{item.cartItemName}</h5>
                         <small className="text-muted"></small>
                       </div>
-                      <span className="text-muted">
-                        {formarCurrency(item.cartItemPrice)} VNĐ
-                      </span>
+                      {item.cartItemPrice !== item.cartItemPriceDiscount ? (
+                        <div>
+                          <h6 className="my-0">
+                            {formatCurrency(item.cartItemPriceDiscount)}₫
+                          </h6>
+                          <small
+                            style={{ textDecoration: "line-through" }}
+                            className="text-muted"
+                          >
+                            {formatCurrency(item.cartItemPrice)}₫
+                          </small>
+                        </div>
+                      ) : (
+                        <div>
+                          <h6 className="my-0">
+                            {formatCurrency(item.cartItemPrice)}₫
+                          </h6>
+                        </div>
+                      )}
                     </li>
                   );
                 })}
@@ -76,27 +93,26 @@ const CheckOut: React.FC = () => {
                 className="list-group-item d-flex justify-content-between"
                 style={{ width: "500px" }}
               >
-                <span>Tổng</span>
-                <strong>
-                  {formarCurrency(shoppingCart?.totalPrice ?? 0)} VND
-                </strong>
+                <div>
+                  <h6 className="my-0">Tổng tiền</h6>
+                  <span className="text-muted">Giảm giá</span>
+                </div>
+                <div>
+                  <h6 className="my-0">
+                    {formatCurrency(totalPriceDiscount ?? 0)}₫
+                  </h6>
+                  <small
+                    style={{ textDecoration: "line-through" }}
+                    className="text-muted"
+                  >
+                    {formatCurrency(shoppingCart?.totalPrice ?? 0)}₫
+                  </small>
+                </div>
               </li>
             </ul>
           </div>
-          <h4 className="mb-3" style={{ color: "#06bbcc" }}>
-            Ghi chú
-          </h4>
+
           <div>
-            <div className="col-sm-6">
-              <input
-                type="text"
-                className="form-control"
-                style={{ width: "500px" }}
-                id="firstName"
-                placeholder=""
-                value=""
-              />
-            </div>
             <div className="form-group" hidden>
               <label
                 asp-htmlFor="OrderTotalPrice"

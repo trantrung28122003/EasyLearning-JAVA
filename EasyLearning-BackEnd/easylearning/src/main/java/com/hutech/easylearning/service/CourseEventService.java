@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -44,7 +45,10 @@ public class CourseEventService {
     @Autowired
     TrainingPartService trainingPartService;
     @Autowired
-    private TrainingPartRepository trainingPartRepository;
+     TrainingPartRepository trainingPartRepository;
+
+    @Autowired
+    UserTrainingProgressService userTrainingProgressService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -138,5 +142,36 @@ public class CourseEventService {
                 .trainingParts(trainingParts)
                 .build();
         return scheduleDetailEventResponse;
+    }
+
+    public List<CourseEventResponse> getCourseEventsByCourse (String courseId)
+    {
+        var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseId);
+
+        List<CourseEventResponse> courseEventResponses = new ArrayList<>();
+        for(var trainingPartId : trainingPartByCourse)
+        {
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if(courseEvent.getId().equals(trainingPartId.getCourseEventId())) {
+                    CourseEventResponse courseEventResponse = CourseEventResponse.builder()
+                            .id(courseEvent.getId())
+                            .courseEventName(courseEvent.getEventName())
+                            .startTime(courseEvent.getDateStart())
+                            .endTime(courseEvent.getDateEnd())
+                            .location(courseEvent.getLocation())
+                            .build();
+                    if (courseEventResponses.stream()
+                            .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
+                        var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
+                        var completePartsByCourseEvent = userTrainingProgressService.getCompletedTrainingPartsOnCourseEvent(courseEventResponse.getId());
+                        courseEventResponse.setCompletedPartsByCourseEvent(completePartsByCourseEvent);
+                        courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
+                        courseEventResponses.add(courseEventResponse);
+                    }
+                }
+            }
+        }
+        return  courseEventResponses;
     }
 }

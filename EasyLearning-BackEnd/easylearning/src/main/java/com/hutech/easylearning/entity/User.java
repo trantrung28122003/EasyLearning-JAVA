@@ -80,6 +80,18 @@ public class User {
     @JsonManagedReference
     Set<Order> orders;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserNote> userNotes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<Notification> notifications;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserDiscount> userDiscounts;
+
     public boolean getIsDeleted() {
         return isDeleted;
     }

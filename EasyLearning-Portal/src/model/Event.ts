@@ -1,4 +1,4 @@
-import { TrainingPart } from "./Course";
+import { TrainingPart, TrainingPartProgressResponses } from "./Course";
 
 export interface EventSlim {
   id: string;
@@ -9,4 +9,5 @@ export interface EventSlim {
   totalPartsByCourseEvent: number;
   completedPartsByCourseEvent : number;
   trainingParts: TrainingPart[];
+  trainingPartProgressResponses: TrainingPartProgressResponses[];
 }

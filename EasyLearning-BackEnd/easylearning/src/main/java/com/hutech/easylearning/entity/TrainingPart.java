@@ -87,5 +87,9 @@ public class TrainingPart{
 
     @Column(name = "is_deleted")
     boolean isDeleted;
+
+    @OneToMany(mappedBy = "trainingPart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<ExerciseQuestion> exerciseQuestions;
 }
 

@@ -18,7 +18,15 @@ const GET_USER_INFO_URL = BASE_URL_USER + "/myInfo";
 const BASE_URL_CUSTOMER = BASE_URL + "/customer";
 const GET_COURSE_BY_USER = BASE_URL_CUSTOMER + "/purchasedCourses";
 const GET_EVENTS_BY_USER = BASE_URL_CUSTOMER + "/schedule";
-const GET_COURSE_STATUS = BASE_URL + "/customer/CourseStatus"
+const GET_COURSE_STATUS_BY_USER = BASE_URL + "/customer/CourseStatus"
+const GET_TRAINING_PROGRESS_STATUS = BASE_URL + "/userTrainingProgress/getUserTrainingProgress"
+const UPDATE_TRAINING_PROGRESS = BASE_URL + "/userTrainingProgress/updateStatusPartProgress"
+const GET_QUESTION_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getExercise"
+const GET_SAVED_SCORE_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getUserTrainingProgressByPart"
+const GET_ALL_CERTIFICATE_BY_USER = BASE_URL + "/certificates/getAllCertificate"
+const ADD_TO_FEEDBACK = BASE_URL+ "/customer/addToFeedback"
+const CREATE_CERTIFICATE = BASE_URL + "/certificates/createCertificate"
+const GET_CERTIFICATE_BY_COURSE = BASE_URL + "/certificates/getCertificateByCourseAndUser"
 /*
   user
 */
@@ -46,6 +54,7 @@ const SEARCH_COURSES = BASE_URL + "/search";
 const BASE_URL_SHOPPING_CART = BASE_URL + "/shoppingCart";
 const ADD_TO_CART = BASE_URL_SHOPPING_CART + "/addToCart";
 const REMOVE_FROM_CART = BASE_URL_SHOPPING_CART + "/remove";
+const GET_COUPONS_BY_USER = BASE_URL +"/discount/getAllDisCountByUser"
 
 /**
  * Shopping cart
@@ -57,7 +66,7 @@ const REMOVE_FROM_CART = BASE_URL_SHOPPING_CART + "/remove";
 const BASE_URL_PAYMENT = BASE_URL + "/payment";
 const DO_PAYMENT_MOMO = BASE_URL_PAYMENT + "/doPaymentMomo";
 const CONFIRM_PAYMENT = BASE_URL_PAYMENT + "/confirmPaymentMomoClient";
-
+const APPLY_DISCOUNT_USER = BASE_URL + "/discount/addUserDiscount"
 /**
  * payment
  */
@@ -80,5 +89,15 @@ export {
   GET_TOP_FOUR_MOST_CATEGORY,
   GET_ALL_COURSE,
   SEARCH_COURSES,
-  GET_COURSE_STATUS,
+  GET_COURSE_STATUS_BY_USER,
+  GET_TRAINING_PROGRESS_STATUS,
+  UPDATE_TRAINING_PROGRESS,
+  GET_QUESTION_BY_TRAINING_PART,
+  GET_SAVED_SCORE_BY_TRAINING_PART,
+  GET_ALL_CERTIFICATE_BY_USER,
+  ADD_TO_FEEDBACK,
+  APPLY_DISCOUNT_USER,
+  GET_COUPONS_BY_USER,
+  CREATE_CERTIFICATE,
+  GET_CERTIFICATE_BY_COURSE
 };

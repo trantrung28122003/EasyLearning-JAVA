@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import {
   ADD_TO_CART,
   GET_COURSE_DETAIL,
-  GET_COURSE_STATUS,
+  GET_COURSE_STATUS_BY_USER,
 } from "../../../../../constants/API";
 import {
   DoCallAPIWithOutToken,
   DoCallAPIWithToken,
 } from "../../../../../services/HttpService";
 import { HTTP_OK } from "../../../../../constants/HTTPCode";
+import { formatCurrency } from "../../../../../hooks/useCurrency";
 
 interface CardProps {
   course: Course;
@@ -21,12 +22,11 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
   const starRatings = [1, 2, 3, 4, 5];
   const [isPurchased, setIsPurchased] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
-
   const [averageRating, setAverageRating] = useState<number | null>(null);
-
   const [totalLearningTime, setTotalLearningTime] = useState<string | null>(
     null
   );
+  const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
 
   const fetchCourseDetail = async (courseId: string) => {
     try {
@@ -37,6 +37,7 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
         console.log(data.averageRating);
         setAverageRating(data.averageRating);
         setTotalLearningTime(data.totalLearningTime);
+        setPriceDiscount(data.coursePriceDiscount);
       }
     } catch (error) {
       console.error("Error fetching course detail:", error);
@@ -45,7 +46,7 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
 
   const doCallGetCourseStatus = async (courseId: string) => {
     try {
-      const URL = GET_COURSE_STATUS + "/" + courseId;
+      const URL = GET_COURSE_STATUS_BY_USER + "/" + courseId;
       const response = await DoCallAPIWithToken(URL, "GET");
       if (response.status === HTTP_OK) {
         const data = await response.data.result;
@@ -128,10 +129,22 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
         </div>
 
         <div className="text-end" style={{ minWidth: "150px" }}>
-          <p className="text-danger fs-5 mb-0">₫{course.coursePrice}.000</p>
-          <p className="text-muted text-decoration-line-through mb-0">
-            1.200.000₫
-          </p>
+          {priceDiscount ? (
+            <>
+              <p className="text-danger fs-5 mb-0">
+                {" "}
+                {formatCurrency(priceDiscount)}₫
+              </p>
+              <p className="text-muted text-decoration-line-through mb-0">
+                {formatCurrency(course.coursePrice)}₫
+              </p>
+            </>
+          ) : (
+            <p className="text-danger fs-5 mb-0">
+              {" "}
+              {formatCurrency(course.coursePrice)}₫
+            </p>
+          )}
         </div>
       </div>
 
