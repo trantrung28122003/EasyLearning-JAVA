@@ -57,10 +57,8 @@ const Navbar: React.FC = () => {
     navigator("/login");
   };
 
-  // Đóng thông báo khi nhấn ngoài
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Kiểm tra nếu click không thuộc vào khung thông báo
       if (
         notificationsRef.current &&
         !notificationsRef.current.contains(event.target as Node)
@@ -77,10 +75,7 @@ const Navbar: React.FC = () => {
   }, []);
   return (
     <>
-      <nav
-        className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0"
-        // style={{ marginBottom: "3rem" }}
-      >
+      <nav className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
         <a
           href="/"
           className="navbar-brand d-flex align-items-center px-4 px-lg-5"
@@ -127,6 +122,10 @@ const Navbar: React.FC = () => {
                     <a className="dropdown-item" href="/userCourses">
                       Danh sách khóa học của bạn
                     </a>
+                    <a className="dropdown-item" href="/certificate">
+                      Chứng chỉ của bạn
+                    </a>
+
                     <a className="dropdown-item">Cài đặt tài khoản</a>
                     {isAdmin && (
                       <a className="dropdown-item" href="admin/dashboard">
@@ -166,7 +165,7 @@ const Navbar: React.FC = () => {
                       ref={notificationsRef}
                     >
                       <div className="notification-header">
-                        <h5>Thông báo</h5>
+                        <div style={{ fontSize: "20px" }}>Thông báo</div>
                         <button className="mark-read">Đánh dấu đã đọc</button>
                       </div>
                       <div className="notification-list">

@@ -35,6 +35,9 @@ public class ShoppingCartItem {
     @Column(name = "shopping_cart_item_price", precision = 10, scale = 3)
     BigDecimal cartItemPrice;
 
+    @Column(name = "shopping_cart_item_price_discount", precision = 10, scale = 3)
+    BigDecimal cartItemPriceDiscount;
+
     @Column(name ="shopping_cart_id")
     String shoppingCartId;
 
@@ -62,4 +65,7 @@ public class ShoppingCartItem {
 
     @Column(name = "is_deleted")
     boolean isDeleted;
+
+    @Version
+    private int version;
 }

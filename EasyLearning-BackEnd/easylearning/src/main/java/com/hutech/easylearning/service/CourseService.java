@@ -75,6 +75,11 @@ public class CourseService {
     @Autowired
     private UserTrainingProgressService userTrainingProgressService;
 
+
+    @Autowired CourseEventService courseEventService;
+    @Autowired
+    private DiscountService discountService;
+
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
@@ -210,7 +215,23 @@ public class CourseService {
     }
 
 
-    @Transactional
+//    @Transactional
+//    public List<MostRegisteredCoursesResponse> getTopThreeMostRegisteredCourses() {
+//        List<Course> courses = courseRepository.findTop3ByOrderByRegisteredUsersDesc();
+//        List<MostRegisteredCoursesResponse> mostRegisteredCoursesResponseList = new ArrayList<>();
+//        for(var course : courses)
+//        {
+//            MostRegisteredCoursesResponse mostRegisteredCoursesResponse = new MostRegisteredCoursesResponse().builder()
+//                    .courseName(course.getCourseName())
+//                    .courseImage(course.getImageUrl())
+//                    .averageRating(cour)
+//
+//                    .build();
+//        }
+//        return courseRepository.findTop3ByOrderByRegisteredUsersDesc();
+//    }
+
+@Transactional
     public List<Course> getTopThreeMostRegisteredCourses() {
         return courseRepository.findTop3ByOrderByRegisteredUsersDesc();
     }
@@ -227,41 +248,24 @@ public class CourseService {
                 for (OrderDetail orderDetail : orderDetails) {
                     String courseId = orderDetail.getCourseId();
                     Course course = courseRepository.findById(courseId).orElse(null);
+                    var sizeLearning = course.getLearningOutcomes().size();
 
-                    var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(course.getId());
+                    var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseId);
                     int totalTrainingPartByCourse = trainingPartByCourse.size();
-                    List<CourseEventResponse> courseEventResponses = new ArrayList<>();
-                    for(var trainingPartId : trainingPartByCourse)
-                    {
-                        for(var courseEvent : courseEventRepository.findAll())
-                        {
-                            if(courseEvent.getId().equals(trainingPartId.getCourseEventId())) {
-                                CourseEventResponse courseEventResponse = CourseEventResponse.builder()
-                                        .id(courseEvent.getId())
-                                        .courseEventName(courseEvent.getEventName())
-                                        .startTime(courseEvent.getDateStart())
-                                        .endTime(courseEvent.getDateEnd())
-                                        .location(courseEvent.getLocation())
-                                        .build();
-                                if (courseEventResponses.stream()
-                                        .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
-                                    var totalTrainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).size();
-                                    var completePartsByCourseEvent = userTrainingProgressService.getCompletedTrainingPartsOnCourseEvent(courseEventResponse.getId());
-                                    courseEventResponse.setCompletedPartsByCourseEvent(completePartsByCourseEvent);
-                                    courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
-                                    courseEventResponses.add(courseEventResponse);
-                                }
-                            }
-                        }
-                    }
+                    List<CourseEventResponse> courseEventResponses = courseEventService.getCourseEventsByCourse(course.getId());
                     Collections.sort(courseEventResponses, Comparator.comparing(CourseEventResponse::getStartTime));
                     var completePartsByCourse = userTrainingProgressService.getCompletedTrainingPartsOnCourses(courseId);
+
+
+
                     PurchasedCourseResponse purchasedCourseResponse = PurchasedCourseResponse.builder()
                             .courseId(course.getId())
                             .courseName(course.getCourseName())
                             .courseImage(course.getImageUrl())
                             .instructor(course.getInstructor())
                             .courseType(course.getCourseType())
+                            .startDate(course.getStartDate())
+                            .endDate(course.getEndDate())
                             .totalTrainingPartByCourse(totalTrainingPartByCourse)
                             .completedPartsByCourse(completePartsByCourse)
                             .courseEventResponses(courseEventResponses)
@@ -418,11 +422,14 @@ public class CourseService {
 
         String totalLearningTime = calculateTotalLearningTime(courseEventResponses);
 
+        var coursePriceDiscount = discountService.applyCourseDiscount(courseById.getId(), courseById.getCoursePrice());
+        if (courseById.getCoursePrice().compareTo(coursePriceDiscount) == 0) { coursePriceDiscount = null; }
 
         DetailCourseResponse detailCourseResponse = DetailCourseResponse.builder()
                 .courseId(courseById.getId())
                 .courseName(courseById.getCourseName())
                 .coursePrice(courseById.getCoursePrice())
+                .coursePriceDiscount(coursePriceDiscount)
                 .courseImage(courseById.getImageUrl())
                 .nameInstructor(courseById.getInstructor())
                 .courseEventResponses(courseEventResponses)
@@ -430,6 +437,7 @@ public class CourseService {
                 .averageRating(averageRating)
                 .feedFeedbackInfoResponses(feedbackInfos)
                 .totalLearningTime(totalLearningTime)
+                .learningOutcomes(courseById.getLearningOutcomes().stream().toList())
                 .build();
 
         return detailCourseResponse;
@@ -474,11 +482,28 @@ public class CourseService {
         }
         return false;
     }
+    public boolean isFeedbackByUser(String courseId) {
+        var currentUser = userService.getMyInfo();
+
+        if (currentUser != null) {
+            List<Feedback> feedbacksByCourse = feedbackRepository.findByCourseId(courseId);
+            for (Feedback feedback : feedbacksByCourse) {
+                if(feedback.getFeedbackUserId().equals(currentUser.getId()))
+                {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
+
     @Transactional
     public CourseStatusResponse getCourseStatus(String courseId) {
         boolean isPurchased = false;
         boolean isLearning = false;
         boolean isInCart = false;
+        boolean isFeedback = false;
         if(isCourseInCart(courseId)){
             isInCart = true;
         }
@@ -486,10 +511,17 @@ public class CourseService {
             isLearning = true;
             isPurchased = true;
         }
+
+        if(isFeedbackByUser(courseId)){
+            isFeedback = true;
+        }
+
+
         CourseStatusResponse courseStatusResponse = new CourseStatusResponse().builder()
                 .isLearning(isLearning)
                 .isInCart(isInCart)
                 .isPurchased(isPurchased)
+                .isFeedback(isFeedback)
                 .build();
 
         return courseStatusResponse;

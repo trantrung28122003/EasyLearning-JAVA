@@ -1,10 +1,16 @@
 package com.hutech.easylearning.service;
 
 
-import com.hutech.easylearning.dto.reponse.CompletedTrainingPartsResponse;
+import com.hutech.easylearning.dto.reponse.CourseEventResponse;
+import com.hutech.easylearning.dto.reponse.TrainingPartProgressResponse;
+import com.hutech.easylearning.dto.reponse.UserTrainingProgressStatusResponse;
+import com.hutech.easylearning.dto.request.ScoreRequest;
 import com.hutech.easylearning.dto.request.UserTrainingProgressUpdateRequest;
 import com.hutech.easylearning.entity.TrainingPart;
 import com.hutech.easylearning.entity.UserTrainingProgress;
+import com.hutech.easylearning.repository.CourseEventRepository;
+import com.hutech.easylearning.repository.CourseRepository;
+import com.hutech.easylearning.repository.TrainingPartRepository;
 import com.hutech.easylearning.repository.UserTrainingProgressRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserTrainingProgressService {
+    @Autowired
+    private CourseRepository courseRepository;
 
     @Autowired
     private UserTrainingProgressRepository userTrainingProgressRepository;
@@ -26,6 +36,10 @@ public class UserTrainingProgressService {
     private UserService userService;
     @Autowired
     private TrainingPartService trainingPartService;
+    @Autowired
+    private CourseEventRepository courseEventRepository;
+    @Autowired
+    private TrainingPartRepository trainingPartRepository;
 
     @Transactional
     public UserTrainingProgress createUserTrainingProgress(UserTrainingProgress userTrainingProgress) {
@@ -36,13 +50,42 @@ public class UserTrainingProgressService {
     public UserTrainingProgress updateUserTrainingProgress(String id, UserTrainingProgressUpdateRequest request) {
         UserTrainingProgress userTrainingProgressById = userTrainingProgressRepository.findById(id).orElseThrow();
         var currentUserInfo  =  userService.getMyInfo();
-
         userTrainingProgressById.setWatchedDuration(request.getWatchedDuration());
         userTrainingProgressById.setQuizScore(request.getQuizScore());
         userTrainingProgressById.setCompleted(request.isCompleted());
         userTrainingProgressById.setDateChange(LocalDateTime.now());
         userTrainingProgressById.setChangedBy(currentUserInfo.getId());
         return userTrainingProgressRepository.save(userTrainingProgressById);
+    }
+
+    @Transactional
+    public UserTrainingProgress updateCompletionStatus(String trainingPartId) {
+
+        var currentUser = userService.getMyInfo();
+        UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
+
+        userTrainingProgress.setCompleted(true);
+        userTrainingProgress.setDateChange(LocalDateTime.now());
+        userTrainingProgress.setChangedBy(currentUser.getId());
+        return userTrainingProgressRepository.save(userTrainingProgress);
+    }
+
+    @Transactional
+    public UserTrainingProgress updatePartProgress(String trainingPartId, ScoreRequest scoreRequest) {
+
+        var currentUser = userService.getMyInfo();
+        UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
+
+        int score = 0;
+        if (scoreRequest != null) {
+            score = scoreRequest.getCorrectAnswersCount() + scoreRequest.getTotalQuestionsCount();
+        }
+
+        userTrainingProgress.setCompleted(true);
+        userTrainingProgress.setQuizScore(score);
+        userTrainingProgress.setDateChange(LocalDateTime.now());
+        userTrainingProgress.setChangedBy(currentUser.getId());
+        return userTrainingProgressRepository.save(userTrainingProgress);
     }
 
 
@@ -86,4 +129,96 @@ public class UserTrainingProgressService {
 
         return completedTrainingParts;
     }
+
+
+    @Transactional
+    public UserTrainingProgressStatusResponse getUserTrainingProgressByCourse(String courseId) {
+        var currentUserInfo = userService.getMyInfo();
+        int completedTrainingParts = 0;
+        int totalTrainingParts = 0;
+        var course = courseRepository.findById(courseId).orElseThrow();
+
+        List<TrainingPart> trainingPartList = trainingPartService.getTrainingPartsByCourseId(courseId);
+        completedTrainingParts = getCompletedTrainingPartsOnCourses(courseId);
+        totalTrainingParts = trainingPartList.size();
+        List<CourseEventResponse> courseEventResponseList = new ArrayList<>();
+        for(var trainingPart : trainingPartList)
+        {
+            for(var courseEvent : courseEventRepository.findAll())
+            {
+                if(courseEvent.getId().equals(trainingPart.getCourseEventId())) {
+                    CourseEventResponse courseEventResponse = CourseEventResponse.builder()
+                            .id(courseEvent.getId())
+                            .courseEventName(courseEvent.getEventName())
+                            .startTime(courseEvent.getDateStart())
+                            .endTime(courseEvent.getDateEnd())
+                            .location(courseEvent.getLocation())
+
+                            .build();
+
+                    if (courseEventResponseList.stream()
+                            .noneMatch(existing -> existing.getId().equals(courseEventResponse.getId()))){
+                        var trainingPartByCourseEvent = trainingPartRepository.findTrainingPartByCourseEventId(courseEventResponse.getId()).stream()
+                                .sorted(Comparator.comparing(TrainingPart::getStartTime))
+                                .collect(Collectors.toList());
+
+                        List<TrainingPartProgressResponse> userTrainingProgressList = new ArrayList<>();
+
+                        for (var trainingpartByCourseEvent : trainingPartByCourseEvent) {
+                            UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUserInfo.getId(), trainingpartByCourseEvent.getId());
+                            Integer watchedDuration = (userTrainingProgress.getWatchedDuration() != null)
+                                    ? userTrainingProgress.getWatchedDuration()
+                                    : 0;
+                            Integer quizScore = (userTrainingProgress.getQuizScore() != null)
+                                    ? userTrainingProgress.getQuizScore()
+                                    : 0;
+
+                            TrainingPartProgressResponse trainingPartProgressResponse = new TrainingPartProgressResponse().builder()
+                                    .id(trainingpartByCourseEvent.getId())
+                                    .trainingPartName(trainingpartByCourseEvent.getTrainingPartName())
+                                    .trainingPartType(trainingpartByCourseEvent.getTrainingPartType())
+                                    .startTime(trainingpartByCourseEvent.getStartTime())
+                                    .endTime(trainingpartByCourseEvent.getEndTime())
+                                    .dateChange(trainingPart.getDateChange())
+                                    .isFree(trainingpartByCourseEvent.isFree())
+                                    .imageUrl(trainingpartByCourseEvent.getImageUrl())
+                                    .videoUrl(trainingpartByCourseEvent.getVideoUrl())
+                                    .watchedDuration(watchedDuration)
+                                    .quizScore(quizScore)
+
+                                    .completed(userTrainingProgress.isCompleted())
+
+                                    .build();
+                            userTrainingProgressList.add(trainingPartProgressResponse);
+                        }
+
+                        var totalTrainingPartByCourseEvent = trainingPartByCourseEvent.size();
+                        courseEventResponse.setTotalPartsByCourseEvent(totalTrainingPartByCourseEvent);
+                        courseEventResponse.setTrainingPartProgressResponses(userTrainingProgressList);
+                        courseEventResponse.setTrainingParts(trainingPartByCourseEvent);
+                        courseEventResponseList.add(courseEventResponse);
+                    }
+                }
+            }
+
+        }
+        Collections.sort(courseEventResponseList, Comparator.comparing(CourseEventResponse::getStartTime));
+        UserTrainingProgressStatusResponse userTrainingProgressStatusResponse = new UserTrainingProgressStatusResponse().builder()
+                .courseName(course.getCourseName())
+                .courseInstructor(course.getInstructor())
+                .completedPartsByCourse(completedTrainingParts)
+                .totalPartsByCourse(totalTrainingParts)
+                .courseEventsResponses(courseEventResponseList)
+                .build();
+
+        return userTrainingProgressStatusResponse;
+    }
+    @Transactional
+    public UserTrainingProgress getUserTrainingProgressByTrainingPart(String trainingPartId) {
+
+        var currentUser = userService.getMyInfo();
+        UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
+        return  userTrainingProgress;
+    }
+
 }

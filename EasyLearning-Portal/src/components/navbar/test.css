@@ -5,12 +5,25 @@
     background   : white;
     border       : 1px solid #ddd;
     box-shadow   : 0 4px 8px rgba(0, 0, 0, 0.1);
-    width        : 300px;
+    width        : 420px;
     max-height   : 400px;
     overflow-y   : auto;
     z-index      : 1000;
     border-radius: 8px;
 }
+
+.notification-dropdown::-webkit-scrollbar {
+    width: 8px;
+
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: #aaa;
+    border-radius   : 4px;
+    border          : 2px solid #fff;
+
+}
+
 
 .notification-header {
     display        : flex;
@@ -53,7 +66,7 @@
 .mark-read {
     background: none;
     border    : none;
-    color     : blue;
+    color     : #06BBCC;
     cursor    : pointer;
 }
 

@@ -103,7 +103,6 @@ public class OrderService {
             shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
 
-
         var toEmail = currentUser.getEmail();
         var subject = "Thanh toán thành công trên trang eLearning";
         var customerName = currentUser.getFullName();
@@ -120,6 +119,9 @@ public class OrderService {
             courseByNames.add(itemShoppingCart.getCourse().getCourseName());
         }
         emailService.sendEmailPaymentAsync(toEmail, subject, customerName, totalAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
+
+        //them qua trinh hoc cho user
+
 
         return saveOrder;
     }

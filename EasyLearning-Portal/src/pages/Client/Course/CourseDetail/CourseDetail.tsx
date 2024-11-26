@@ -4,8 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CourseSlim } from "../../../../model/Course";
 import {
   ADD_TO_CART,
+  ADD_TO_FEEDBACK,
   GET_COURSE_DETAIL,
-  GET_COURSE_STATUS,
+  GET_COURSE_STATUS_BY_USER,
   GET_FEEDBACKS_FOR_COURSE,
 } from "../../../../constants/API";
 import {
@@ -19,6 +20,7 @@ import classNames from "classnames";
 import { Feedback } from "../../../../model/FeedBack";
 import { isUserLogin } from "../../../../hooks/useLogin";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
+import { formatCurrency } from "../../../../hooks/useCurrency";
 
 const CourseDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -28,19 +30,27 @@ const CourseDetail: React.FC = () => {
   const starRatings = [1, 2, 3, 4, 5];
   const [isPurchased, setIsPurchased] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
+  const [isFeedback, setIsFeedBack] = useState(false);
   const isLogin = isUserLogin();
-  const LESSON = "LESSON";
+  const [rating, setRating] = useState(0);
+  const [content, setContent] = useState("");
 
+  const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
   const fetchCourseDetail = async (courseId: string) => {
     try {
       const URL = GET_COURSE_DETAIL + "/" + courseId;
       const courseRes = await DoCallAPIWithOutToken(URL, "GET");
-      const courseDetail: CourseSlim = courseRes.data.result;
-      setCourse(courseDetail);
+      if (courseRes.status == HTTP_OK) {
+        const courseDetail: CourseSlim = courseRes.data.result;
+        setPriceDiscount(courseRes.data.result.coursePriceDiscount);
+        setCourse(courseDetail);
+      }
 
       const feedbackURL = GET_FEEDBACKS_FOR_COURSE + "/" + courseId;
       const feedbackRes = await DoCallAPIWithOutToken(feedbackURL, "GET");
-      setFeedBacks(feedbackRes.data.result.feedbacks);
+      if (feedbackRes.status === HTTP_OK) {
+        setFeedBacks(feedbackRes.data.result.feedbacks);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -48,12 +58,13 @@ const CourseDetail: React.FC = () => {
 
   const fetchCourseStatus = async (courseId: string) => {
     try {
-      const URL = GET_COURSE_STATUS + "/" + courseId;
+      const URL = GET_COURSE_STATUS_BY_USER + "/" + courseId;
       const response = await DoCallAPIWithToken(URL, "GET");
       if (response.status === HTTP_OK) {
         const data = await response.data.result;
         setIsInCart(data.isInCart);
         setIsPurchased(data.isPurchased);
+        setIsFeedBack(data.isFeedback);
       }
     } catch (error) {}
   };
@@ -66,19 +77,6 @@ const CourseDetail: React.FC = () => {
     }));
   };
 
-  useEffect(() => {
-    if (courseId) {
-      fetchCourseDetail(courseId);
-      fetchCourseStatus(courseId);
-
-      setTimeout(() => {
-        window.scrollTo(0, 0);
-      }, 0);
-    } else {
-      console.error("Course ID is missing!");
-    }
-  }, [courseId]);
-
   const addToCart = () => {
     if (!isLogin) {
       localStorage.clear();
@@ -90,7 +88,6 @@ const CourseDetail: React.FC = () => {
       navigate("/shoppingCart");
     } else {
       const URL = ADD_TO_CART + "/" + courseId;
-
       DoCallAPIWithToken(URL, "post").then((res) => {
         if (res.status === HTTP_OK) {
           navigate("/shoppingCart");
@@ -98,6 +95,49 @@ const CourseDetail: React.FC = () => {
       });
     }
   };
+  const handleStarClick = (value: any) => {
+    setRating(value);
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!rating || !content.trim()) return alert("Vui lòng điền đủ thông tin!");
+    try {
+      const feedbackCreationRequest = {
+        courseId: courseId,
+        feedbackContent: content,
+        feedbackRating: rating,
+      };
+
+      const URL = ADD_TO_FEEDBACK;
+      const response = await DoCallAPIWithToken(
+        URL,
+        "POST",
+        feedbackCreationRequest
+      );
+      if (response.status === HTTP_OK) {
+        if (courseId) {
+          fetchCourseDetail(courseId);
+          fetchCourseStatus(courseId);
+        }
+        //alert("Cảm ơn bạn đã gửi phản hồi!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gửi phản hồi:", error);
+      alert("Đã xảy ra lỗi, vui lòng thử lại sau.");
+    }
+  };
+  useEffect(() => {
+    if (courseId) {
+      fetchCourseDetail(courseId);
+      fetchCourseStatus(courseId);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+      }, 0);
+    } else {
+      console.error("Course ID is missing!");
+    }
+  }, [courseId]);
 
   return (
     <ClientShared>
@@ -116,23 +156,15 @@ const CourseDetail: React.FC = () => {
                       />
                     </div>
                   </div>
-                  {/* <button
-                    className="carousel-control-prev"
-                    type="button"
-                    data-bs-target="#myCarousel-2"
-                    data-bs-slide="prev"
-                  >
-                    <span className="visually-hidden">Trước</span>
-                  </button>
-                  <button
-                    className="carousel-control-next"
-                    type="button"
-                    data-bs-target="#myCarousel-2"
-                    data-bs-slide="next"
-                  >
-                    <span className="visually-hidden">Sau</span>
-                  </button> */}
                 </div>
+              </div>
+              <div className="text-section">
+                <h2>Những gì bạn sẽ học</h2>
+                <ul>
+                  {course?.learningOutcomes.map((outComes, index) => (
+                    <li key={index}>{outComes.outcomeName}</li>
+                  ))}
+                </ul>
               </div>
             </div>
 
@@ -153,7 +185,7 @@ const CourseDetail: React.FC = () => {
                 <span className="fa fa-2x">
                   {starRatings.map((x) =>
                     x <= (course?.averageRating ?? 0) ? (
-                      <i className="fas fa-star fa-2x text-primary" />
+                      <i className="fas fa-star fa-2x text-warning" />
                     ) : (
                       <i className="fas fa-star fa-2x text-muted" />
                     )
@@ -169,7 +201,20 @@ const CourseDetail: React.FC = () => {
                 </span>
               </h2>
               <hr />
-              <h3 className="price-container">{course?.coursePrice}.000 VNĐ</h3>
+              {priceDiscount ? (
+                <h3 className="price-container">
+                  {formatCurrency(priceDiscount)}₫
+                  <span className="price-container-discount">
+                    {formatCurrency(course?.coursePrice)}₫
+                  </span>
+                </h3>
+              ) : (
+                <h3 className="price-container">
+                  {" "}
+                  {formatCurrency(course?.coursePrice)}₫
+                </h3>
+              )}
+
               <hr />
               <div className="description description-tabs">
                 <ul className="nav nav-pills">
@@ -239,7 +284,7 @@ const CourseDetail: React.FC = () => {
                                     })}
                                   >
                                     <span>
-                                      {part.trainingPartType == LESSON ? (
+                                      {part.trainingPartType == "LESSON" ? (
                                         <i className="fas fa-tv"></i>
                                       ) : (
                                         <i className="far fa-file-alt"></i>
@@ -276,103 +321,50 @@ const CourseDetail: React.FC = () => {
 
                   <div className="tab-pane fade" id="reviews">
                     <br />
-
-                    <form method="post" className="well padding-bottom-10">
-                      <div className="form-group">
-                        <div className="form-group">
-                          <textarea
-                            id="textContent"
-                            name="content"
-                            rows={2}
-                            className="form-control"
-                            placeholder="Write a review"
-                          ></textarea>
-                        </div>
-                        <div className="d-flex justify-content-end ml-auto">
-                          <input
-                            type="hidden"
-                            id="rating"
-                            name="rating"
-                            value="0"
-                          />
-                          <span
-                            className="star"
-                            style={{ fontSize: "25px", cursor: "pointer" }}
-                            data-value="1"
+                    {isPurchased && !isFeedback && (
+                      <div className="well padding-bottom-10">
+                        <form onSubmit={handleSubmit} className="form-group">
+                          <div className="form-group">
+                            <textarea
+                              id="textContent"
+                              name="content"
+                              rows={4}
+                              className="form-control"
+                              placeholder="Write a review"
+                              value={content}
+                              onChange={(e) => setContent(e.target.value)}
+                            ></textarea>
+                          </div>
+                          <div
+                            className="d-flex justify-content-end"
+                            style={{ marginTop: "4px" }}
                           >
-                            &#9733;
-                          </span>
-                          <span
-                            className="star"
-                            style={{ fontSize: "25px", cursor: "pointer" }}
-                            data-value="2"
+                            {[1, 2, 3, 4, 5].map((value) => (
+                              <span
+                                key={value}
+                                className={`fas fa-star fa-2x ${
+                                  value <= rating
+                                    ? "text-warning"
+                                    : "text-muted"
+                                }`}
+                                style={{
+                                  fontSize: "25px",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => handleStarClick(value)} // Cập nhật rating khi nhấn vào sao
+                              ></span>
+                            ))}
+                          </div>
+                          <button
+                            type="submit"
+                            className="btn btn-sm btn-primary pull-right"
+                            style={{ fontSize: "16px" }}
                           >
-                            &#9733;
-                          </span>
-                          <span
-                            className="star"
-                            style={{ fontSize: "25px", cursor: "pointer" }}
-                            data-value="3"
-                          >
-                            &#9733;
-                          </span>
-                          <span
-                            className="star"
-                            style={{ fontSize: "25px", cursor: "pointer" }}
-                            data-value="4"
-                          >
-                            &#9733;
-                          </span>
-                          <span
-                            className="star"
-                            style={{ fontSize: "25px", cursor: "pointer" }}
-                            data-value="5"
-                          >
-                            &#9733;
-                          </span>
-                        </div>
-                        <button
-                          id="submitReviewBtn"
-                          type="submit"
-                          className="btn btn-sm btn-primary pull-right"
-                        >
-                          Submit Review
-                        </button>
-                        <a
-                          className="btn btn-link profile-link-btn"
-                          rel="tooltip"
-                          data-bs-placement="bottom"
-                          title="Add Location"
-                        >
-                          <i className="fa fa-location-arrow"></i>
-                        </a>
-                        <a
-                          className="btn btn-link profile-link-btn"
-                          rel="tooltip"
-                          data-bs-placement="bottom"
-                          title="Add Voice"
-                        >
-                          <i className="fa fa-microphone"></i>
-                        </a>
-                        <a
-                          className="btn btn-link profile-link-btn"
-                          rel="tooltip"
-                          data-bs-placement="bottom"
-                          title="Add Photo"
-                        >
-                          <i className="fa fa-camera"></i>
-                        </a>
-                        <a
-                          className="btn btn-link profile-link-btn"
-                          rel="tooltip"
-                          data-bs-placement="bottom"
-                          title="Add File"
-                        >
-                          <i className="fa fa-file"></i>
-                        </a>
+                            Đánh giá khóa học
+                          </button>
+                        </form>
                       </div>
-                    </form>
-
+                    )}
                     <div className="chat-body no-padding profile-message">
                       <ul>
                         {feedBacks.map((itemFeedback, index) => (
@@ -430,7 +422,7 @@ const CourseDetail: React.FC = () => {
                                           key={i}
                                           className={`fas fa-star fa-2x ${
                                             i <= itemFeedback.feedbackRating
-                                              ? "text-primary"
+                                              ? "text-warning"
                                               : "text-muted"
                                           }`}
                                         />
@@ -467,7 +459,7 @@ const CourseDetail: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <hr />
+
               <div className="row">
                 <a
                   onClick={() => addToCart()}

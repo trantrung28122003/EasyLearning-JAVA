@@ -7,11 +7,12 @@ import {
 import {
   ADD_TO_CART,
   GET_COURSE_DETAIL,
-  GET_COURSE_STATUS,
+  GET_COURSE_STATUS_BY_USER,
 } from "../../constants/API";
 import { HTTP_OK } from "../../constants/HTTPCode";
 import { useNavigate } from "react-router-dom";
 import { isUserLogin } from "../../hooks/useLogin";
+import { formatCurrency } from "../../hooks/useCurrency";
 interface CardProps {
   course: Course;
 }
@@ -20,8 +21,10 @@ const Card: React.FC<CardProps> = ({ course }) => {
   const navigate = useNavigate();
   const starRatings = [1, 2, 3, 4, 5];
   const [averageRating, setAverageRating] = useState<number | null>(null);
+  const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
   const [isPurchased, setIsPurchased] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
+
   const isLogin = isUserLogin();
 
   const fetchCourseDetail = async (courseId: string) => {
@@ -31,6 +34,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
       if (response.status === HTTP_OK) {
         const data = await response.data.result;
         setAverageRating(data.averageRating);
+        setPriceDiscount(data.coursePriceDiscount);
       }
     } catch (error) {
       console.error("Error fetching course detail:", error);
@@ -39,7 +43,7 @@ const Card: React.FC<CardProps> = ({ course }) => {
 
   const fetchCourseStatus = async (courseId: string) => {
     try {
-      const URL = GET_COURSE_STATUS + "/" + courseId;
+      const URL = GET_COURSE_STATUS_BY_USER + "/" + courseId;
       const response = await DoCallAPIWithToken(URL, "GET");
       if (response.status === HTTP_OK) {
         const data = await response.data.result;
@@ -103,7 +107,38 @@ const Card: React.FC<CardProps> = ({ course }) => {
           </div>
         </div>
         <div className="text-center p-3 pb-0">
-          <h3 className="mb-0">{course.coursePrice}.000 VNĐ</h3>
+          {priceDiscount && priceDiscount > 0 ? (
+            <>
+              <h3
+                className="mb-0"
+                style={{
+                  fontSize: "16px",
+                  color: "#888",
+                  textDecoration: "line-through",
+                }}
+              >
+                {formatCurrency(course.coursePrice)}₫
+              </h3>
+              <h3 className="mb-0" style={{ fontSize: "24px" }}>
+                {formatCurrency(priceDiscount)}₫
+              </h3>
+            </>
+          ) : (
+            <>
+              <h3
+                className="mb-0"
+                style={{
+                  fontSize: "16px",
+                  color: "#888",
+                }}
+              >
+                Chưa có khuyến mãi
+              </h3>
+              <h3 className="mb-0" style={{ fontSize: "24px" }}>
+                {formatCurrency(course.coursePrice)}₫
+              </h3>
+            </>
+          )}
           <div className="mb-2">
             {starRatings.map((i) =>
               i <= (averageRating ?? 0) ? (

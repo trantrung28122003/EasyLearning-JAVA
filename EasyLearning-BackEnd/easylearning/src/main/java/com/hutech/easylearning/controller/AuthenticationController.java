@@ -19,12 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true )
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     @Autowired
     AuthenticationService authenticationService;
@@ -41,8 +42,8 @@ public class AuthenticationController {
                 .build();
     }
     @PostMapping("/outbound/authentication")
-    ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam("code") String code
-    ){
+    public ApiResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody Map<String, String> payload) {
+        String code = payload.get("code");
         var result = authenticationService.outboundAuthenticate(code);
         return ApiResponse.<AuthenticationResponse>builder().result(result).build();
     }
@@ -80,5 +81,6 @@ public class AuthenticationController {
                 .result(result)
                 .build();
     }
+
 
 }

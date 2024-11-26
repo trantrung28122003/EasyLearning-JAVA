@@ -21,5 +21,5 @@ public class CourseEventResponse {
      int completedPartsByCourseEvent;
      int totalPartsByCourseEvent;
      List<TrainingPart> trainingParts;
-
+     List<TrainingPartProgressResponse> trainingPartProgressResponses;
 }

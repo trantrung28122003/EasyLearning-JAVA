@@ -49,12 +49,10 @@ public class AuthenticationService {
 
     @Autowired
     private InvalidatedTokenRepository invalidatedTokenRepository;
+    private OutboundIdentityClient outboundIdentityClient;
 
-    OutboundIdentityClient outboundIdentityClient;
 
     OutboundUserClient outboundUserClient;
-
-
 
     @NonFinal
     @Value("${jwt.signerKey}")

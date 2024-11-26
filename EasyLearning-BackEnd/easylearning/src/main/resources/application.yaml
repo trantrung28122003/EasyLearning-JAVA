@@ -36,8 +36,8 @@ spring:
 
 outbound:
   identity:
-    client-id: "<clientId>"
-    client-secret: "<clientSecret>"
+    client-id: "409126728225-mn4h754gh3l2a1vhd3jjk74ug5b0dmug.apps.googleusercontent.com"
+    client-secret: "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"
     redirect-uri: ""
 
 jwt:
@@ -45,5 +45,12 @@ jwt:
   valid-duration: 36000  # in seconds
   refreshable-duration: 36000  # in seconds
 
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full  # Ghi log đầy đủ các request/response của Feign
+        connectTimeout: 5000  # Thời gian timeout kết nối (5 giây)
+        readTimeout: 5000  # Thời gian timeout đọc dữ liệu (5 giây)
 
 

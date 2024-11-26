@@ -5,7 +5,6 @@
 .text-header {
   text-align: center;
   background: url(https://sinhvien.hutech.edu.vn/assets/img/mybg.png) #fff;
-
 }
 
 .event-schedule-area .tab-area .nav-tabs {
@@ -528,46 +527,78 @@
 
 .product_list .card-header .btn-link:after {
   content         : "\f078";
-  /* Biểu tượng FontAwesome */
   font-family     : "Font Awesome 5 Free";
   font-weight     : 900;
-  /* Đảm bảo biểu tượng sử dụng font-weight 900 */
   position        : absolute;
   right           : 10px;
-  /* Điều chỉnh khoảng cách từ bên phải */
   top             : 50%;
   transform       : translateY(-50%) rotate(180deg);
   line-height     : normal;
   width           : 40px;
-  /* Tăng kích thước hình tròn */
   height          : 40px;
-  /* Tăng kích thước hình tròn */
   background-color: #06BBCC;
-  /* Màu nền */
   border-radius   : 50%;
   display         : flex;
   align-items     : center;
   justify-content : center;
   color           : #ffffff;
-  /* Màu của icon */
   font-size       : 20px;
-  /* Tăng kích thước của icon */
   transition      : all 0.3s ease-in-out;
-  /* Hiệu ứng chuyển động mượt mà */
   background-image: none;
 }
 
-/* Thêm hiệu ứng hover cho icon */
+
 .product_list .card-header .btn-link:hover:after {
   background-color: #04A2A7;
-  /* Đổi màu nền khi hover */
   transform       : translateY(-50%) rotate(180deg);
-  /* Giữ hiệu ứng xoay */
   color           : #ffffff;
-  /* Đảm bảo màu chữ vẫn là trắng khi hover */
 }
 
 .product_list .card-header .btn-link.collapsed:after {
   transform: translateY(-50%) rotate(0deg);
-  /* Khi thu gọn, icon trở về trạng thái ban đầu */
+}
+
+
+
+
+
+
+.image-container {
+  position: relative;
+  display : inline-block;
+  cursor  : pointer;
+}
+
+.image-container img {
+  display: block;
+  width  : 120px;
+  height : auto;
+}
+
+.play-button-overlay {
+  position        : absolute;
+  top             : 0;
+  left            : 0;
+  right           : 0;
+  bottom          : 0;
+  display         : flex;
+  align-items     : center;
+  justify-content : center;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity         : 0;
+  transition      : opacity 0.3s ease;
+}
+
+.image-container:hover .play-button-overlay {
+  opacity: 1;
+}
+
+.play-icon {
+  width     : 60px;
+  height    : 60px;
+  transition: transform 0.3s ease;
+}
+
+.image-container:hover .play-icon {
+  transform: scale(1.2);
 }

@@ -23,11 +23,12 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {"/users",
-            "/auth/login",
-            "/auth/introspect",
-            "/auth/register",
-    };
+        private final String[] PUBLIC_ENDPOINTS = {"/users",
+                "/auth/login",
+                "/auth/introspect",
+                "/auth/register",
+                "/auth/outbound/authentication"
+        };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/topThreeMostRegisteredCourses",
@@ -85,4 +86,5 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
+
 }

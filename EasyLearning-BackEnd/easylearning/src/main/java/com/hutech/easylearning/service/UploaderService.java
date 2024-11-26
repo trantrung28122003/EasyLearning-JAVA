@@ -5,9 +5,11 @@
     import org.springframework.stereotype.Service;
     import org.springframework.web.multipart.MultipartFile;
 
+    import java.io.ByteArrayInputStream;
     import java.io.File;
     import java.io.FileOutputStream;
     import java.io.IOException;
+    import java.util.Map;
 
     @Service
     public class UploaderService {
@@ -40,5 +42,16 @@
             fos.write(file.getBytes());
             fos.close();
             return convFile;
+        }
+
+
+        public String uploadPdfToCloud(byte[] pdfData) {
+            try {
+                Map<String, Object> uploadResult = cloudinary.uploader().upload(pdfData, ObjectUtils.asMap("resource_type", "auto"));
+                return (String) uploadResult.get("url");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }

@@ -214,4 +214,32 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: false,
   },
 
+
+
+  {
+    path: "/learning/:courseId",
+    component: LazyLoadComponent(import("../pages/Client/Learning/Learning")),
+    isProtected: true,
+    isAdmin: false,
+  },
+
+  {
+    path: "/quiz",
+    component: LazyLoadComponent(import("../pages/Client/Learning/QuizApp/ExerciseQuiz")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/certificate",
+    component: LazyLoadComponent(import("../pages/Client/UserCertificate/UserCertificate")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/ConfirmCertificate",
+    component: LazyLoadComponent(import("../pages/Client/UserCertificate/ConfirmCertificate")),
+    isProtected: true,
+    isAdmin: false,
+  },
+
 ];

@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 const CheckoutResult = () => {
   let [searchParams] = useSearchParams();
-  const navigate = useNavigate(); // Khai báo hook useNavigate
+  const navigate = useNavigate();
 
   const request: ConfirmPaymentRequest = {
     partnerCode: searchParams.get("partnerCode") ?? "",
