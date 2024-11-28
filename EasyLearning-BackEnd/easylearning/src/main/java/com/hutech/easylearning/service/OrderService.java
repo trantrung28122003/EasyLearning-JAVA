@@ -69,7 +69,6 @@ public class OrderService {
     public Order processPaymentAndCreateOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
         var currentUser = userService.getMyInfo();
-        List<Course> courseByPurchased = new ArrayList<>();
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)

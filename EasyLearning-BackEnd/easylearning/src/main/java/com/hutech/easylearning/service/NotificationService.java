@@ -121,4 +121,34 @@ public class NotificationService {
         return notificationResponse;
     }
 
+    public NotificationResponse addNotificationByCertification(String courseId) {
+
+        var course = courseRepository.findById(courseId) .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khoa học với ID: " + courseId));
+        var currentUser = userService.getMyInfo();
+
+        var  contentNotification = "Chúc mừng bạn đã hoàn thành chứng chỉ của khóa học "
+                + course.getCourseName() + "! Hãy tiếp tục hành trình học tập của mình nhé.";
+        var targetId ="/certificate";
+
+        Notification notification = new Notification().builder()
+                .content(contentNotification)
+                .type(NotificationType.CERTIFICATION)
+                .isRead(false)
+                .userId(currentUser.getId())
+                .dateCreate(LocalDateTime.now())
+                .dateChange(LocalDateTime.now())
+                .isDeleted(false)
+                .targetId(targetId)
+                .changedBy("Hệ thống")
+                .build();
+        notificationRepository.save(notification);
+
+        NotificationResponse notificationResponse = new NotificationResponse().builder()
+                .contentNotification(notification.getContent())
+                .dateCreate(notification.getDateCreate())
+                .isRead(notification.isRead())
+                .build();
+        return notificationResponse;
+    }
+
 }
