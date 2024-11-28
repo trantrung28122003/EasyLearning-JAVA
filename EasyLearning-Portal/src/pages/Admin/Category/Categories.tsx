@@ -7,7 +7,8 @@ const Categories: React.FC = () => {
       <h1 style={{ textAlign: "center" }}>Danh sách thể loại</h1>
       <hr />
       <p>
-        <a asp-action="Create" className="btn btn-info">
+        <a asp-action="Create" className="btn btn-info"
+          onClick={() => (window.location.href = "/admin/category/create")}>
           {" "}
           <i className="fa fa-plus" style={{ marginRight: "10px" }}></i> Thêm
           thể loại mới
@@ -29,9 +30,13 @@ const Categories: React.FC = () => {
             <td></td>
             <td></td>
             <td>
-              <button className="btn btn-info">Sửa</button>
-              <button className="btn btn-warning">Chi tiết</button>
-              <button className="btn btn-danger">Xóa</button>
+              <button className="btn btn-sm btn-primary me-2"
+                onClick={() => (window.location.href = "/admin/category/update")}>
+                <i className="bi bi-pencil-square"></i>Sửa
+              </button>
+              <button className="btn btn-sm btn-danger me-2">
+                <i className="bi bi-trash"></i>Xóa
+              </button>
             </td>
           </tr>
         </tbody>
