@@ -1,12 +1,12 @@
 import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs'; // Giả sử bạn đang dùng thư viện stompjs
+import { Client } from '@stomp/stompjs';
+import { BASE_URL } from '../../../constants/API';
 
-const SOCKET_URL = "http://localhost:8080/ws";
+const SOCKET_URL = BASE_URL + "/ws";
 
-// Singleton client để quản lý kết nối WebSocket
+
 let client: Client | null = null;
 
-// Hàm để lấy client WebSocket
 export const getWebSocketClient = (): Client => {
     if (!client) {
         client = new Client({
@@ -22,7 +22,6 @@ export const getWebSocketClient = (): Client => {
                         },
                     }));
                 };
-
                 return socket;
             },
             reconnectDelay: 5000, // Thử kết nối lại sau 5 giây nếu thất bại

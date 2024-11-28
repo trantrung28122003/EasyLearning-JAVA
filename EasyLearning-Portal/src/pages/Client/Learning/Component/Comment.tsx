@@ -4,6 +4,7 @@ import "./comments.css";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { getTimeAgo } from "../../../../hooks/useTime";
+import { BASE_URL } from "../../../../constants/API";
 interface Reply {
   id: string;
   userId: string;
@@ -75,7 +76,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
     // const trainingPartId = "40955bca-7e83-408f-90d2-bf0efd10b569";
     console.log("trainpartiddd neeee", trainingPartId);
     const res = DoCallAPIWithToken(
-      `http://localhost:8080/comments/commentsByTrainingPart/${trainingPartId}`,
+      BASE_URL + `/comments/commentsByTrainingPart/${trainingPartId}`,
       "GET"
     ).then((res) => {
       if (res.status === HTTP_OK) {

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "https://sd75skpq-8080.asse.devtunnels.ms";
 /* 
   authentication
 */
@@ -74,6 +74,7 @@ const APPLY_DISCOUNT_USER = BASE_URL + "/discount/addUserDiscount"
  * payment
  */
 export {
+  BASE_URL,
   LOGIN_URL,
   GET_USER_INFO_URL,
   GET_COURSES_MOST_REGISTERED,

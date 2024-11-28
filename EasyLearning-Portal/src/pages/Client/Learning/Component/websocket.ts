@@ -1,7 +1,8 @@
 import SockJS from 'sockjs-client';
 import { Client } from '@stomp/stompjs'; // Giả sử bạn đang dùng thư viện stompjs
+import { BASE_URL } from '../../../../constants/API';
 
-const SOCKET_URL = "http://localhost:8080/ws";
+const SOCKET_URL = BASE_URL + "/ws";
 
 // Singleton client để quản lý kết nối WebSocket
 let client: Client | null = null;
