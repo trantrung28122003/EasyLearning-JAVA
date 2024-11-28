@@ -4,7 +4,11 @@ import {
   DoCallAPIWithOutToken,
   DoCallAPIWithToken,
 } from "../../../services/HttpService";
-import { GET_USER_INFO_URL, LOGIN_URL } from "../../../constants/API";
+import {
+  GET_USER_INFO_URL,
+  LOGIN_URL,
+  LOGIN_WITH_GOOGLE,
+} from "../../../constants/API";
 import * as yup from "yup";
 import { Field, Form, Formik } from "formik";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +25,7 @@ const Login: React.FC = () => {
     userName: yup
       .string()
       .min(8, "Tên ài khoản phải có ít nhất 8 ký tự")
-      .max(24, "Tên tài khoản tối đa 24 ký tự")
+      .max(30, "Tên tài khoản tối đa 24 ký tự")
       .required("Tên tài khoản không được để trống"),
     password: yup.string().required("Mật khẩu không được để trống"),
   });
@@ -56,29 +60,25 @@ const Login: React.FC = () => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       console.log("Google Login Success:", tokenResponse);
-      console.log("tokenResponse", tokenResponse.code);
-      // Gửi mã token đến backend
-      const response = await fetch(
-        "http://localhost:8080/auth/outbound/authentication",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: tokenResponse.code }),
+      console.log("tokenResponse", tokenResponse.access_token);
+      try {
+        const res = await DoCallAPIWithOutToken(LOGIN_WITH_GOOGLE, "POST", {
+          access_token: tokenResponse.access_token,
+        });
+        if (res.status === 200) {
+          localStorage.setItem(
+            "authentication",
+            JSON.stringify(res.data.result)
+          );
+          fetchCurrentUser();
+        } else {
+          setLoginError("Đăng nhập không thành công");
         }
-      );
-      const data = await response.json();
-
-      if (data.token) {
-        localStorage.setItem("authentication", data.token);
-        window.location.href = "/"; // Chuyển hướng đến trang chính
-      } else {
-        console.error("Login failed");
+      } catch (error) {
+        console.error("Error during Google login:", error);
+        setLoginError("Có lỗi xảy ra, vui lòng thử lại.");
       }
     },
-    onError: () => {
-      console.error("Google Login failed");
-    },
-    flow: "auth-code", // Sử dụng Authorization Code Flow
   });
 
   const fetchCurrentUser = () => {
@@ -193,18 +193,17 @@ const Login: React.FC = () => {
                     Đăng ký
                   </a>
                 </p>
-
-                <button
-                  style={{
-                    backgroundColor: "#06BBCC",
-                    borderColor: "#06BBCC",
-                  }}
-                  onClick={() => googleLogin()}
-                  className="btn btn-primary d-grid w-100"
-                >
-                  ĐĂNG NHẬP VỚI GOOGLE
-                </button>
               </Form>
+              <button
+                style={{
+                  backgroundColor: "#06BBCC",
+                  borderColor: "#06BBCC",
+                }}
+                onClick={() => googleLogin()}
+                className="btn btn-primary d-grid w-100"
+              >
+                ĐĂNG NHẬP VỚI GOOGLE
+              </button>
             </div>
           </div>
         )}

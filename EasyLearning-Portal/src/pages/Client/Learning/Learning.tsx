@@ -67,14 +67,28 @@ const Learning: React.FC = () => {
         const data = await response.data.result;
         setTrainingProgressData(data);
 
-        const lastCompletedPart = data.courseEventsResponses
-          .flatMap((event: EventSlim) => event.trainingPartProgressResponses)
-          .reverse()
-          .find(
-            (part: TrainingPartProgressResponses) => part.completed === true
-          );
-        if (lastCompletedPart) {
-          setSelectedTrainingPart(lastCompletedPart);
+        const trainingParts = data.courseEventsResponses.flatMap(
+          (event: EventSlim) => event.trainingPartProgressResponses
+        );
+        const completedParts = trainingParts.filter(
+          (part: TrainingPartProgressResponses) => part.completed === true
+        );
+
+        const lastCompletedIndex = trainingParts.indexOf(
+          completedParts[completedParts.length - 1]
+        );
+        const nextTrainingPart = trainingParts[lastCompletedIndex + 1];
+
+        if (nextTrainingPart) {
+          setSelectedTrainingPart(nextTrainingPart);
+        } else {
+          const firstTrainingPart = data.courseEventsResponses
+            .flatMap((event: EventSlim) => event.trainingPartProgressResponses)
+            .find((part: TrainingPartProgressResponses) => part);
+
+          if (firstTrainingPart) {
+            setSelectedTrainingPart(firstTrainingPart);
+          }
         }
       }
     } catch (error) {}
@@ -454,6 +468,7 @@ const Learning: React.FC = () => {
           )}
         </div>
       </div>
+
       {isNoteBox && (
         <div className="wrapper-note">
           <div className="over-lay" id="note-box" onClick={toggleNoteBox}>
@@ -474,6 +489,7 @@ const Learning: React.FC = () => {
           </div>
         </div>
       )}
+
       <div className="footer-learning">
         <button className="toggle-sidebar-btn" onClick={toggleSidebar}>
           {isSidebarOpen ? (

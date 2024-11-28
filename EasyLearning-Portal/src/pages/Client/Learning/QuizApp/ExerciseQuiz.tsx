@@ -108,7 +108,6 @@ const ExerciseQuiz: React.FC<ExerciseQuizProps> = ({
       const URL = GET_SAVED_SCORE_BY_TRAINING_PART + "/" + trainingPartId;
       const response = await DoCallAPIWithToken(URL, "GET");
       if (response.status === HTTP_OK) {
-        console.log("calll lay diemm", response.data.result);
         setSavedScore(response.data.result.quizScore);
       }
     } catch (error) {

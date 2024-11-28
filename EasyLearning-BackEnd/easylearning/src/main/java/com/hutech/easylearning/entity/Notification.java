@@ -3,6 +3,7 @@ package com.hutech.easylearning.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hutech.easylearning.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +30,13 @@ public class Notification {
 
     @Column(name = "is_read", nullable = false)
     private boolean isRead = false;
+
+    @Column(name = "type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    NotificationType type;
+
+    @Column(name = "target_id", nullable = true)
+    String targetId;
 
     @Column(name = "user_id")
     String userId;

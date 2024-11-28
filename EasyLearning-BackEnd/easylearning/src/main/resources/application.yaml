@@ -34,23 +34,17 @@ spring:
           starttls:
             enable: true
 
-outbound:
-  identity:
-    client-id: "409126728225-mn4h754gh3l2a1vhd3jjk74ug5b0dmug.apps.googleusercontent.com"
-    client-secret: "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"
-    redirect-uri: ""
+
 
 jwt:
   signerKey: "a0YJZqjYV1ny1WVzrErLD1cWFmSiTfzDOIhsYH+Fw45JDN6WukcgWRWd+4zka+9G"
   valid-duration: 36000  # in seconds
   refreshable-duration: 36000  # in seconds
 
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: full  # Ghi log đầy đủ các request/response của Feign
-        connectTimeout: 5000  # Thời gian timeout kết nối (5 giây)
-        readTimeout: 5000  # Thời gian timeout đọc dữ liệu (5 giây)
-
+google:
+  client-id: "409126728225-mn4h754gh3l2a1vhd3jjk74ug5b0dmug.apps.googleusercontent.com"
+  client-secret: "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"
+  redirect-uri: "http://localhost:5173" # URL frontend
+  token-uri: "https://oauth2.googleapis.com/token"
+  user-info-uri: "https://www.googleapis.com/oauth2/v2/userinfo"
 

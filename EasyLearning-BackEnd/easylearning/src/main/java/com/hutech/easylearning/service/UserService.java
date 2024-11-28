@@ -96,7 +96,9 @@ public class UserService {
         user.setImageUrl(userImageUrl);
         user.setDateCreate(LocalDateTime.now());
         user.setDateChange(LocalDateTime.now());
+        user.setEmail(request.getEmail());
         user.setIsDeleted(false);
+        user.setFullName(request.getFullName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         if(userRepository.existsByUserName(user.getUserName()))
         {

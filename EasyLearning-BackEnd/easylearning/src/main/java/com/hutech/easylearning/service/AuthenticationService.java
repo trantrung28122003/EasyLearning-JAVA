@@ -1,15 +1,20 @@
 package com.hutech.easylearning.service;
 
+
+import com.hutech.easylearning.configuration.GoogleAuthClient;
 import com.hutech.easylearning.dto.reponse.AuthenticationResponse;
+import com.hutech.easylearning.dto.reponse.GoogleUserInfo;
 import com.hutech.easylearning.dto.reponse.IntrospectResponse;
 import com.hutech.easylearning.dto.request.*;
 import com.hutech.easylearning.entity.InvalidatedToken;
 import com.hutech.easylearning.entity.Role;
+import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.User;
 import com.hutech.easylearning.exception.AppException;
 import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.repository.InvalidatedTokenRepository;
 import com.hutech.easylearning.repository.RoleRepository;
+import com.hutech.easylearning.repository.ShoppingCartRepository;
 import com.hutech.easylearning.repository.httpclient.OutboundIdentityClient;
 import com.hutech.easylearning.repository.UserRepository;
 import com.hutech.easylearning.repository.httpclient.OutboundUserClient;
@@ -23,6 +28,7 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,10 +41,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AuthenticationService {
+    private final ShoppingCartRepository shoppingCartRepository;
 
     @Autowired
 
@@ -49,10 +58,8 @@ public class AuthenticationService {
 
     @Autowired
     private InvalidatedTokenRepository invalidatedTokenRepository;
-    private OutboundIdentityClient outboundIdentityClient;
 
-
-    OutboundUserClient outboundUserClient;
+    private final GoogleAuthClient googleAuthClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -66,21 +73,25 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
-    @NonFinal
-    @Value("${outbound.identity.client-id}")
-    protected String CLIENT_ID;
+    @Value("${google.token-uri}")
+    private String tokenUri;
 
-    @NonFinal
-    @Value("${outbound.identity.client-secret}")
-    protected String CLIENT_SECRET;
+    @Value("${google.user-info-uri}")
+    private String userInfoUri;
 
-    @NonFinal
-    @Value("${outbound.identity.redirect-uri}")
-    protected String REDIRECT_URI;
+    @Value("${google.client-id}")
+    private String clientId;
+
+    @Value("${google.client-secret}")
+    private String clientSecret;
+
+    @Value("${google.redirect-uri}")
+    private String redirectUri;
 
     @NonFinal
     protected final String GRANT_TYPE = "authorization_code";
-
+    @Autowired
+    private GoogleAuthService googleAuthService;
 
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
@@ -91,43 +102,55 @@ public class AuthenticationService {
         } catch (AppException e) {
             isValid = false;
         }
-
-
         return IntrospectResponse.builder()
                 .valid(isValid)
                 .build();
     }
 
-    public AuthenticationResponse outboundAuthenticate(String code){
-        var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
-                .code(code)
-                .clientId(CLIENT_ID)
-                .clientSecret(CLIENT_SECRET)
-                .redirectUri(REDIRECT_URI)
-                .grantType(GRANT_TYPE)
-                .build());
+    public AuthenticationResponse authenticateGoogle(String accessToken) {
+        GoogleUserInfo userInfo = googleAuthService.verifyAccessToken(accessToken);
+        if (userInfo != null) {
+            User user = userRepository.findByEmail(userInfo.getEmail())
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        String userImageUrl = "http://res.cloudinary.com/dofr3xzmi/image/upload/v1720255836/aoy4tixw5shd9cxh5ep1.jpg";
+                        if(userInfo.getPicture() != null)
+                        {
+                            userImageUrl = userInfo.getPicture();
+                        }
+                        newUser.setImageUrl(userImageUrl);
+                        newUser.setDateCreate(LocalDateTime.now());
+                        newUser.setDateChange(LocalDateTime.now());
+                        newUser.setIsDeleted(false);
+                        newUser.setEmail(userInfo.getEmail());
+                        newUser.setFullName(userInfo.getName());
+                        newUser.setPassword("");
+                        List<String> defaultRoleNames = List.of("USER");
+                        var roles = roleRepository.findByNameIn(defaultRoleNames);
+                        newUser.setRoles(new HashSet<>(roles));
+                        try {
+                            newUser = userRepository.save(newUser);
+                            ShoppingCart shoppingCart = ShoppingCart.builder()
+                                    .userId(newUser.getId())
+                                    .dateCreate(LocalDateTime.now())
+                                    .dateChange(LocalDateTime.now())
+                                    .changedBy(newUser.getId())
+                                    .isDeleted(false)
+                                    .build();
+                            shoppingCartRepository.save(shoppingCart);
 
-        log.info("TOKEN RESPONSE {}", response);
-        var userInfo  = outboundUserClient.getUserInfo("json", response.getAccessToken());
+                        } catch (DataIntegrityViolationException exception){
+                            throw new AppException(ErrorCode.USER_EXISTED);
+                        }
+                        return newUser;
+                    });
 
-
-        List<String> defaultRoleNames = List.of("USER");
-        var roles = roleRepository.findByNameIn(defaultRoleNames);
-        var user = userRepository.findByUserName(userInfo.getEmail()).orElseGet(
-                () -> userRepository.save(User.builder()
-                                .userName(userInfo.getEmail())
-                                .fullName(userInfo.getName())
-                                .dateChange(LocalDateTime.now())
-                                .dateChange(LocalDateTime.now())
-                                .roles(new HashSet<>(roles))
-                                .build()));
-
-        var token = generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(token)
-                .build();
+            String token = generateToken(user);
+            return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        } else {
+            throw new RuntimeException("User info not found from Google ID token");
+        }
     }
-
     public AuthenticationResponse authenticate(AuthenticationRequest request)
     {
         var user = userRepository.findByUserName(request.getUserName())

@@ -242,4 +242,18 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: false,
   },
 
+  {
+    path: "/comment",
+    component: LazyLoadComponent(import("../pages/test/CommentSection")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/test",
+    component: LazyLoadComponent(import("../pages/Client/Learning/test")),
+    isProtected: true,
+    isAdmin: false,
+  },
+
+
 ];

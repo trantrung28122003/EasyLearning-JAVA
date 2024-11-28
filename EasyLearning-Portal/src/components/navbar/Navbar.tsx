@@ -1,50 +1,36 @@
 import React, { useEffect, useRef, useState } from "react";
 import { hasAdminRole, isUserLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
-import "./test.css";
+import "./Navbar.css";
+import { GET_NOTIFICATION_BY_USER } from "../../constants/API";
+import { DoCallAPIWithToken } from "../../services/HttpService";
+import { HTTP_OK } from "../../constants/HTTPCode";
+import { getTimeAgo } from "../../hooks/useTime";
+import { getWebSocketClient } from "../../pages/test/websocket";
+
+interface Notification {
+  contentNotification: string;
+  dateCreate: string;
+  isRead: boolean;
+}
+
 const Navbar: React.FC = () => {
   const isAdmin = hasAdminRole();
   const isLogin = isUserLogin();
   const navigator = useNavigate();
-  const [isNotificationOpen, setNotificationOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: "Bài học Tham gia cộng đồng F8 trên Discord mới được thêm vào.",
-      time: "8 tháng trước",
-      isRead: false,
-    },
-    {
-      id: 2,
-      message: "Bài học Mua áo F8 | Đăng ký học Offline mới được thêm vào.",
-      time: "1 năm trước",
-      isRead: false,
-    },
-    {
-      id: 3,
-      message: "Bài học CSS selectors cơ bản #1 mới được thêm vào.",
-      time: "2 năm trước",
-      isRead: false,
-    },
-  ]);
+  const bellIconRef = useRef<HTMLDivElement>(null);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const unreadCount = notifications.filter((notif) => !notif.isRead).length;
-
-  // Đánh dấu tất cả là đã đọc
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notif) => ({ ...notif, isRead: true }))
-    );
-  };
-
-  // Đánh dấu một thông báo là đã đọc
-  const markAsRead = (id: number) => {
-    setNotifications((prev) =>
-      prev.map((notif) =>
-        notif.id === id ? { ...notif, isRead: true } : notif
-      )
-    );
+  const FetchNotificationByUser = async () => {
+    try {
+      const URL = GET_NOTIFICATION_BY_USER;
+      const response = await DoCallAPIWithToken(URL, "GET");
+      if (response.status === HTTP_OK) {
+        setNotifications(response.data.result);
+      }
+    } catch (error) {}
   };
 
   const handleLogout = () => {
@@ -57,22 +43,41 @@ const Navbar: React.FC = () => {
     navigator("/login");
   };
 
+  const client = getWebSocketClient();
   useEffect(() => {
+    if (isLogin) {
+      FetchNotificationByUser();
+    }
     const handleClickOutside = (event: MouseEvent) => {
       if (
         notificationsRef.current &&
-        !notificationsRef.current.contains(event.target as Node)
+        !notificationsRef.current.contains(event.target as Node) &&
+        !bellIconRef.current?.contains(event.target as Node)
       ) {
-        setNotificationOpen(false);
+        setIsNotificationOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
+    client.onConnect = () => {
+      client.subscribe("/topic/notifications", (content) => {
+        const newNotification = JSON.parse(content.body);
+        setNotifications((prevNotifications) => [
+          ...prevNotifications,
+          newNotification,
+        ]);
+      });
+    };
+    client.activate();
 
     return () => {
+      if (client.active) client.deactivate();
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [client]);
+
+  const unreadNotificationsCount = notifications.filter(
+    (notification) => !notification.isRead
+  ).length;
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
@@ -148,15 +153,19 @@ const Navbar: React.FC = () => {
                   <i className="fa fa-bell fa-2x"></i>
                   <span className="notification-count">3</span>{" "}
                 </a> */}
-                <div className="position-relative me-4 my-auto">
+                <div
+                  className="position-relative me-4 my-auto"
+                  ref={bellIconRef}
+                >
                   <i
                     className="fa fa-bell fa-2x"
-                    onClick={() => setNotificationOpen(!isNotificationOpen)}
-                    ref={notificationsRef}
-                    style={{ cursor: "pointer" }}
+                    onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                    style={{ cursor: "pointer", fontSize: "30px" }}
                   >
-                    {unreadCount > 0 && (
-                      <span className="notification-badge">{unreadCount}</span>
+                    {unreadNotificationsCount > 0 && (
+                      <span className="notification-badge">
+                        {unreadNotificationsCount}
+                      </span>
                     )}
                   </i>
                   {isNotificationOpen && (
@@ -169,16 +178,19 @@ const Navbar: React.FC = () => {
                         <button className="mark-read">Đánh dấu đã đọc</button>
                       </div>
                       <div className="notification-list">
-                        {notifications.map((notif) => (
+                        {notifications.map((notification, index) => (
                           <div
-                            key={notif.id}
+                            key={index}
                             className={`notification-item ${
-                              notif.isRead ? "read" : ""
+                              notification.isRead ? "read" : ""
                             }`}
-                            onClick={() => markAsRead(notif.id)} // Đánh dấu đã đọc khi nhấn vào
+                            // onClick={() => markAsRead(notif.id)} // Đánh dấu đã đọc khi nhấn vào
                           >
-                            <p>{notif.message}</p>
-                            <span>{notif.time}</span>
+                            <p>{notification.contentNotification}</p>
+                            <span>{getTimeAgo(notification.dateCreate)}</span>
+                            {!notification.isRead && (
+                              <span className="new-notification-dot"></span>
+                            )}
                           </div>
                         ))}
                       </div>

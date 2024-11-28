@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,11 +25,13 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+
         private final String[] PUBLIC_ENDPOINTS = {"/users",
                 "/auth/login",
                 "/auth/introspect",
                 "/auth/register",
-                "/auth/outbound/authentication"
+                "/auth/loginWithGoogle",
+                "/ws/**"
         };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
@@ -40,7 +44,8 @@ public class SecurityConfig {
             "/getFeedbacksByCourseWithoutUser/{param}",
             "/getCoursesByCategory/{param}",
             "/search",
-            "/getAllCourse"
+            "/getAllCourse",
+            "/ws/**"
     };
 
 
@@ -65,6 +70,15 @@ public class SecurityConfig {
             configuration.setAllowedOrigins(List.of("*"));
             configuration.setAllowedMethods(List.of("*"));
             configuration.setAllowedHeaders(List.of("*"));
+            return configuration;
+        }));
+
+        httpSecurity.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Chỉ định domain cụ thể
+            configuration.setAllowedMethods(List.of("*"));
+            configuration.setAllowedHeaders(List.of("*"));
+            configuration.setAllowCredentials(true); // Hỗ trợ credentials
             return configuration;
         }));
         return httpSecurity.build();
