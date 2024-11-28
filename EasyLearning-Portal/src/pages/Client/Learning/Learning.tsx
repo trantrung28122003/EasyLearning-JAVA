@@ -22,6 +22,7 @@ interface ScoreRequest {
 }
 
 const Learning: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const { courseId } = useParams<{ courseId: string }>();
   const navigate = useNavigate();
   const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
@@ -60,6 +61,7 @@ const Learning: React.FC = () => {
     useState<UserTrainingProgressStatusResponse | null>(null);
 
   const FetchUserTrainingProgress = async (courseId: string) => {
+    setIsLoading(true);
     try {
       const URL = GET_TRAINING_PROGRESS_STATUS + "/" + courseId;
       const response = await DoCallAPIWithToken(URL, "GET");
@@ -91,7 +93,10 @@ const Learning: React.FC = () => {
           }
         }
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleVideoCompleted = async (trainingPartId: string) => {
@@ -172,6 +177,7 @@ const Learning: React.FC = () => {
   };
 
   const fetchCreateCertificate = async () => {
+    setIsLoading(true);
     try {
       const URL = CREATE_CERTIFICATE + `?courseId=${courseId}`;
       const response = await DoCallAPIWithToken(URL, "POST");
@@ -181,7 +187,10 @@ const Learning: React.FC = () => {
           FetchUserTrainingProgress(courseId);
         }
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const completeCourse = async () => {
@@ -246,6 +255,11 @@ const Learning: React.FC = () => {
 
   return (
     <div className="app">
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+        </div>
+      )}
       <div className="header">
         <div className="logo">eLEARNING</div>
         <div className="vertical-divider"></div>
