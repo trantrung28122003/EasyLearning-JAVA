@@ -4,5 +4,7 @@ public enum NotificationType {
     COMMENT,
     PAYMENT,
     PROMOTION,
-    SYSTEM_ALERT
+    SYSTEM_ALERT,
+    CERTIFICATION,
+    REMINDER,
 }

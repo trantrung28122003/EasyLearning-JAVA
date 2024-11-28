@@ -192,14 +192,13 @@ const Learning: React.FC = () => {
         if (response.status === HTTP_OK) {
           if (courseId) {
             FetchUserTrainingProgress(courseId);
-            console.log(`Phần học ${selectedTrainingPart.id} đã hoàn thành`);
           }
         }
       } catch (error) {
         console.error("Không thể cập nhật trạng thái hoàn thành:", error);
       }
+      await fetchCreateCertificate();
       navigate("/confirmCertificate", { state: { courseId } });
-      fetchCreateCertificate();
     } else {
       navigate("/certificate");
     }
