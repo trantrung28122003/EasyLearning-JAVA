@@ -2,9 +2,11 @@ package com.hutech.easylearning.service;
 
 
 import com.hutech.easylearning.dto.request.OrderRequest;
+import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.Order;
 import com.hutech.easylearning.entity.OrderDetail;
 import com.hutech.easylearning.entity.UserTrainingProgress;
+import com.hutech.easylearning.repository.CourseRepository;
 import com.hutech.easylearning.repository.OrderRepository;
 import com.hutech.easylearning.repository.TrainingPartRepository;
 import jakarta.validation.constraints.Email;
@@ -12,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.format.DateTimeFormatter;
@@ -44,8 +47,13 @@ public class OrderService {
 
     @Autowired
     UserTrainingProgressService userTrainingProgressService;
+    @Autowired
+    private CourseRepository courseRepository;
+    @Autowired
+    private NotificationService notificationService;
 
-
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -61,6 +69,7 @@ public class OrderService {
     public Order processPaymentAndCreateOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
         var currentUser = userService.getMyInfo();
+        List<Course> courseByPurchased = new ArrayList<>();
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)
@@ -99,9 +108,19 @@ public class OrderService {
                         .build();
 
                 userTrainingProgressService.createUserTrainingProgress(userTrainingProgress);
+
+
+
             }
+
+            var notificationResponse = notificationService.addNotificationByPurchaseCourse(itemShoppingCart.getCourseId());
+            // Gửi thông báo tới các client qua WebSocket
+            simpMessagingTemplate.convertAndSend("/topic/notifications", notificationResponse);
             shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
+
+
+
 
         var toEmail = currentUser.getEmail();
         var subject = "Thanh toán thành công trên trang eLearning";
@@ -119,9 +138,6 @@ public class OrderService {
             courseByNames.add(itemShoppingCart.getCourse().getCourseName());
         }
         emailService.sendEmailPaymentAsync(toEmail, subject, customerName, totalAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
-
-        //them qua trinh hoc cho user
-
 
         return saveOrder;
     }

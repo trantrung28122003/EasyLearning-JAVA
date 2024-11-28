@@ -41,11 +41,15 @@ public class AuthenticationController {
                 .result(result)
                 .build();
     }
-    @PostMapping("/outbound/authentication")
+
+    @PostMapping("/loginWithGoogle")
     public ApiResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody Map<String, String> payload) {
-        String code = payload.get("code");
-        var result = authenticationService.outboundAuthenticate(code);
-        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+        String access_token = payload.get("access_token");
+        var result = authenticationService.authenticateGoogle(access_token);
+        System.out.println(result.getToken());
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
     }
 
     @PostMapping("/register")

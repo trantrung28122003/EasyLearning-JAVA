@@ -3,6 +3,7 @@ package com.hutech.easylearning.controller;
 
 
 import com.hutech.easylearning.dto.request.*;
+import com.hutech.easylearning.service.NotificationService;
 import com.hutech.easylearning.service.OrderService;
 import com.hutech.easylearning.service.PaymentService;
 import jakarta.validation.Valid;
@@ -25,7 +26,8 @@ public class PaymentController {
 
     @Autowired
     OrderService orderService;
-
+    @Autowired
+    private NotificationService notificationService;
 
 
     @PostMapping("/doPaymentMomo")
@@ -53,7 +55,6 @@ public class PaymentController {
         System.out.println("signature: " + request.getSignature());
 
         if ("0".equals(request.getErrorCode())) {
-
             OrderRequest orderRequest = OrderRequest.builder()
                     .amount(request.getAmount())
                     .note("Thanh toán thành công")
@@ -64,12 +65,6 @@ public class PaymentController {
                     .result("Payment successful")
                     .build();
         } else {
-//            OrderRequest orderRequest = OrderRequest.builder()
-//                    .amount(request.getAmount())
-//                    .note("Thanh toán thành công")
-//                    .build();
-//            orderService.processPaymentAndCreateOrder(orderRequest);
-
             return ApiResponse.<String>builder()
                     .result("Payment failed: " + request.getMessage())
                     .build();

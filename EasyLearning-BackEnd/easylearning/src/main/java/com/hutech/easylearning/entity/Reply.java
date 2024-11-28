@@ -28,8 +28,10 @@ public class Reply {
     @Column(name = "user_id", nullable = false)
     String userId;
 
+    @Column(name = "comment_id")
+    String commentId;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "comment_id", referencedColumnName = "id")
+    @JoinColumn(name = "comment_id", referencedColumnName = "id" , insertable = false, updatable = false)
     @JsonBackReference
     Comment comment;
 
@@ -38,6 +40,9 @@ public class Reply {
 
     @Column(name = "date_change")
     LocalDateTime dateChange;
+
+    @Column(name = "changed_by")
+    String changedBy;
 
     @Column(name = "is_deleted", nullable = false)
     boolean isDeleted;

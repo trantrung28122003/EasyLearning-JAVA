@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { TrainingPartProgressResponses } from "../../../../model/Course";
-import video from "../CaiDatMoiTruong.mp4";
-import NoteBox from "./Note";
 import ExerciseQuiz from "../QuizApp/ExerciseQuiz";
+import Comments from "./Comment";
 
 interface ScoreRequest {
   correctAnswersCount: number;
@@ -25,11 +24,11 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   onVideoCompleted,
   onQuizCompleted,
 }) => {
-  const [progress, setProgress] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [isVideoWatched, setIsVideoWatched] = useState(false);
+  const [isCommentBox, setIsCommentBox] = useState(false);
+
   const handleQuizCompleted = (
     trainingPartId: string,
     scoreRequest: ScoreRequest
@@ -41,7 +40,6 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
       const currentTime = videoRef.current.currentTime;
       const duration = videoRef.current.duration;
       const percentWatched = (currentTime / duration) * 100;
-      setProgress(percentWatched);
       setCurrentTime(currentTime);
       if (percentWatched >= 90 && !hasCompleted && !trainingPart.completed) {
         console.log("Tao goi api ne con");
@@ -66,6 +64,10 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
     }
   };
 
+  const toggleCommentBox = () => {
+    setIsCommentBox(!isCommentBox);
+  };
+
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load();
@@ -82,7 +84,7 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
             controls
             controlsList="nodownload"
             style={{ border: "1px solid ccc", borderRadius: "5px" }}
-            onTimeUpdate={handleTimeUpdate} // Gọi hàm khi video cập nhật thời gian
+            onTimeUpdate={handleTimeUpdate}
           >
             <source src={trainingPart.videoUrl} type="video/mp4" />
             Trình duyệt của bạn không hỗ trợ phát video.
@@ -137,6 +139,33 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
             <strong>{formatTime(currentTime)}</strong>
           </button>
         </div>
+        <div className="note">
+          <button className="btn-comment" onClick={toggleCommentBox}>
+            <i className="fas fa-comment"></i>
+            <span style={{ marginLeft: "3px" }}>Hỏi đáp</span>
+          </button>
+        </div>
+
+        {isCommentBox && (
+          <div className="wrapper-note">
+            <div className="over-lay" onClick={toggleCommentBox}>
+              {" "}
+            </div>
+            <div className="comment-box">
+              <div className="note-header d-flex justify-content-between align-items-center p-3">
+                <h5 className="mb-0">Hỏi đáp về phần học</h5>
+                <button
+                  type="button"
+                  className="close-notes btn btn-outline-primary btn-rounded"
+                  onClick={toggleCommentBox}
+                >
+                  Đóng cửa sổ
+                </button>
+              </div>
+              <Comments trainingPartId={trainingPart.id} />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

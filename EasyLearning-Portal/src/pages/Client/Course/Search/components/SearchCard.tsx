@@ -148,7 +148,7 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
         </div>
       </div>
 
-      <div className="hover-card">
+      <div className="hover-card" onClick={(e) => e.stopPropagation()}>
         <h4>Tổng quan</h4>
         <ul>
           <li>{course.courseDescription}</li>

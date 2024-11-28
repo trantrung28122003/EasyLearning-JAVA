@@ -2,9 +2,10 @@ const BASE_URL = "http://localhost:8080";
 /* 
   authentication
 */
-const BASE_URL_AUTHEN = BASE_URL + "/auth";
-const LOGIN_URL = BASE_URL_AUTHEN + "/login";
-const REGISTER_URL = BASE_URL_AUTHEN + "/register";
+const BASE_URL_AUTH = BASE_URL + "/auth";
+const LOGIN_URL = BASE_URL_AUTH + "/login";
+const LOGIN_WITH_GOOGLE = BASE_URL_AUTH + "/loginWithGoogle"
+const REGISTER_URL = BASE_URL_AUTH + "/register";
 
 /* 
   authentication
@@ -27,6 +28,8 @@ const GET_ALL_CERTIFICATE_BY_USER = BASE_URL + "/certificates/getAllCertificate"
 const ADD_TO_FEEDBACK = BASE_URL+ "/customer/addToFeedback"
 const CREATE_CERTIFICATE = BASE_URL + "/certificates/createCertificate"
 const GET_CERTIFICATE_BY_COURSE = BASE_URL + "/certificates/getCertificateByCourseAndUser"
+const GET_NOTIFICATION_BY_USER = BASE_URL + "/customer/notificationByUser"
+
 /*
   user
 */
@@ -99,5 +102,7 @@ export {
   APPLY_DISCOUNT_USER,
   GET_COUPONS_BY_USER,
   CREATE_CERTIFICATE,
-  GET_CERTIFICATE_BY_COURSE
+  GET_CERTIFICATE_BY_COURSE,
+  LOGIN_WITH_GOOGLE,
+  GET_NOTIFICATION_BY_USER
 };

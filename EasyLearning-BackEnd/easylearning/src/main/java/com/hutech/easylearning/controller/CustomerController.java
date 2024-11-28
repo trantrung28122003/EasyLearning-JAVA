@@ -8,9 +8,8 @@ import com.hutech.easylearning.dto.request.FeedbackUpdateRequest;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.Feedback;
 import com.hutech.easylearning.enums.CourseType;
-import com.hutech.easylearning.service.CourseEventService;
-import com.hutech.easylearning.service.CourseService;
-import com.hutech.easylearning.service.FeedbackService;
+import com.hutech.easylearning.service.*;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +27,10 @@ public class CustomerController {
     private FeedbackService feedbackService;
     @Autowired
     private CourseEventService courseEventService;
+    @Autowired
+    private CommentService commentService;
+    @Autowired
+    private NotificationService notificationService;
 
     @PostMapping("/addToFeedback")
     ApiResponse<Feedback> createFeedback(@RequestBody FeedbackCreationRequest request) {
@@ -94,11 +97,12 @@ public class CustomerController {
 
     }
 
-
-
-
-
-
+    @GetMapping("/notificationByUser")
+    public ApiResponse<List<NotificationResponse>> getNotification() {
+        return ApiResponse.<List<NotificationResponse>>builder()
+                .result(notificationService.getAllNotificationByUser())
+                .build();
+    }
 
 
 

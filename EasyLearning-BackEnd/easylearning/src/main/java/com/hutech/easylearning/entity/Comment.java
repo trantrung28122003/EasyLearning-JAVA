@@ -31,6 +31,9 @@ public class Comment {
     @Column(name = "user_id", nullable = false)
     String userId;
 
+
+    @Column(name = "training_part_id")
+    String trainingPartId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "training_part_id", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonBackReference
