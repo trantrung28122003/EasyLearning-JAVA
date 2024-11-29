@@ -1,4 +1,6 @@
-const BASE_URL = "https://sd75skpq-8080.asse.devtunnels.ms";
+// const BASE_URL = "https://sd75skpq-8080.asse.devtunnels.ms";
+
+const BASE_URL = "http://localhost:8080";
 /* 
   authentication
 */
