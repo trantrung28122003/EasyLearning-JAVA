@@ -55,14 +55,12 @@ public class NotificationService {
 
         var trainingPart = trainingPartRepository.findById(comment.getTrainingPartId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + request.getCommentId()));
-
         var course = courseRepository.findById(trainingPart.getCourseId()) .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + trainingPart.getCourseId()));
         var userOfComment = userRepository.findById(comment.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + comment.getUserId()));
 
         var contentNotification = "Có người đã trả lời bình luận của bạn tại phần học " + trainingPart.getTrainingPartName() + " của khóa học "
                 + course.getCourseName();
-
         var targetId = "/learning/" + course.getId();
 
 

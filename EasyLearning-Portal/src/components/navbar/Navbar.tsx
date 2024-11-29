@@ -1,17 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  getCredentials,
-  getUserInfo,
-  hasAdminRole,
-  isUserLogin,
-} from "../../hooks/useLogin";
+import { getUserInfo, hasAdminRole, isUserLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { GET_NOTIFICATION_BY_USER } from "../../constants/API";
 import { DoCallAPIWithToken } from "../../services/HttpService";
 import { HTTP_OK } from "../../constants/HTTPCode";
 import { getTimeAgo } from "../../hooks/useTime";
-import { getWebSocketClient } from "../../pages/test/websocket";
+import { getWebSocketClient } from "../../hooks/websocket";
 
 interface Notification {
   contentNotification: string;
