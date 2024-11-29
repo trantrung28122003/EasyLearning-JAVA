@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { hasAdminRole, isUserLogin } from "../../hooks/useLogin";
+import {
+  getCredentials,
+  getUserInfo,
+  hasAdminRole,
+  isUserLogin,
+} from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import { GET_NOTIFICATION_BY_USER } from "../../constants/API";
@@ -48,6 +53,7 @@ const Navbar: React.FC = () => {
     if (isLogin) {
       FetchNotificationByUser();
     }
+    const currentUser = getUserInfo();
     const handleClickOutside = (event: MouseEvent) => {
       if (
         notificationsRef.current &&
@@ -66,6 +72,15 @@ const Navbar: React.FC = () => {
           newNotification,
         ]);
       });
+      if (currentUser?.id) {
+        client.subscribe(`/user/${currentUser.id}/notifications`, (content) => {
+          const newNotification = JSON.parse(content.body);
+          setNotifications((prevNotifications) => [
+            ...prevNotifications,
+            newNotification,
+          ]);
+        });
+      }
     };
     client.activate();
 

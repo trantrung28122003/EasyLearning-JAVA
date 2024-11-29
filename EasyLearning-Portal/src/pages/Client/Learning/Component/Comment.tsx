@@ -5,6 +5,7 @@ import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { getTimeAgo } from "../../../../hooks/useTime";
 import { BASE_URL } from "../../../../constants/API";
+import { getUserInfo } from "../../../../hooks/useLogin";
 interface Reply {
   id: string;
   userId: string;
@@ -73,7 +74,6 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
 
   const client = getWebSocketClient();
   useEffect(() => {
-    // const trainingPartId = "40955bca-7e83-408f-90d2-bf0efd10b569";
     console.log("trainpartiddd neeee", trainingPartId);
     const res = DoCallAPIWithToken(
       BASE_URL + `/comments/commentsByTrainingPart/${trainingPartId}`,
@@ -83,17 +83,15 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
         setComments(res.data.result);
       }
     });
+
     if (!client.active) {
       client.onConnect = () => {
         client.subscribe("/topic/comments", (content) => {
           const newComment = JSON.parse(content.body);
-          console.log("newCommentttttt neeee", newComment);
           setComments((prev) => [...prev, newComment]);
         });
-
         client.subscribe("/topic/replies", (content) => {
           const newReply = JSON.parse(content.body);
-          console.log("newwww replyy neeee", newReply);
           setComments((prevComments) =>
             prevComments.map((comment) =>
               comment.id === newReply.commentId
@@ -112,15 +110,18 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
     };
   }, [client]);
 
-  const handleReplySubmit = (commentId: string) => {
+  const handleReplySubmit = (commentId: string, parentReplyUserId?: string) => {
     if (replyContent.trim() === "") return;
-    const userInfo = JSON.parse(localStorage.getItem("user_info") || "{}");
+    const userInfo = getUserInfo();
     if (client.connected) {
-      const replyRequest = {
+      const replyRequest: any = {
         commentId,
         replyContent: replyContent,
-        userId: userInfo.id,
+        currentUserId: userInfo?.id,
       };
+      if (parentReplyUserId) {
+        replyRequest.parentReplyUserId = parentReplyUserId;
+      }
 
       client.publish({
         destination: "/app/reply",
@@ -144,10 +145,12 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
         userId: userInfo.id,
         replies: [],
       };
+
       client.publish({
         destination: "/app/comment",
         body: JSON.stringify(commentRequest),
       });
+
       setCommentContent("");
     } else {
       console.error("WebSocket connection is not established.");
@@ -327,7 +330,9 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
                               ></textarea>
                               <button
                                 className="btn btn-primary btn-sm mt-2"
-                                onClick={() => handleReplySubmit(comment.id)}
+                                onClick={() =>
+                                  handleReplySubmit(comment.id, reply.userId)
+                                }
                                 disabled={replyContent.trim() === ""}
                               >
                                 Gửi phản hồi

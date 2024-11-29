@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,33 +24,34 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ReplyRepository replyRepository;
     private final UserRepository userRepository;
-    private final UserService userService;
 
     public List<CommentResponse> getCommentsByTrainingPartId(String trainingPartId) {
         List<CommentResponse> commentResponseList = new ArrayList<>();
 
-        var currentUser = userService.getMyInfo();
         List<Comment> comments = commentRepository.findAllByTrainingPartId(trainingPartId);
         for(Comment comment : comments) {
+            var userOfComment = userRepository.findById(comment.getUserId()).orElseThrow();
             List<ReplyResponse> replyResponseList = new ArrayList<>();
             for(Reply reply : comment.getReplies()) {
+                var userOfReply = userRepository.findById(reply.getUserId()).orElseThrow();
                 ReplyResponse replyResponse = new ReplyResponse().builder()
                         .id(reply.getId())
                         .contentReply(reply.getContent())
                         .commentId(comment.getId())
                         .userId(reply.getUserId())
-                        .userFullName(currentUser.getFullName())
-                        .userImageUrl(currentUser.getImageUrl())
+                        .userFullName(userOfReply.getFullName())
+                        .userImageUrl(userOfReply.getImageUrl())
                         .dateCreate(reply.getDateCreate())
                         .build();
                 replyResponseList.add(replyResponse);
             }
+
             CommentResponse commentResponse = new CommentResponse().builder()
                     .id(comment.getId())
                     .contentComment(comment.getContent())
                     .userId(comment.getUserId())
-                    .userFullName(currentUser.getFullName())
-                    .userImageUrl(currentUser.getImageUrl())
+                    .userFullName(userOfComment.getFullName())
+                    .userImageUrl(userOfComment.getImageUrl())
                     .dateCreate(comment.getDateCreate())
                     .replies(replyResponseList)
                     .build();
@@ -88,17 +89,18 @@ public class CommentService {
 
 
     public ReplyResponse addReplyToComment(ReplyRequest request) {
-        var userById = userRepository.findById(request.getUserId());
+        var userById = userRepository.findById(request.getCurrentUserId());
         Reply reply = new Reply().builder()
-
                 .content(request.getReplyContent())
-                .userId(request.getUserId())
+                .userId(request.getCurrentUserId())
                 .dateCreate(LocalDateTime.now())
                 .dateChange(LocalDateTime.now())
                 .changedBy(request.getReplyContent())
                 .commentId(request.getCommentId())
                 .build();
         replyRepository.save(reply);
+
+
         ReplyResponse replyResponse = new ReplyResponse().builder()
                 .id(reply.getId())
                 .commentId(reply.getCommentId())

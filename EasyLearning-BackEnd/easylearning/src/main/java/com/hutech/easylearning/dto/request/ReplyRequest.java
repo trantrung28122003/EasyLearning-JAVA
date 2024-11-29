@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class ReplyRequest {
     String commentId;
     String replyContent;
-    String userId;
+    String currentUserId;
     String dateCreate;
+    String parentReplyUserId;
 }

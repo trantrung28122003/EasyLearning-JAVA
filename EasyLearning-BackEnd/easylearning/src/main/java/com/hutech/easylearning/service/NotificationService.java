@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,8 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final TrainingPartRepository trainingPartRepository;
     private final CourseRepository courseRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
 
     public List<NotificationResponse> getAllNotificationByUser () {
         List<NotificationResponse> notificationResponseList = new ArrayList<>();
@@ -46,25 +49,31 @@ public class NotificationService {
         return  notificationResponseList;
     }
 
-    public NotificationResponse addNotificationByComment(String commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bình luận với ID: " + commentId));
+    public NotificationResponse addNotificationByComment(ReplyRequest request) {
+        Comment comment = commentRepository.findById(request.getCommentId())
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bình luận với ID: " + request.getCommentId()));
 
         var trainingPart = trainingPartRepository.findById(comment.getTrainingPartId())
-                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + commentId));
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + request.getCommentId()));
 
         var course = courseRepository.findById(trainingPart.getCourseId()) .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + trainingPart.getCourseId()));
-        var userById = userRepository.findById(comment.getUserId())
+        var userOfComment = userRepository.findById(comment.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + comment.getUserId()));
 
         var contentNotification = "Có người đã trả lời bình luận của bạn tại phần học " + trainingPart.getTrainingPartName() + " của khóa học "
                 + course.getCourseName();
+
         var targetId = "/learning/" + course.getId();
-        Notification notification = new Notification().builder()
+
+
+        var notificationOfUserId  = request.getParentReplyUserId() != null ? request.getParentReplyUserId() : userOfComment.getId();
+
+
+       Notification notification = new Notification().builder()
                 .content(contentNotification)
                 .type(NotificationType.COMMENT)
                 .isRead(false)
-                .userId(userById.getId())
+                .userId(notificationOfUserId)
                 .dateCreate(LocalDateTime.now())
                 .dateChange(LocalDateTime.now())
                 .isDeleted(false)
@@ -78,8 +87,16 @@ public class NotificationService {
                 .contentNotification(notification.getContent())
                 .dateCreate(notification.getDateCreate())
                 .isRead(notification.isRead())
+                .type(notification.getType())
+                .targetId(notification.getTargetId())
                 .build();
 
+        String destination = "/user/" + notificationOfUserId + "/notifications";
+        try {
+            simpMessagingTemplate.convertAndSend(destination, notificationResponse);
+        } catch (Exception e) {
+            System.err.println("Không thể gửi thông báo qua WebSocket: " + e.getMessage());
+        }
         return notificationResponse;
     }
 

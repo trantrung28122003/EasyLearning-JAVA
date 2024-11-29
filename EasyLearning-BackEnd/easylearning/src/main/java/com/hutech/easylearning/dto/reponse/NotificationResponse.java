@@ -1,6 +1,10 @@
 package com.hutech.easylearning.dto.reponse;
 
 
+import com.hutech.easylearning.enums.NotificationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,4 +19,8 @@ public class NotificationResponse {
     String contentNotification;
     LocalDateTime dateCreate;
     Boolean isRead;
+    @Enumerated(EnumType.STRING)
+    NotificationType type;
+    String targetId;
+
 }
