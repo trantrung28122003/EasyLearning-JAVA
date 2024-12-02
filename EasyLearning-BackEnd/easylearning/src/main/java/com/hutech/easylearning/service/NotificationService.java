@@ -37,37 +37,39 @@ public class NotificationService {
     public List<NotificationResponse> getAllNotificationByUser () {
         List<NotificationResponse> notificationResponseList = new ArrayList<>();
         var currentUser = userService.getMyInfo();
-        List<Notification> notificationsByUser = notificationRepository.findAllByUserId(currentUser.getId());
+        List<Notification> notificationsByUser = notificationRepository.findAllByUserIdOrderByDateCreateDesc(currentUser.getId());
         for(Notification notification : notificationsByUser) {
             NotificationResponse notificationResponse = new NotificationResponse().builder()
+                    .id(notification.getId())
                     .contentNotification(notification.getContent())
                     .dateCreate(notification.getDateCreate())
                     .isRead(notification.isRead())
+                    .targetId(notification.getTargetId())
+                    .type(notification.getType())
                     .build();
             notificationResponseList.add(notificationResponse);
         }
+
         return  notificationResponseList;
     }
 
     public NotificationResponse addNotificationByComment(ReplyRequest request) {
         Comment comment = commentRepository.findById(request.getCommentId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy bình luận với ID: " + request.getCommentId()));
-
         var trainingPart = trainingPartRepository.findById(comment.getTrainingPartId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + request.getCommentId()));
         var course = courseRepository.findById(trainingPart.getCourseId()) .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy phần học với ID: " + trainingPart.getCourseId()));
         var userOfComment = userRepository.findById(comment.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + comment.getUserId()));
-
         var contentNotification = "Có người đã trả lời bình luận của bạn tại phần học " + trainingPart.getTrainingPartName() + " của khóa học "
                 + course.getCourseName();
         var targetId = "/learning/" + course.getId();
-
 
         var notificationOfUserId  = request.getParentReplyUserId() != null ? request.getParentReplyUserId() : userOfComment.getId();
 
 
        Notification notification = new Notification().builder()
+
                 .content(contentNotification)
                 .type(NotificationType.COMMENT)
                 .isRead(false)
@@ -82,6 +84,7 @@ public class NotificationService {
 
         // Xây dựng Response Notification
         NotificationResponse notificationResponse = new NotificationResponse().builder()
+                .id(notification.getId())
                 .contentNotification(notification.getContent())
                 .dateCreate(notification.getDateCreate())
                 .isRead(notification.isRead())
@@ -115,6 +118,7 @@ public class NotificationService {
         }
 
         Notification notification = new Notification().builder()
+
                 .content(contentNotification)
                 .type(NotificationType.PAYMENT)
                 .isRead(false)
@@ -128,9 +132,12 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         NotificationResponse notificationResponse = new NotificationResponse().builder()
+                .id(notification.getId())
                 .contentNotification(notification.getContent())
                 .dateCreate(notification.getDateCreate())
                 .isRead(notification.isRead())
+                .type(notification.getType())
+                .targetId(notification.getTargetId())
                 .build();
 
         return notificationResponse;
@@ -159,9 +166,28 @@ public class NotificationService {
         notificationRepository.save(notification);
 
         NotificationResponse notificationResponse = new NotificationResponse().builder()
+                .id(notification.getId())
                 .contentNotification(notification.getContent())
                 .dateCreate(notification.getDateCreate())
                 .isRead(notification.isRead())
+                .type(notification.getType())
+                .targetId(notification.getTargetId())
+                .build();
+        return notificationResponse;
+    }
+
+    public NotificationResponse updateStatusIsRead(String notificationId) {
+        var notification = notificationRepository.findById(notificationId).orElseThrow();
+        notification.setRead(true);
+        notificationRepository.save(notification);
+
+        NotificationResponse notificationResponse = new NotificationResponse().builder()
+                .id(notification.getId())
+                .contentNotification(notification.getContent())
+                .dateCreate(notification.getDateCreate())
+                .isRead(notification.isRead())
+                .type(notification.getType())
+                .targetId(notification.getTargetId())
                 .build();
         return notificationResponse;
     }

@@ -4,17 +4,24 @@ import { getCredentials } from "../hooks/useLogin";
 const DoCallAPIWithToken = async <T>(
   url: string,
   method: string,
-  requestBody?: T
+  requestBody?: T | FormData
 ) => {
   const token = getCredentials();
+
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  // Chỉ thêm Content-Type nếu requestBody không phải FormData
+  if (!(requestBody instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
   return axios({
     method: method,
     url: url,
     data: requestBody,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    
+    headers: headers,
   });
 };
 

@@ -35,12 +35,11 @@ public class EmailService {
     @Value("${spring.mail.fromEmail}")
     private String fromEmail;
 
-    public void sendVerificationCode(String toEmail, String subject, String verificationCode) throws MessagingException, IOException {
+    public void sendVerificationCode(String toEmail, String verificationCode) throws MessagingException, IOException {
         String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailVerification.html").toString();
         String emailTemplate = new String(Files.readAllBytes(Paths.get(emailTemplatePath)));
-
+        String subject = verificationCode + " - Xác nhận yêu cầu đặt lại mật khẩu tài khoản của bạn";
         String emailBody = emailTemplate.replace("[verificationCode]", verificationCode);
-
         Properties properties = new Properties();
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", String.valueOf(port));

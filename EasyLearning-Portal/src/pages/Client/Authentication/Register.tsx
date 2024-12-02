@@ -10,11 +10,12 @@ import { Field, Form, Formik } from "formik";
 import { DoCallAPIWithOutToken } from "../../../services/HttpService";
 import { REGISTER_URL } from "../../../constants/API";
 import { HTTP_OK } from "../../../constants/HTTPCode";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
   const [registerError, setRegisterError] = useState<string | null>(null); // State for handling API errors
-
+  const [isLoading, setIsLoading] = useState(false);
   const handleLogin = () => {
     localStorage.clear();
     navigate("/login");
@@ -51,8 +52,6 @@ const Register: React.FC = () => {
 
   const doRegister = (account: APIRegisterRequest) => {
     const formData = new FormData();
-
-    // Nếu có file ảnh, thêm vào FormData
     if (account.file) {
       formData.append("file", account.file);
     }
@@ -62,14 +61,13 @@ const Register: React.FC = () => {
     formData.append("fullName", account.fullName);
     formData.append("password", account.password);
 
-    // Đảm bảo ngày sinh được định dạng đúng trước khi gửi
     if (account.dayOfBirth) {
       const formattedDate = new Date(account.dayOfBirth)
         .toISOString()
-        .split("T")[0]; // Chỉ lấy phần ngày
+        .split("T")[0];
       formData.append("dayOfBirth", formattedDate);
     }
-
+    setIsLoading(true);
     DoCallAPIWithOutToken<APIRegisterRequest>(REGISTER_URL, "post", formData)
       .then((res) => {
         if (res.status === HTTP_OK) {
@@ -78,21 +76,23 @@ const Register: React.FC = () => {
       })
       .catch((err) => {
         if (err.response && err.response.status === 400) {
-          setRegisterError("Tài khoản hoặc email đã tồn tại."); // Thông báo lỗi nếu tài khoản đã tồn tại
+          setRegisterError("Tài khoản hoặc email đã tồn tại.");
         } else {
-          setRegisterError("Đăng ký thất bại. Vui lòng thử lại sau."); // Lỗi khác (không phải 400)
+          setRegisterError("Đăng ký thất bại. Vui lòng thử lại sau.");
         }
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   return (
     <AuthenticationShared>
+      <DataLoader isLoading={isLoading} />
       <Formik
         initialValues={{
           userName: "",
           email: "",
           fullName: "",
-          dayOfBirth: new Date("2000-01-01").toISOString(),
+          dayOfBirth: new Date("2003-12-28").toISOString(),
           imageName: "",
           password: "",
           confirmPassword: "",

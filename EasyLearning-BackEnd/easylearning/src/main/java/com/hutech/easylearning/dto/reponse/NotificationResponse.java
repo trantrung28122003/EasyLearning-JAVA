@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationResponse {
+    String id;
     String contentNotification;
     LocalDateTime dateCreate;
     Boolean isRead;

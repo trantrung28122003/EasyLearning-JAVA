@@ -1,49 +1,37 @@
 import React, { useEffect, useState } from "react";
-
 import ClientShared from "../Shared/ClientShared";
-
-import "./UserSchedule.css";
-import { CourseSlim } from "../../../model/Course";
 import { GET_COURSE_BY_USER } from "../../../constants/API";
 import { DoCallAPIWithToken } from "../../../services/HttpService";
 import { ApplicationResponse } from "../../../model/BaseResponse";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
+import { CourseSlim } from "../../../model/Course";
+import "./UserSchedule.css";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
 
-type EventSchedule = {
-  eventId: string;
-  courseName: string;
-  eventDate: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  instructor: string;
-};
-
-type Schedule = {
-  date: string;
-  events: EventSchedule[];
-};
-
 const UserEvents: React.FC = () => {
-  const [userCourse, getUserCourse] = useState<CourseSlim[]>([]);
-  const doCallGetCourseByUser = () => {
-    DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
-      const response: ApplicationResponse<CourseSlim[]> = res.data;
-      console.log(response.result);
-      getUserCourse(response.result);
-    });
-  };
-
-  useEffect(() => {
-    doCallGetCourseByUser();
-  }, []);
-
+  const [userCourse, setUserCourse] = useState<CourseSlim[]>([]);
+  const [scheduleData, setScheduleData] = useState<Schedule[] | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentWeekStart, setCurrentWeekStart] = useState(
     dayjs().startOf("week").add(1, "day")
   );
+  const [selectedDate, setSelectedDate] = useState<string>(
+    dayjs().format("YYYY-MM-DD")
+  );
 
-  const [scheduleData, setScheduleData] = useState<Schedule[]>([]);
+  const doCallGetCourseByUser = () => {
+    setIsLoading(true);
+    DoCallAPIWithToken(GET_COURSE_BY_USER, "get")
+      .then((res) => {
+        const response: ApplicationResponse<CourseSlim[]> = res.data;
+        console.log(response.result);
+        setUserCourse(response.result);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
 
   const getScheduleForWeek = (startOfWeek: dayjs.Dayjs) => {
     const scheduleForWeek: Schedule[] = [];
@@ -97,13 +85,25 @@ const UserEvents: React.FC = () => {
     return formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
   };
 
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateValue = e.target.value;
+    setSelectedDate(dateValue);
+    if (dateValue) {
+      const newStartOfWeek = dayjs(dateValue).startOf("week").add(1, "day");
+      setCurrentWeekStart(newStartOfWeek);
+    }
+  };
+
+  useEffect(() => {
+    doCallGetCourseByUser();
+  }, []);
   useEffect(() => {
     getScheduleForWeek(currentWeekStart);
-    console.log("1231232", userCourse);
-  }, [currentWeekStart]);
+  }, [currentWeekStart, userCourse]);
 
   return (
     <ClientShared>
+      <DataLoader isLoading={isLoading} />
       <div className="page-content">
         <div className="container px-0">
           <div className="row">
@@ -166,8 +166,36 @@ const UserEvents: React.FC = () => {
                 </div>
               </div>
             </div>
+            <div className="col-12 col-lg-12" style={{ marginTop: "28px" }}>
+              <div className="row d-flex justify-content-center align-items-center">
+                <div className="col-sm-5 d-flex justify-content-center">
+                  <input
+                    type="date"
+                    className="form-control-date"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                  />
+                </div>
+              </div>
+            </div>
 
-            {scheduleData.length > 0 ? (
+            {!isLoading && !scheduleData ? (
+              <div className="centered-content">
+                <img
+                  src="https://api.hutech.edu.vn/file-publish/sinh-vien-edu-vn/nodata_tkb.gif"
+                  style={{ width: "200px" }}
+                  alt="No data"
+                />
+                <h2 className="warning-message">
+                  Bạn không có buổi học nào trong tuần này!
+                </h2>
+                <h1>Vui lòng chọn tuần khác để xem thời khóa biểu</h1>
+                <p>
+                  Theo dõi website thường xuyên để cập nhật lịch học mới nhất,
+                  giúp bạn không bỏ lỡ bất kỳ buổi học nào!
+                </p>
+              </div>
+            ) : (
               <>
                 <div className="mt-4">
                   <div className="row mb-2 mb-sm-0 py-25 bgc-default-l4">
@@ -185,7 +213,7 @@ const UserEvents: React.FC = () => {
                     </div>
                   </div>
 
-                  {scheduleData.map((schedule, i) => (
+                  {scheduleData?.map((schedule, i) => (
                     <div key={i}>
                       <div
                         className="row text-600 text-white bgc-default py-25"
@@ -200,7 +228,7 @@ const UserEvents: React.FC = () => {
                       </div>
                       {schedule.events.map((eventCourses, index) => (
                         <div
-                          className={`row mb-2 mb-sm-0 py-25 bgc-default-l4 ${
+                          className={`row mb-2 mb-sm- py-25 bgc-default-l4 ${
                             index < schedule.events.length - 1
                               ? "border-bottom"
                               : ""
@@ -226,22 +254,6 @@ const UserEvents: React.FC = () => {
                   ))}
                 </div>
               </>
-            ) : (
-              <div className="centered-content">
-                <img
-                  src="https://api.hutech.edu.vn/file-publish/sinh-vien-edu-vn/nodata_tkb.gif"
-                  style={{ width: "200px" }}
-                  alt="No data"
-                />
-                <h2 className="warning-message">
-                  Bạn không có buổi học nào trong tuần này!
-                </h2>
-                <h1>Vui lòng chọn tuần khác để xem thời khóa biểu</h1>
-                <p>
-                  Theo dõi website thường xuyên để cập nhật lịch học mới nhất,
-                  giúp bạn không bỏ lỡ bất kỳ buổi học nào!
-                </p>
-              </div>
             )}
           </div>
         </div>

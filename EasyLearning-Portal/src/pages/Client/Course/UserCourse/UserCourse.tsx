@@ -4,19 +4,27 @@ import { ApplicationResponse } from "../../../../model/BaseResponse";
 import { CourseSlim } from "../../../../model/Course";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import ClientShared from "../../Shared/ClientShared";
-import "./UserCourse.css";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import DataLoader from "../../../../components/lazyLoadComponent/DataLoader";
+import "./UserCourse.css";
+
 const UserCourse: React.FC = () => {
   const [userCourse, setUserCourse] = useState<CourseSlim[]>([]);
-
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
   const doCallGetCourseByUser = () => {
-    DoCallAPIWithToken(GET_COURSE_BY_USER, "get").then((res) => {
-      const response: ApplicationResponse<CourseSlim[]> = res.data;
-      console.log(response.result);
-      setUserCourse(response.result);
-    });
+    setIsLoading(true);
+    DoCallAPIWithToken(GET_COURSE_BY_USER, "get")
+      .then((res) => {
+        const response: ApplicationResponse<CourseSlim[]> = res.data;
+        console.log(response.result);
+        setUserCourse(response.result);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   const calculateProgressPercentage = (
@@ -29,10 +37,12 @@ const UserCourse: React.FC = () => {
   useEffect(() => {
     doCallGetCourseByUser();
   }, []);
+
   return (
     <ClientShared>
       <div className="page-content-user-course">
-        {userCourse.length === 0 ? (
+        <DataLoader isLoading={isLoading} />
+        {!isLoading && userCourse.length === 0 ? (
           <div className="col-lg-12 text-header">
             <div className="centered-content">
               <img
@@ -79,7 +89,7 @@ const UserCourse: React.FC = () => {
             <div className="col-xl-12">
               <div className="row">
                 <div className="col-lg-12">
-                  {userCourse.map((itemCourse) => (
+                  {userCourse?.map((itemCourse) => (
                     <div
                       key={itemCourse.courseId}
                       className="card product_list accordion-item"

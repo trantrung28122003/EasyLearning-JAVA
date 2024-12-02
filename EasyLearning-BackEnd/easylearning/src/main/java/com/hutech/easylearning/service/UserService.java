@@ -1,8 +1,7 @@
 package com.hutech.easylearning.service;
 
 import com.hutech.easylearning.dto.reponse.UserResponse;
-import com.hutech.easylearning.dto.request.UserCreationRequest;
-import com.hutech.easylearning.dto.request.UserUpdateRequest;
+import com.hutech.easylearning.dto.request.*;
 import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.User;
 import com.hutech.easylearning.exception.AppException;
@@ -44,6 +43,7 @@ public class UserService {
 
     @Autowired
     private UploaderService uploaderService;
+    @Autowired
     private ShoppingCartRepository shoppingCartRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -105,6 +105,11 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
+        if(userRepository.existsByEmail(user.getEmail()))
+        {
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
         List<String> defaultRoleNames = List.of("USER");
         var roles = roleRepository.findByNameIn(defaultRoleNames);
         user.setRoles(new HashSet<>(roles));
@@ -137,7 +142,44 @@ public class UserService {
 
         return userMapper.toUserResponse(userRepository.save(getUserById));
     }
+
+    public UserResponse updateProfileUser(String fullName,  MultipartFile file) {
+        var currentUser = getMyInfo();
+        User getUserById = userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        String userImageUrl = getUserById.getImageUrl();
+        if(file != null)
+        {
+            userImageUrl = uploaderService.uploadFile(file);
+        }
+        getUserById.setFullName(fullName);
+        getUserById.setImageUrl(userImageUrl);
+        return userMapper.toUserResponse(userRepository.save(getUserById));
+    }
+
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
+    }
+
+    public Boolean changePassword(ChangePasswordRequest request) {
+        var currentUser = getMyInfo();
+        User user = userRepository.findById(currentUser.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            return false;
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+        return true;
+    }
+
+
+    public void resetPassword(ResetPasswordRequest request) {
+        var userByEmail = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userByEmail.getId()).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+    }
+
+    public boolean isEmailExist(String email) {
+        return userRepository.existsByEmail(email);
     }
 }

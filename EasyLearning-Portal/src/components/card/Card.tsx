@@ -142,9 +142,9 @@ const Card: React.FC<CardProps> = ({ course }) => {
           <div className="mb-2">
             {starRatings.map((i) =>
               i <= (averageRating ?? 0) ? (
-                <small className="fa fa-star text-warning"></small>
+                <small key={i} className="fa fa-star text-warning"></small>
               ) : (
-                <small className="fa fa-star text-mute"></small>
+                <small key={i} className="fa fa-star text-mute"></small>
               )
             )}
             <small style={{ marginLeft: "10px" }}>
