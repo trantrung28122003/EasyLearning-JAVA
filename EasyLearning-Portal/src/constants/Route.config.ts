@@ -41,6 +41,15 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: false,
     isAdmin: false,
   },
+
+  {
+    path: "/forgetPassword",
+    component: LazyLoadComponent(
+      import("../pages/Client/Authentication/ForgetPassword")
+    ),
+    isProtected: false,
+    isAdmin: false,
+  },
   {
     path: "/about",
     component: LazyLoadComponent(import("../pages/Client/About/About")),
@@ -243,17 +252,17 @@ export const RoutesConfig: ApplicationRoute[] = [
   },
 
   {
-    path: "/comment",
-    component: LazyLoadComponent(import("../pages/test/CommentSection")),
+    path: "/userProfile",
+    component: LazyLoadComponent(import("../pages/Client/UserSetting/UserSetting")),
     isProtected: true,
     isAdmin: false,
   },
-  {
-    path: "/test",
-    component: LazyLoadComponent(import("../pages/Client/Learning/test")),
-    isProtected: true,
-    isAdmin: false,
-  },
+  // {
+  //   path: "/test",
+  //   component: LazyLoadComponent(import("../pages/Client/Learning/test")),
+  //   isProtected: true,
+  //   isAdmin: false,
+  // },
 
 
 ];

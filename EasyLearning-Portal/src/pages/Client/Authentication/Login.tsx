@@ -97,6 +97,10 @@ const Login: React.FC = () => {
     localStorage.clear();
     navigate("/register");
   };
+  const handleForgetPassword = () => {
+    localStorage.clear();
+    navigate("/forgetPassword");
+  };
 
   return (
     <AuthenticationShared>
@@ -175,6 +179,7 @@ const Login: React.FC = () => {
                       color: "#06BBCC",
                       cursor: "pointer",
                     }}
+                    onClick={handleForgetPassword}
                   >
                     Bạn quên mật khẩu?
                   </a>

@@ -2,7 +2,6 @@ body {
     color: #484b51;
 }
 
-
 .page-content {
     min-height: 100vh;
     max-width : 100%;
@@ -193,4 +192,31 @@ hr {
 
 .border-bottom {
     border-bottom: 1px solid #ddd;
+}
+
+.form-control-date {
+    border          : 1px solid #ced4da;
+    border-radius   : 8px;
+    padding         : 10px;
+    font-size       : 16px;
+    background-color: #f8f9fa;
+    width           : 100%;
+    transition      : border-color 0.3s ease, background-color 0.3s ease;
+    caret-color     : transparent;
+}
+
+.form-control-date:focus {
+    border-color    : #06bbcc;
+    background-color: #ffffff;
+    outline         : none;
+}
+
+.form-control-date::-webkit-calendar-picker-indicator {
+    background-color: #06bbcc;
+    border-radius   : 50%;
+    padding         : 5px;
+}
+
+.form-control-date::placeholder {
+    color: #888;
 }

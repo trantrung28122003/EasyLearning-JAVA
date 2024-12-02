@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getWebSocketClient } from "./websocket";
 import "./comments.css";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { getTimeAgo } from "../../../../hooks/useTime";
 import { BASE_URL } from "../../../../constants/API";
 import { getUserInfo } from "../../../../hooks/useLogin";
+import { getWebSocketClient } from "../../../../hooks/websocket";
 interface Reply {
   id: string;
   userId: string;

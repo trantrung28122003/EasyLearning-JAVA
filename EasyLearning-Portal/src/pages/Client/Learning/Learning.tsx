@@ -16,6 +16,7 @@ import TrainingPartContent from "./Component/TraininpartContent";
 import { EventSlim } from "../../../model/Event";
 
 import Note from "./Component/Note";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
 interface ScoreRequest {
   correctAnswersCount: number;
   totalQuestionsCount: number;
@@ -255,11 +256,7 @@ const Learning: React.FC = () => {
 
   return (
     <div className="app">
-      {isLoading && (
-        <div className="loading-overlay">
-          <div className="spinner"></div>
-        </div>
-      )}
+      <DataLoader isLoading={isLoading} />
       <div className="header">
         <div className="logo">eLEARNING</div>
         <div className="vertical-divider"></div>

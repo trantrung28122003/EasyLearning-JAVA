@@ -1,22 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  getCredentials,
-  getUserInfo,
-  hasAdminRole,
-  isUserLogin,
-} from "../../hooks/useLogin";
+import { getUserInfo, hasAdminRole, isUserLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
-import { GET_NOTIFICATION_BY_USER } from "../../constants/API";
+import {
+  GET_NOTIFICATION_BY_USER,
+  UPDATE_NOTIFICATION_READ_STATUS,
+} from "../../constants/API";
 import { DoCallAPIWithToken } from "../../services/HttpService";
 import { HTTP_OK } from "../../constants/HTTPCode";
 import { getTimeAgo } from "../../hooks/useTime";
-import { getWebSocketClient } from "../../pages/test/websocket";
+import { getWebSocketClient } from "../../hooks/websocket";
 
 interface Notification {
+  id: string;
   contentNotification: string;
   dateCreate: string;
   isRead: boolean;
+  type: string;
+  targetId: string;
 }
 
 const Navbar: React.FC = () => {
@@ -93,6 +94,60 @@ const Navbar: React.FC = () => {
   const unreadNotificationsCount = notifications.filter(
     (notification) => !notification.isRead
   ).length;
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case "COMMENT":
+        return <i className="fa fa-comments"></i>; // Ví dụ: icon cho bình luận
+      case "CERTIFICATE":
+        return <i className="fa fa-certificate"></i>; // Ví dụ: icon cho chứng chỉ
+      case "COURSE_PURCHASE":
+        return <i className="fa fa-graduation-cap"></i>; // Ví dụ: icon cho khóa học
+      default:
+        return <i className="fa fa-bell"></i>; // Icon mặc định
+    }
+  };
+  const updateNotificationReadStatus = async (notificationId: string) => {
+    try {
+      const URL = `${UPDATE_NOTIFICATION_READ_STATUS}?notificationId=${notificationId}`;
+      const response = await DoCallAPIWithToken(URL, "POST");
+      if (response.status === HTTP_OK) {
+      }
+    } catch (error) {}
+  };
+
+  const handleMarkAllAsRead = async () => {
+    notifications.map(async (notification) => {
+      if (!notification.isRead) {
+        updateNotificationReadStatus(notification.id);
+      }
+    });
+
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) => ({
+        ...notification,
+        isRead: true,
+      }))
+    );
+  };
+
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.isRead) {
+      updateNotificationReadStatus(notification.id);
+      const notificationId = notification.id;
+      setNotifications((prevNotifications) =>
+        prevNotifications.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, isRead: true }
+            : notification
+        )
+      );
+    }
+    if (notification.targetId != null) {
+      navigator(`${notification.targetId}`);
+    }
+  };
+
   return (
     <>
       <nav className="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
@@ -146,7 +201,9 @@ const Navbar: React.FC = () => {
                       Chứng chỉ của bạn
                     </a>
 
-                    <a className="dropdown-item">Cài đặt tài khoản</a>
+                    <a className="dropdown-item" href="/userProfile">
+                      Cài đặt tài khoản
+                    </a>
                     {isAdmin && (
                       <a className="dropdown-item" href="admin/dashboard">
                         Quản lý
@@ -190,7 +247,12 @@ const Navbar: React.FC = () => {
                     >
                       <div className="notification-header">
                         <div style={{ fontSize: "20px" }}>Thông báo</div>
-                        <button className="mark-read">Đánh dấu đã đọc</button>
+                        <button
+                          className="mark-read"
+                          onClick={handleMarkAllAsRead}
+                        >
+                          Đánh dấu tất cả đã đọc
+                        </button>
                       </div>
                       <div className="notification-list">
                         {notifications.map((notification, index) => (
@@ -199,13 +261,25 @@ const Navbar: React.FC = () => {
                             className={`notification-item ${
                               notification.isRead ? "read" : ""
                             }`}
-                            // onClick={() => markAsRead(notif.id)} // Đánh dấu đã đọc khi nhấn vào
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
                           >
-                            <p>{notification.contentNotification}</p>
-                            <span>{getTimeAgo(notification.dateCreate)}</span>
-                            {!notification.isRead && (
-                              <span className="new-notification-dot"></span>
-                            )}
+                            <div className="notification-content">
+                              {/* Hiển thị icon tùy thuộc vào loại thông báo */}
+                              <div className="notification-icon">
+                                {getNotificationIcon(notification.type)}
+                              </div>
+                              <div className="notification-text">
+                                <p>{notification.contentNotification}</p>
+                                <span>
+                                  {getTimeAgo(notification.dateCreate)}
+                                </span>
+                                {!notification.isRead && (
+                                  <span className="new-notification-dot"></span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>

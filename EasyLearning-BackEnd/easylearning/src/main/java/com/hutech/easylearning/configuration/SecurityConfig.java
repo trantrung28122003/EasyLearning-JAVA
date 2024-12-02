@@ -31,7 +31,10 @@ public class SecurityConfig {
                 "/auth/introspect",
                 "/auth/register",
                 "/auth/loginWithGoogle",
-                "/ws/**"
+                "/ws/**",
+                "/email/sendVerificationCode",
+                "/email/verifyCode",
+                "customer/resetPassword"
         };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {

@@ -31,9 +31,14 @@ const ADD_TO_FEEDBACK = BASE_URL+ "/customer/addToFeedback"
 const CREATE_CERTIFICATE = BASE_URL + "/certificates/createCertificate"
 const GET_CERTIFICATE_BY_COURSE = BASE_URL + "/certificates/getCertificateByCourseAndUser"
 const GET_NOTIFICATION_BY_USER = BASE_URL + "/customer/notificationByUser"
-
+const UPDATE_NOTIFICATION_READ_STATUS = BASE_URL + "/customer/updateNotificationStatusIsRead"
+const UPDATE_PROFILE_USER = BASE_URL + "/customer/updateProfile"
+const CHANGE_PASSWORD_BY_USER = BASE_URL + "/customer/changePassword"
+const FORGOT_PASSWORD_URL = BASE_URL + "/email/sendVerificationCode"
+const VERIFY_CODE_URL = BASE_URL + "/email/verifyCode"
+const RESET_PASSWORD = BASE_URL +"/customer/resetPassword"
 /*
-  user
+  users
 */
 
 /**
@@ -107,5 +112,11 @@ export {
   CREATE_CERTIFICATE,
   GET_CERTIFICATE_BY_COURSE,
   LOGIN_WITH_GOOGLE,
-  GET_NOTIFICATION_BY_USER
+  GET_NOTIFICATION_BY_USER,
+  UPDATE_NOTIFICATION_READ_STATUS,
+  UPDATE_PROFILE_USER,
+  CHANGE_PASSWORD_BY_USER,
+  FORGOT_PASSWORD_URL,
+  VERIFY_CODE_URL,
+  RESET_PASSWORD
 };
