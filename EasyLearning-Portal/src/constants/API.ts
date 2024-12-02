@@ -13,6 +13,19 @@ const REGISTER_URL = BASE_URL_AUTH + "/register";
   authentication
 */
 
+
+/* 
+  Course
+*/
+const BASE_URL_COURSE = BASE_URL + "/course";
+const BASE_URL_CREATE_COURSE = BASE_URL_COURSE + "/create";
+
+/* 
+  Course
+*/
+
+
+
 /*
   user
 */
@@ -118,5 +131,6 @@ export {
   CHANGE_PASSWORD_BY_USER,
   FORGOT_PASSWORD_URL,
   VERIFY_CODE_URL,
-  RESET_PASSWORD
+  RESET_PASSWORD,
+  BASE_URL_CREATE_COURSE,
 };

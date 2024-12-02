@@ -30,6 +30,12 @@ export interface Course {
   averageRating: number;
 }
 
+
+export interface CourseRequest
+{
+  courseName: string;
+}
+
 export interface TrainingPart {
   id: string;
   trainingPartName: string;

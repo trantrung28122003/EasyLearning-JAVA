@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Field, Formik } from "formik";
 import * as yup from "yup";
-import { DoCallAPIWithOutToken } from "../../../services/HttpService";
+import {
+  DoCallAPIWithOutToken,
+  DoCallAPIWithToken,
+} from "../../../services/HttpService";
 import {
   FORGOT_PASSWORD_URL,
   RESET_PASSWORD,
@@ -59,7 +62,7 @@ const ForgotPassword: React.FC = () => {
 
   const handleForgotPassword = (email: string) => {
     setIsLoading(true);
-    DoCallAPIWithOutToken(FORGOT_PASSWORD_URL, "POST", { email })
+    DoCallAPIWithToken(FORGOT_PASSWORD_URL, "POST", { email })
       .then((res) => {
         if (res.data.code === HTTP_OK) {
           setSuccessMessage("Mã xác nhận đã được gửi vào email của bạn");

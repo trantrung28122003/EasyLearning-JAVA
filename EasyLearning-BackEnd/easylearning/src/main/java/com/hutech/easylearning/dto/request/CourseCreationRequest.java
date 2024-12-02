@@ -16,39 +16,22 @@ import java.util.Set;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseCreationRequest {
-
     String courseName;
-
     String courseDescription;
-
     BigDecimal coursePrice;
-
     String requirements;
-
     String courseType;
-
     String courseContent;
-
     String instructor;
-
     LocalDateTime startDate;
-
     LocalDateTime endDate;
-
     LocalDateTime registrationDeadline;
-
     List<String> categories;
-
     int maxAttendees;
-
     int registeredUsers;
-
     LocalDateTime dateCreate;
-
     LocalDateTime dateChange;
-
     String changedBy;
-
     boolean isDeleted;
 }
 
