@@ -16,6 +16,7 @@ interface TrainingPartContentProps {
     trainingPartId: string,
     scoreRequest: ScoreRequest
   ) => Promise<void>;
+  onWarningMessage: (message: string) => Promise<void>;
 }
 
 const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
@@ -23,11 +24,17 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   courseInstructor,
   onVideoCompleted,
   onQuizCompleted,
+  onWarningMessage,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCompleted, setHasCompleted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [isCommentBox, setIsCommentBox] = useState(false);
+  const [actualWatchTime, setActualWatchTime] = useState(0);
+  const [previousTime, setPreviousTime] = useState(0);
+  const [skipCount, setSkipCount] = useState(0);
+
+  const skipLimit = 10;
 
   const handleQuizCompleted = (
     trainingPartId: string,
@@ -35,6 +42,7 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   ) => {
     onQuizCompleted(trainingPartId, scoreRequest);
   };
+
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       const currentTime = videoRef.current.currentTime;
@@ -45,6 +53,10 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
         console.log("Tao goi api ne con");
         onVideoCompleted(trainingPart.id);
         setHasCompleted(true);
+      }
+      setPreviousTime(currentTime);
+      if (Math.floor(currentTime) > actualWatchTime) {
+        setActualWatchTime((prevTime) => prevTime + 1);
       }
     }
   };
@@ -67,12 +79,37 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   const toggleCommentBox = () => {
     setIsCommentBox(!isCommentBox);
   };
+  const handleSeeking = () => {
+    if (videoRef.current != null) {
+      const currentTime = videoRef.current.currentTime;
+      const duration = videoRef.current.duration;
+      setCurrentTime(currentTime);
+      const maxSkipTime = (duration * 30) / 100;
+      if (currentTime > maxSkipTime && actualWatchTime + 20 < currentTime) {
+        onWarningMessage(
+          "Bạn đã tua quá nhanh! Video sẽ quay lại vị trí trước đó."
+        );
+        videoRef.current.currentTime = previousTime;
+        videoRef.current.pause();
+      } else if (currentTime > previousTime) {
+        setSkipCount((prevCount) => prevCount + 1);
+        if (skipCount + 1 >= skipLimit) {
+          onWarningMessage(
+            "Bạn đang tua quá nhiều lần! Hãy xem video nghiêm túc."
+          );
 
+          videoRef.current.currentTime = previousTime;
+          videoRef.current.pause();
+          setSkipCount(0);
+        }
+      }
+    }
+  };
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load();
     }
-    setHasCompleted(false);
+    setHasCompleted(trainingPart.completed);
   }, [trainingPart.id]);
 
   return (
@@ -85,6 +122,7 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
             controlsList="nodownload"
             style={{ border: "1px solid ccc", borderRadius: "5px" }}
             onTimeUpdate={handleTimeUpdate}
+            onSeeking={handleSeeking}
           >
             <source src={trainingPart.videoUrl} type="video/mp4" />
             Trình duyệt của bạn không hỗ trợ phát video.

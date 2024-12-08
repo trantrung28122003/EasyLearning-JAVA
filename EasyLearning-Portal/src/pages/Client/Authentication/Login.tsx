@@ -82,11 +82,10 @@ const Login: React.FC = () => {
   });
 
   const fetchCurrentUser = () => {
-    const token = getCredentials();
     DoCallAPIWithToken(GET_USER_INFO_URL, "get").then((res) => {
       if (res.status === HTTP_OK) {
         localStorage.setItem("user_info", JSON.stringify(res.data.result));
-        navigate("/");
+        navigate("/", { replace: true });
       } else {
         navigate("/login-fail");
       }

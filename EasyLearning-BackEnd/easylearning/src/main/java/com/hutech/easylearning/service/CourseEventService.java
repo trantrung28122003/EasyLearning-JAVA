@@ -133,7 +133,8 @@ public class CourseEventService {
         var trainingParts = trainingPartRepository.findTrainingPartByCourseEventId(courseEventId).stream()
                 .sorted(Comparator.comparing(TrainingPart::getStartTime))
                 .collect(Collectors.toList());;
-        var course = courseRepository.findById(trainingParts.getFirst().getCourseId());
+        var course = courseRepository.findById(trainingParts.get(0).getCourseId());
+
         nameInstructor = course.get().getInstructor();
 
         ScheduleDetailEventResponse scheduleDetailEventResponse = ScheduleDetailEventResponse.builder()

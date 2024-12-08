@@ -3,7 +3,8 @@ import ClientShared from "../Shared/ClientShared";
 import { DoCallAPIWithToken } from "../../../services/HttpService";
 import { GET_USER_INFO_URL, UPDATE_PROFILE_USER } from "../../../constants/API";
 import { HTTP_OK } from "../../../constants/HTTPCode";
-import ChangePasswordModal from "../test/ChangePasswordModal";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
+import ChangePasswordModal from "./component/ChangePasswordModal";
 
 interface UserProfileViewModel {
   imageUrl: string;
@@ -24,8 +25,9 @@ const UserSetting: React.FC = () => {
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [fullName, setFullName] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const loadUserProfile = async () => {
+    setIsLoading(true);
     try {
       DoCallAPIWithToken(GET_USER_INFO_URL, "get").then((res) => {
         if (res.status === HTTP_OK) {
@@ -36,6 +38,8 @@ const UserSetting: React.FC = () => {
       });
     } catch (error) {
       console.error("Lỗi khi tải thông tin người dùng:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -50,14 +54,12 @@ const UserSetting: React.FC = () => {
   };
 
   const handleUpdateProfile = () => {
-    console.log("Fulll name ne", fullName);
-
+    setIsLoading(true);
     const formData = new FormData();
-    formData.append("fullName", fullName); // Đảm bảo "fullName" được gửi đúng
+    formData.append("fullName", fullName);
     if (imageFile) {
-      formData.append("file", imageFile); // Đảm bảo file được gửi
+      formData.append("file", imageFile);
     }
-
     const URL = UPDATE_PROFILE_USER;
     DoCallAPIWithToken(URL, "post", formData)
       .then((res) => {
@@ -65,8 +67,14 @@ const UserSetting: React.FC = () => {
           setFullName(res.data.result.fullName);
         }
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.error("Error updating profile:", err);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
+
   const [isModalVisible, setModalVisible] = useState(false);
   const handleOpenModal = () => {
     setModalVisible(true);
@@ -77,6 +85,7 @@ const UserSetting: React.FC = () => {
   };
   return (
     <ClientShared>
+      <DataLoader isLoading={isLoading} />
       <div className="container-xl px-4 mt-4">
         <nav className="nav nav-borders">
           <a

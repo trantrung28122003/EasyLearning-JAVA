@@ -20,7 +20,7 @@ const Courses: React.FC = () => {
 
   useEffect(() => {
     fectchCourses();
-  }, []); // Chạy 1 lần khi component được mount
+  }, []); 
 
   return (
     <AdminShared>

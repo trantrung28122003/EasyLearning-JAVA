@@ -61,10 +61,7 @@ const Course: React.FC = () => {
           style={{ margin: "40px" }}
         >
           <div className="category-dropdown">
-            <button
-              className="category-link btn btn-primary btn-filter"
-              style={{ marginRight: "20px" }}
-            >
+            <button className="category-link btn btn-primary btn-filter">
               Thể loại
             </button>
 

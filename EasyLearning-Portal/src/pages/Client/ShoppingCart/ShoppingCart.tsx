@@ -11,23 +11,27 @@ import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../../../hooks/useCurrency";
 
 import "./ShoppingCart.css";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
 const ShoppingCart: React.FC = () => {
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>();
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // Lưu thông báo lỗi
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [totalPriceDiscount, setTotalPriceDiscount] = useState(0);
   const [couponsByUser, setCouponsByUser] = useState<UserDiscountResponse[]>();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const availableCoupons = ["DISCOUNT10", "FREESHIP", "SALE20"];
   const navigator = useNavigate();
   const doGetShoppingCart = () => {
-    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get").then((res) => {
-      if (res.status === HTTP_OK) {
-        const shoppingCart: ShoppingCart = res.data;
-        setShoppingCart(shoppingCart);
-        setTotalPriceDiscount(shoppingCart.totalPriceDiscount);
-      }
-    });
+    setIsLoading(true);
+    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get")
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          const shoppingCart: ShoppingCart = res.data;
+          setShoppingCart(shoppingCart);
+          setTotalPriceDiscount(shoppingCart.totalPriceDiscount);
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const doGetCouponsByUser = () => {
@@ -52,6 +56,7 @@ const ShoppingCart: React.FC = () => {
       totalPriceDiscount: shoppingCart?.totalPriceDiscount,
       discountCode: couponCode,
     };
+    setIsLoading(true);
     DoCallAPIWithToken(
       `${BASE_URL_SHOPPING_CART}/applyDiscount`,
       "POST",
@@ -76,7 +81,8 @@ const ShoppingCart: React.FC = () => {
       .catch((error) => {
         setErrorMessage("Có lỗi xảy ra khi áp dụng mã giảm giá!");
         setAppliedCoupon(null);
-      });
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const removeCoupon = () => {
@@ -95,9 +101,9 @@ const ShoppingCart: React.FC = () => {
     doGetCouponsByUser();
   }, []);
 
-  console.log("1222222", couponsByUser);
   return (
     <ClientShared>
+      <DataLoader isLoading={isLoading} />
       <div
         className="container"
         style={{ minHeight: "100vh", marginTop: "20px" }}

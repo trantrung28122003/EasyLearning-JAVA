@@ -11,11 +11,13 @@ import { HTTP_OK } from "../../../constants/HTTPCode";
 import Certificate from "../../../components/certificate/Certificate";
 import { CourseSlim } from "../../../model/Course";
 import { ApplicationResponse } from "../../../model/BaseResponse";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
 
 const UserCertificate: React.FC = () => {
   const [userCertificates, setUserCertificates] = useState<
     CertificateResponse[]
   >([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [userCourse, setUserCourse] = useState<CourseSlim[]>([]);
   const navigate = useNavigate();
   const doCallGetCourseByUser = () => {
@@ -27,6 +29,7 @@ const UserCertificate: React.FC = () => {
   };
 
   const doCallGetCertificateByUser = async () => {
+    setIsLoading(true);
     try {
       const URL = GET_ALL_CERTIFICATE_BY_USER;
       const response = await DoCallAPIWithToken(URL, "GET");
@@ -34,7 +37,11 @@ const UserCertificate: React.FC = () => {
         const data = response.data.result;
         setUserCertificates(data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching certificates:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -43,8 +50,9 @@ const UserCertificate: React.FC = () => {
   }, []);
   return (
     <ClientShared>
+      <DataLoader isLoading={isLoading} />
       <div className="page-content-user-course">
-        {userCourse.length === 0 ? (
+        {userCourse.length === 0 && isLoading ? (
           <div className="col-lg-12 text-header">
             <div className="centered-content">
               <img

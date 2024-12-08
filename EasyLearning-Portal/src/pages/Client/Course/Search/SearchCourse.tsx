@@ -17,6 +17,7 @@ import { ApplicationResponse } from "../../../../model/BaseResponse";
 import SearchCard from "./components/SearchCard";
 import { CategoryWithCourse } from "../../../../model/Category";
 import { useNavigate } from "react-router-dom";
+import DataLoader from "../../../../components/lazyLoadComponent/DataLoader";
 
 const SearchCourse: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -31,28 +32,34 @@ const SearchCourse: React.FC = () => {
   const [isLanguageOpen, setIsLanguageOpen] = useState(true);
   const [isSortByOpen, setIsSortByOpen] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
   const doCallGetAllCourse = () => {
+    setIsLoading(true);
     const URL = GET_ALL_COURSE;
-    DoCallAPIWithOutToken(URL, "get").then((res) => {
-      if (res.status === HTTP_OK) {
-        const response: ApplicationResponse<Course[]> = res.data;
-        setCourses(response.result);
-      }
-    });
+    DoCallAPIWithOutToken(URL, "get")
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          const response: ApplicationResponse<Course[]> = res.data;
+          setCourses(response.result);
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const doCallGetAllCourseByCategory = () => {
     const URL = GET_ALL_CATEGORY_WITH_COURSE;
-    DoCallAPIWithOutToken(URL, "get").then((res) => {
-      if (res.status === HTTP_OK) {
-        const response: ApplicationResponse<CategoryWithCourse[]> = res.data;
-        const categoriesData = Array.isArray(response.result)
-          ? response.result
-          : [response.result];
-        setCategories(categoriesData);
-      }
-    });
+    setIsLoading(true);
+    DoCallAPIWithOutToken(URL, "get")
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          const response: ApplicationResponse<CategoryWithCourse[]> = res.data;
+          const categoriesData = Array.isArray(response.result)
+            ? response.result
+            : [response.result];
+          setCategories(categoriesData);
+        }
+      })
+      .finally(() => setIsLoading(false));
   };
 
   const doCallSearchCourses = (
@@ -113,7 +120,6 @@ const SearchCourse: React.FC = () => {
     if (currentPage > visiblePages + 1) {
       pages.push("...");
     }
-
     // Thêm các trang gần trang hiện tại (ở giữa)
     for (
       let i = Math.max(currentPage - visiblePages, 2);
@@ -150,15 +156,14 @@ const SearchCourse: React.FC = () => {
     setIsSearching(true);
     setIsFilterApplied(!!(query || sortBy || courseType || rating));
   };
-
   useEffect(() => {
     doCallGetAllCourse();
     doCallGetAllCourseByCategory();
-
     setIsFilterApplied(!!(query || sortBy || courseType || rating));
   }, []);
   return (
     <ClientShared>
+      <DataLoader isLoading={isLoading} />
       <div className="container-search-course" style={{ marginBottom: "80px" }}>
         <div className="d-flex justify-content align-items-center mb-3">
           <div className="category-dropdown">

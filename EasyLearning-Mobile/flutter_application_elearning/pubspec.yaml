@@ -1,0 +1,42 @@
+name: flutter_application_elearning
+description: "A new Flutter project."
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  flutter_native_splash: ^2.4.3
+  get: ^4.6.5
+  flutter_otp_text_field: ^1.0.2
+  iconsax: ^0.0.8
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter_native_splash:
+  color: "#f7f6f1"
+  color_dark: "#272727"
+  image: assets/images/logoLearning.jpg
+  image_dark: assets/images/logoLearning.jpg
+
+  android_12:
+    image: assets/images/logoLearning.jpg
+    icon_background_color: "#f7f6f1"
+    image_dark: assets/images/logoLearning.jpg
+    icon_background_color_dark: "#272727"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/logoLearning.jpg
+    - assets/logo/google-logo.png
