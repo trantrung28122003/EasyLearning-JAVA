@@ -60,10 +60,10 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
     if (isPurchased) {
       navigate("/userCourses");
     } else if (isInCart) {
-      navigate("/shoppingCart");
+      const shoppingCartUrl = "/shoppingCart";
+      window.open(shoppingCartUrl, "_blank");
     } else {
       const URL = ADD_TO_CART + "/" + courseId;
-
       DoCallAPIWithToken(URL, "post").then((res) => {
         if (res.status === HTTP_OK) {
           navigate("/shoppingCart");
@@ -73,7 +73,8 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
   };
 
   const handleNavigateToCourseDetail = (courseId: string) => {
-    navigate("/course/" + courseId);
+    const courseDetailUrl = "/course/" + courseId;
+    window.open(courseDetailUrl, "_blank");
   };
 
   useEffect(() => {

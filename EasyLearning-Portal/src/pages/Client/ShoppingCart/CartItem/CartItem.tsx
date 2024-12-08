@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import style from "./CartItem.module.css";
 import { REMOVE_FROM_CART } from "../../../../constants/API";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
@@ -22,6 +22,7 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const handleDetailCourse = (courseId: string) => {
     navigate("/course/" + courseId);
   };
+
   return (
     <>
       <div className={`card mb-4 ${style.item_wrapper}`}>

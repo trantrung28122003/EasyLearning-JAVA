@@ -31,7 +31,7 @@ const Learning: React.FC = () => {
   const [isNoteBox, setIsNoteBox] = useState(false);
   const [selectedTrainingPart, setSelectedTrainingPart] =
     useState<TrainingPartProgressResponses | null>(null);
-
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -247,7 +247,12 @@ const Learning: React.FC = () => {
 
     return lastCompletedIndex + 1 === flatTrainingParts.indexOf(part);
   };
-
+  const handleWarningMessage = async (message: string) => {
+    setWarningMessage(message);
+  };
+  const closeWarning = () => {
+    setWarningMessage(null);
+  };
   useEffect(() => {
     if (courseId) {
       FetchUserTrainingProgress(courseId);
@@ -453,6 +458,7 @@ const Learning: React.FC = () => {
               courseInstructor={trainingProgressData?.courseInstructor ?? ""}
               onVideoCompleted={handleVideoCompleted}
               onQuizCompleted={handleQuizCompleted}
+              onWarningMessage={handleWarningMessage}
             />
           ) : (
             <div className="col-lg-12 ">
@@ -540,6 +546,16 @@ const Learning: React.FC = () => {
           )}
         </div>
       </div>
+      {warningMessage && (
+        <div className="warning-overlay">
+          <div className="warning-modal">
+            <h3>{warningMessage}</h3>
+            <button className="warning-close-button" onClick={closeWarning}>
+              Đã hiểu
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

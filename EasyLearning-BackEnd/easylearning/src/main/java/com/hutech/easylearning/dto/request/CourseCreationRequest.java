@@ -1,8 +1,5 @@
 package com.hutech.easylearning.dto.request;
 
-import com.hutech.easylearning.entity.*;
-import com.hutech.easylearning.enums.CourseType;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

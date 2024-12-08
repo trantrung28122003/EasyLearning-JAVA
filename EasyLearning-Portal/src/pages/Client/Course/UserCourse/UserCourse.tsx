@@ -34,6 +34,14 @@ const UserCourse: React.FC = () => {
     return Math.round((completedLessons / totalLessons) * 100);
   };
 
+  function handleNavigationLearning(itemCourse: CourseSlim) {
+    if (itemCourse.courseType === "ONLINE") {
+      const learningUrl = "/learning/" + itemCourse.courseId;
+      window.open(learningUrl, "_blank");
+    } else {
+      navigate("/schedule");
+    }
+  }
   useEffect(() => {
     doCallGetCourseByUser();
   }, []);
@@ -102,11 +110,7 @@ const UserCourse: React.FC = () => {
                           aria-expanded="false"
                         >
                           <a
-                            href={
-                              itemCourse.courseType === "ONLINE"
-                                ? `/learning/${itemCourse.courseId}`
-                                : `/schedule`
-                            }
+                            onClick={() => handleNavigationLearning(itemCourse)}
                           >
                             <div className="list_block">
                               <div className="list_image">
