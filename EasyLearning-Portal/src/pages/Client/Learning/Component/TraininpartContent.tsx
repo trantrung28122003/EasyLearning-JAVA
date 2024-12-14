@@ -2,29 +2,34 @@ import React, { useState, useRef, useEffect } from "react";
 import { TrainingPartProgressResponses } from "../../../../model/Course";
 import ExerciseQuiz from "../QuizApp/ExerciseQuiz";
 import Comments from "./Comment";
+import { convertSecondsToTime } from "../../../../hooks/useTime";
+import { ADD_NOTE_BY_COURSE_AND_USER } from "../../../../constants/API";
+import { DoCallAPIWithToken } from "../../../../services/HttpService";
+import { HTTP_OK } from "../../../../constants/HTTPCode";
+import { toast } from "react-toastify";
 
 interface ScoreRequest {
   correctAnswersCount: number;
   totalQuestionsCount: number;
 }
-
 interface TrainingPartContentProps {
   trainingPart: TrainingPartProgressResponses;
+  courseId: string;
   courseInstructor: string;
+  timestamp: number;
   onVideoCompleted: (trainingPartId: string) => Promise<void>;
-  onQuizCompleted: (
-    trainingPartId: string,
-    scoreRequest: ScoreRequest
-  ) => Promise<void>;
+  onQuizCompleted: (trainingPartId: string,scoreRequest: ScoreRequest) => Promise<void>;
   onWarningMessage: (message: string) => Promise<void>;
 }
 
 const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   trainingPart,
+  courseId,
   courseInstructor,
   onVideoCompleted,
   onQuizCompleted,
   onWarningMessage,
+  timestamp,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCompleted, setHasCompleted] = useState(false);
@@ -33,9 +38,10 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
   const [actualWatchTime, setActualWatchTime] = useState(0);
   const [previousTime, setPreviousTime] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
-
+  const [noteContent, setNoteContent] = useState("");
+  const [isNoteForm, setIsNoteForm] = useState(false);
+  const [showNotificationNote, setShowNotificationNote] = useState(false);
   const skipLimit = 10;
-
   const handleQuizCompleted = (
     trainingPartId: string,
     scoreRequest: ScoreRequest
@@ -50,7 +56,6 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
       const percentWatched = (currentTime / duration) * 100;
       setCurrentTime(currentTime);
       if (percentWatched >= 90 && !hasCompleted && !trainingPart.completed) {
-        console.log("Tao goi api ne con");
         onVideoCompleted(trainingPart.id);
         setHasCompleted(true);
       }
@@ -61,26 +66,11 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
     }
   };
 
-  const formatTime = (timeInSeconds: number) => {
-    const hours = Math.floor(timeInSeconds / 3600);
-    const minutes = Math.floor((timeInSeconds % 3600) / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    if (hours > 0) {
-      return `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    } else {
-      return `${minutes.toString().padStart(2, "0")}:${seconds
-        .toString()
-        .padStart(2, "0")}`;
-    }
-  };
-
   const toggleCommentBox = () => {
     setIsCommentBox(!isCommentBox);
   };
   const handleSeeking = () => {
-    if (videoRef.current != null) {
+    if (videoRef.current != null ) {
       const currentTime = videoRef.current.currentTime;
       const duration = videoRef.current.duration;
       setCurrentTime(currentTime);
@@ -97,7 +87,6 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
           onWarningMessage(
             "Bạn đang tua quá nhiều lần! Hãy xem video nghiêm túc."
           );
-
           videoRef.current.currentTime = previousTime;
           videoRef.current.pause();
           setSkipCount(0);
@@ -105,14 +94,67 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
       }
     }
   };
+  const hanldeAddNote = () => {
+    setIsNoteForm(true);
+    videoRef.current?.pause();
+  }
+  const hanldeSubmitNote = async () => {
+  
+    if (noteContent.trim()) {
+        try {
+          const payLoad = {
+            noteContent : noteContent,
+            courseId: courseId,
+            trainingPartId: trainingPart.id,
+            timestamp: currentTime
+          }
+          const URL = ADD_NOTE_BY_COURSE_AND_USER;
+          const response = await DoCallAPIWithToken(URL, "POST", payLoad);
+          if (response.status === HTTP_OK) {
+            setNoteContent(""); 
+            setIsNoteForm(false); 
+             toast.success("Ghi chú đã được xóa thành công!"); 
+            setShowNotificationNote(true)
+            setTimeout(() => {
+              setShowNotificationNote(false);
+            
+            }, 5000);
+          }
+        } catch (error) {
+          console.error("Không thể cập nhật trạng thái hoàn thành:", error);
+        }
+      }else {
+      onWarningMessage("Nội dung ghi chú không được để trống!");
+    }
+  };
+
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.load();
+      if(timestamp)
+      videoRef.current.currentTime = timestamp;
+      setActualWatchTime(timestamp)
+    
     }
     setHasCompleted(trainingPart.completed);
-  }, [trainingPart.id]);
+
+    const handleDocumentClick = () => {
+      setShowNotificationNote(false); 
+    };
+    document.addEventListener("click", handleDocumentClick);
+    return () => {
+      document.removeEventListener("click", handleDocumentClick);
+    };
+  }, [trainingPart.id, timestamp]);
 
   return (
+    <>
+
+    {showNotificationNote && (
+      <div className="notification">
+        <span>Ghi chú của bạn ở đây!</span>
+      </div>
+    )}
     <div className="video-player">
       {trainingPart.trainingPartType === "LESSON" ? (
         <div className="video">
@@ -122,6 +164,10 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
             controlsList="nodownload"
             style={{ border: "1px solid ccc", borderRadius: "5px" }}
             onTimeUpdate={handleTimeUpdate}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              return false;
+            }}
             onSeeking={handleSeeking}
           >
             <source src={trainingPart.videoUrl} type="video/mp4" />
@@ -135,21 +181,24 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
           onQuizCompleted={handleQuizCompleted}
         />
       )}
+      {isNoteForm && (
+       <div className="note-form">
+            <h5 className="title-note">Thêm ghi chú tại <span>{convertSecondsToTime(currentTime)}</span></h5> 
+            <textarea
+              placeholder="Nhập nội dung ghi chú..."
+              value={noteContent}
+              onChange={(e) => setNoteContent(e.target.value)}
+            />
+             <button className="btn btn-primary" 
+             onClick={hanldeSubmitNote} 
+             disabled ={!noteContent.trim()}
+             >Lưu ghi chú</button>
+            <button className="btn btn-secondary" onClick={() => setIsNoteForm(false)}>Hủy</button> 
+          </div>  
+          )}
       <div className="video-info">
         <h2 style={{ maxWidth: "40rem" }}>{trainingPart.trainingPartName}</h2>
         <div className="video-details">
-          <div className="rating">
-            <strong>⭐ 4.5</strong>
-            <span>72,600 đánh giá</span>
-          </div>
-          <div className="students">
-            <strong>👥 728,533</strong>
-            <span> Người tham gia</span>
-          </div>
-          <div className="duration">
-            <strong>⏱ 9.5 hours</strong>
-            <span> Tổng giờ</span>
-          </div>
         </div>
         <p className="last-updated">
           <i className="fas fa-exclamation-circle"></i> {""}Cập nhập gần đây
@@ -171,10 +220,10 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
           </span>
         </div>
         <div className="note">
-          <button className="btn-note">
+          <button className="btn-note" onClick={hanldeAddNote}>
             <i className="fas fa-plus"></i>{" "}
-            <span style={{ marginLeft: "12px" }}>Thêm ghi chú tại </span>
-            <strong>{formatTime(currentTime)}</strong>
+            <span style={{ marginLeft: "12px" }} >Thêm ghi chú tại </span>
+            <strong>{convertSecondsToTime(currentTime)}</strong>
           </button>
         </div>
         <div className="note">
@@ -183,7 +232,6 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
             <span style={{ marginLeft: "3px" }}>Hỏi đáp</span>
           </button>
         </div>
-
         {isCommentBox && (
           <div className="wrapper-note">
             <div className="over-lay" onClick={toggleCommentBox}>
@@ -206,6 +254,7 @@ const TrainingPartContent: React.FC<TrainingPartContentProps> = ({
         )}
       </div>
     </div>
+    </>
   );
 };
 

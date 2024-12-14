@@ -257,12 +257,12 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: true,
     isAdmin: false,
   },
-  // {
-  //   path: "/test",
-  //   component: LazyLoadComponent(import("../pages/Client/Learning/test")),
-  //   isProtected: true,
-  //   isAdmin: false,
-  // },
+  {
+    path: "/test",
+    component: LazyLoadComponent(import("../pages/Client/Learning/test")),
+    isProtected: true,
+    isAdmin: false,
+  },
 
 
 ];

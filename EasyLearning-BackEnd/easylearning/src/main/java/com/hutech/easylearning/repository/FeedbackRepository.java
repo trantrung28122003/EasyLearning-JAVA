@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface FeedbackRepository extends JpaRepository<Feedback, String> {
     List<Feedback> findByCourseId(String courseId);
+    List<Feedback> findByFeedbackRating(int rating);
 }

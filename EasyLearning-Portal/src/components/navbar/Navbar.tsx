@@ -3,6 +3,7 @@ import { getUserInfo, hasAdminRole, isUserLogin } from "../../hooks/useLogin";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import {
+  BASE_URL_SHOPPING_CART,
   GET_NOTIFICATION_BY_USER,
   UPDATE_NOTIFICATION_READ_STATUS,
 } from "../../constants/API";
@@ -28,6 +29,19 @@ const Navbar: React.FC = () => {
   const notificationsRef = useRef<HTMLDivElement>(null);
   const bellIconRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [cartItemsCount, setCartItemsCount] = useState(0);
+  const doGetShoppingCart = () => {
+   // setIsLoading(true);
+    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get")
+      .then((res) => {
+        if (res.status === HTTP_OK) {
+          const shoppingCart: ShoppingCart = res.data;
+          setCartItemsCount(shoppingCart.shoppingCartItemResponses.length);
+        }
+      })
+      //.finally(() => setIsLoading(false));
+  };
+
 
   const FetchNotificationByUser = async () => {
     try {
@@ -53,6 +67,7 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     if (isLogin) {
       FetchNotificationByUser();
+      doGetShoppingCart();
     }
     const currentUser = getUserInfo();
     const handleClickOutside = (event: MouseEvent) => {
@@ -98,13 +113,13 @@ const Navbar: React.FC = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "COMMENT":
-        return <i className="fa fa-comments"></i>; // Ví dụ: icon cho bình luận
+        return <i className="fa fa-comments"></i>; 
       case "CERTIFICATE":
-        return <i className="fa fa-certificate"></i>; // Ví dụ: icon cho chứng chỉ
+        return <i className="fa fa-certificate"></i>; 
       case "COURSE_PURCHASE":
-        return <i className="fa fa-graduation-cap"></i>; // Ví dụ: icon cho khóa học
+        return <i className="fa fa-graduation-cap"></i>; 
       default:
-        return <i className="fa fa-bell"></i>; // Icon mặc định
+        return <i className="fa fa-bell"></i>; 
     }
   };
   const updateNotificationReadStatus = async (notificationId: string) => {
@@ -172,13 +187,11 @@ const Navbar: React.FC = () => {
             <a href="/" className="nav-item nav-link active">
               Trang Chủ
             </a>
-            <a href="/about" className="nav-item nav-link">
-              Thông Tin Về Chúng Tôi
-            </a>
             <a className="nav-item nav-link" href="/courses/search">
               Các Khóa Học
             </a>
-
+            
+            
             {isLogin && (
               <>
                 <div className="nav-item dropdown">
@@ -198,11 +211,14 @@ const Navbar: React.FC = () => {
                       Danh sách khóa học của bạn
                     </a>
                     <a className="dropdown-item" href="/certificate">
-                      Chứng chỉ của bạn
+                      Chứng chỉ của bạn
                     </a>
 
                     <a className="dropdown-item" href="/userProfile">
                       Cài đặt tài khoản
+                    </a>
+                    <a className="dropdown-item" href="/about">
+                      Thông tin về eLEARNING
                     </a>
                     {isAdmin && (
                       <a className="dropdown-item" href="admin/dashboard">
@@ -211,20 +227,27 @@ const Navbar: React.FC = () => {
                     )}
                   </div>
                 </div>
+
                 <a
                   className="position-relative me-4 my-auto"
                   href="/shoppingCart"
                 >
-                  <i className="fa fa-shopping-bag fa-2x"></i>
+                  <i className="far fa-heart fa-2x"></i>
+                   
+            
                 </a>
 
-                {/* <a
+                <a
                   className="position-relative me-4 my-auto"
-                  href="/notifications"
+                  href="/shoppingCart"
                 >
-                  <i className="fa fa-bell fa-2x"></i>
-                  <span className="notification-count">3</span>{" "}
-                </a> */}
+                  <i className="fa fa-shopping-bag fa-2x">
+                    {cartItemsCount > 0 &&
+                     <span className="shoppingcart-badge">
+                        {cartItemsCount}
+                    </span>
+                  }</i>
+                </a>
                 <div
                   className="position-relative me-4 my-auto"
                   ref={bellIconRef}
@@ -288,13 +311,25 @@ const Navbar: React.FC = () => {
                 </div>
               </>
             )}
+
+
+           <a className="position-relative me-4 my-auto profile-dropdown">
+             <img src="http://res.cloudinary.com/dofr3xzmi/image/upload/v1732969604/mzxf7ihvdzwavbxyshg8.webp"
+             style={{width: "40px", height:"40px", borderRadius: "29px"}}
+             />
+
+            <div className="profile">
+              1111111111
+            </div>
+          </a>
             {isLogin ? (
-              <button
-                className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"
-                onClick={handleLogout}
-              >
-                Đăng Xuất<i className="fa fa-arrow-right ms-3"></i>
-              </button>
+              // <button
+              //   className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"
+              //   onClick={handleLogout}
+              // >
+              //   Đăng Xuất<i className="fa fa-arrow-right ms-3"></i>
+              // </button>
+              <></>
             ) : (
               <button
                 className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"

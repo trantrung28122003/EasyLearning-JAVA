@@ -38,7 +38,7 @@ public class SecurityConfig {
         };
 
     private final String[] PUBLIC_GET_ENDPOINTS = {
-            "/topThreeMostRegisteredCourses",
+            "/topFourMostRegisteredCourses",
             "/customer/searchCourseByName",
             "/payment/confirmPaymentMomoClient",
             "/getAllCategoryWithCourse",
@@ -48,7 +48,9 @@ public class SecurityConfig {
             "/getCoursesByCategory/{param}",
             "/search",
             "/getAllCourse",
-            "/ws/**"
+            "/ws/**",
+            "/getFeedbacksWithFiveRating",
+            "/getCourseWithDiscount"
     };
 
 

@@ -3,13 +3,12 @@ package com.hutech.easylearning.controller;
 
 import com.hutech.easylearning.dto.reponse.CategoryWithCourseResponse;
 import com.hutech.easylearning.dto.reponse.DetailCourseResponse;
+import com.hutech.easylearning.dto.reponse.FeedbackInfoResponse;
 import com.hutech.easylearning.dto.reponse.FeedbackResponse;
-import com.hutech.easylearning.dto.reponse.RoleResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
-import com.hutech.easylearning.dto.request.RoleRequest;
 import com.hutech.easylearning.entity.Category;
 import com.hutech.easylearning.entity.Course;
-import com.hutech.easylearning.entity.Feedback;
+
 import com.hutech.easylearning.service.CategoryService;
 import com.hutech.easylearning.service.CourseService;
 import com.hutech.easylearning.service.FeedbackService;
@@ -24,17 +23,16 @@ public class HomeController {
 
     @Autowired
     private CourseService courseService;
-
     @Autowired
     private CategoryService categoryService;
 
     @Autowired
     private FeedbackService feedbackService;
 
-    @GetMapping("/topThreeMostRegisteredCourses")
-    ApiResponse<List<Course>> topThreeCourse() {
+    @GetMapping("/topFourMostRegisteredCourses")
+    ApiResponse<List<Course>> topFourCourse() {
         return ApiResponse.<List<Course>>builder()
-                .result(courseService.getTopThreeMostRegisteredCourses())
+                .result(courseService.getTopFourMostRegisteredCourses())
                 .build();
     }
 
@@ -66,6 +64,14 @@ public class HomeController {
                 .build();
     }
 
+    @GetMapping("/getCourseWithDiscount")
+    ApiResponse<List<Course>> getAllCourseWithDiscount() {
+        return ApiResponse.<List<Course>>builder()
+                .result(courseService.getAllCourseWithDiscount())
+                .build();
+    }
+
+
     @GetMapping("/detailCourse/{courseId}")
     public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {
         return ApiResponse.<DetailCourseResponse>builder()
@@ -77,6 +83,14 @@ public class HomeController {
     ApiResponse<FeedbackResponse> getFeedbacksByCourseWithoutUser(@PathVariable("courseId") String courseId) {
         return ApiResponse.<FeedbackResponse>builder()
                 .result(feedbackService.getFeedbacksByCourseWithoutUser(courseId))
+                .build();
+    }
+
+
+    @GetMapping("/getFeedbacksWithFiveRating")
+    ApiResponse<List<FeedbackInfoResponse>> getFeedbacksWithFiveRating() {
+        return ApiResponse.<List<FeedbackInfoResponse>>builder()
+                .result(feedbackService.getFeedbacksWithFiveRating())
                 .build();
     }
 

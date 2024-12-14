@@ -1,35 +1,28 @@
-/* Style for Category Dropdown */
 .container-search-course {
     margin-top: 40px;
 }
 
 .input-group {
-    max-width: 1100px;
-
+    max-width: 1200px;
     border-radius: 20px;
     overflow     : hidden;
     box-shadow   : 0 4px 8px rgba(0, 0, 0, 0.1);
     border       : 1px solid #ced4da;
-    /* Đường viền màu đen cho toàn bộ nhóm */
 }
 
 .input-group .input-group-text {
     background-color: #f8f9fa;
     border          : none;
     font-size       : 1rem;
-    /* Giảm kích thước font cho icon */
     display         : flex;
     align-items     : center;
     padding         : 0 12px;
     color           : #06bbcc;
-    /* Màu icon */
 }
 
 .input-group .form-control {
     height       : 45px;
-    /* Giảm chiều cao của ô input */
     font-size    : 1rem;
-    /* Kích thước chữ nhỏ hơn */
     border       : none;
     border-radius: 0;
 }
@@ -41,21 +34,16 @@
 
 .input-group .btn {
     height          : 45px;
-    /* Giảm chiều cao của nút */
     font-size       : 1rem;
-    /* Kích thước chữ nhỏ hơn */
     border-radius   : 0;
     padding         : 0 20px;
     background-color: #06bbcc;
-    /* Màu nền nút */
     border          : none;
     color           : #fff;
-    /* Màu chữ nút */
 }
 
 .input-group .btn:hover {
     background-color: #0499a3;
-    /* Màu khi rê chuột vào nút */
 }
 
 
@@ -121,21 +109,14 @@
 
 .star-border {
     color : transparent;
-    /* Sao không tô có màu trong suốt */
     border: 2px solid #f1c40f;
-    /* Viền vàng */
 }
 
 .btn-filter {
     border-radius: 30px;
-    /* Bo tròn góc */
     padding      : 7px 40px;
-    /* Tạo khoảng cách nội dung bên trong nút (dài hơn) */
     font-size    : 16px;
-    /* Tăng kích thước chữ */
     transition   : background-color 0.3s ease;
-
-    /* Thêm hiệu ứng chuyển màu nền khi hover */
 }
 
 .btn-filter:hover {

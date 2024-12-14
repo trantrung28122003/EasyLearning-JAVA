@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./Learning.css";
 import {
   CREATE_CERTIFICATE,
+  GET_NOTES_BY_COURSE_AND_USER,
   GET_TRAINING_PROGRESS_STATUS,
   UPDATE_TRAINING_PROGRESS,
 } from "../../../constants/API";
@@ -14,9 +15,11 @@ import {
 } from "../../../model/Course";
 import TrainingPartContent from "./Component/TraininpartContent";
 import { EventSlim } from "../../../model/Event";
-
+import 'react-toastify/dist/ReactToastify.css';
 import Note from "./Component/Note";
 import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
+import { UserNote } from "../../../model/User";
+import { ToastContainer } from "react-toastify";
 interface ScoreRequest {
   correctAnswersCount: number;
   totalQuestionsCount: number;
@@ -32,11 +35,17 @@ const Learning: React.FC = () => {
   const [selectedTrainingPart, setSelectedTrainingPart] =
     useState<TrainingPartProgressResponses | null>(null);
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
+  const [timeStamp, setTimeStamp] = useState<number> (0);
+  const [notes, setNotes] = useState<UserNote[]>();
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const toggleNoteBox = () => {
+    if(courseId)
+    {
+      fetchUserNotesByCourseAndUser(courseId);
+    }
     setIsNoteBox(!isNoteBox);
   };
 
@@ -61,7 +70,7 @@ const Learning: React.FC = () => {
   const [trainingProgressData, setTrainingProgressData] =
     useState<UserTrainingProgressStatusResponse | null>(null);
 
-  const FetchUserTrainingProgress = async (courseId: string) => {
+  const fetchUserTrainingProgress = async (courseId: string) => {
     setIsLoading(true);
     try {
       const URL = GET_TRAINING_PROGRESS_STATUS + "/" + courseId;
@@ -99,6 +108,20 @@ const Learning: React.FC = () => {
       setIsLoading(false);
     }
   };
+  const fetchUserNotesByCourseAndUser = async (courseId: string) => {
+    setIsLoading(true)
+    try {
+      const URL = `${GET_NOTES_BY_COURSE_AND_USER}?courseId=${courseId}`;
+      const response = await DoCallAPIWithToken(URL, "GET");
+      if (response.status === HTTP_OK) {
+        
+          setNotes(response.data.result);
+      }
+    } catch (error) {
+      console.error("Không thể cập nhật trạng thái hoàn thành:", error);
+    }finally{setIsLoading(false)};
+  };
+
 
   const handleVideoCompleted = async (trainingPartId: string) => {
     try {
@@ -106,7 +129,7 @@ const Learning: React.FC = () => {
       const response = await DoCallAPIWithToken(URL, "POST");
       if (response.status === HTTP_OK) {
         if (courseId) {
-          FetchUserTrainingProgress(courseId);
+          fetchUserTrainingProgress(courseId);
           console.log(`Phần học ${trainingPartId} đã hoàn thành`);
         }
       }
@@ -125,7 +148,7 @@ const Learning: React.FC = () => {
       if (response.status === HTTP_OK) {
         if (courseId) {
           console.log("score", scoreRequest);
-          FetchUserTrainingProgress(courseId);
+          fetchUserTrainingProgress(courseId);
           console.log(`Phần học ${trainingPartId} đã hoàn thành`);
         }
       }
@@ -185,7 +208,7 @@ const Learning: React.FC = () => {
       if (response.status === HTTP_OK) {
         if (courseId) {
           console.log("tao chung chi thanh cong ne conn");
-          FetchUserTrainingProgress(courseId);
+          fetchUserTrainingProgress(courseId);
         }
       }
     } catch (error) {
@@ -201,7 +224,7 @@ const Learning: React.FC = () => {
         const response = await DoCallAPIWithToken(URL, "POST");
         if (response.status === HTTP_OK) {
           if (courseId) {
-            FetchUserTrainingProgress(courseId);
+            fetchUserTrainingProgress(courseId);
           }
         }
       } catch (error) {
@@ -253,17 +276,47 @@ const Learning: React.FC = () => {
   const closeWarning = () => {
     setWarningMessage(null);
   };
+
+
+  const handleNoteClick = (trainPartId: string, timestamp: number) => {
+    const flatTrainingParts =trainingProgressData?.courseEventsResponses.flatMap((event) => event.trainingPartProgressResponses);
+    if(flatTrainingParts)
+    {
+      const trainingPart = flatTrainingParts.find((part: TrainingPartProgressResponses) => part.id === trainPartId);
+      if(trainingPart)
+      {
+        setSelectedTrainingPart(trainingPart);
+        setTimeStamp(timestamp);
+        setIsNoteBox(!isNoteBox)
+      }
+    }
+  };
+
+  const handDeleteNote = (noteId: string) => {
+    if(notes)
+    {
+      console.log("usernotttttttttt id dc xoâ",noteId);
+      const updatedNotes = notes.filter((note) => note.id !== noteId);
+      console.log("danhh sach sau khi xoaaaa",updatedNotes)
+      setNotes(updatedNotes);
+    }
+
+  }
+
+  
   useEffect(() => {
     if (courseId) {
-      FetchUserTrainingProgress(courseId);
+      fetchUserTrainingProgress(courseId);
+     
     }
   }, [courseId]);
 
   return (
     <div className="app">
+      <ToastContainer  autoClose={2000}/>
       <DataLoader isLoading={isLoading} />
       <div className="header">
-        <div className="logo">eLEARNING</div>
+        <a className="logo" onClick={() => navigate("/")} style={{cursor: "pointer"}}>eLEARNING</a>
         <div className="vertical-divider"></div>
         <div className="course-info">
           <span className="course-title">
@@ -366,8 +419,8 @@ const Learning: React.FC = () => {
                                 (part) => part.completed === true
                               ).length
                             }{" "}
-                            / {classEvent.trainingPartProgressResponses.length}{" "}
-                            | 7 phút
+                            / {classEvent.trainingPartProgressResponses.length}{" "} phần học
+                          
                           </span>
                         </div>
                         {openEvents[classEvent.courseEventName] && (
@@ -405,20 +458,32 @@ const Learning: React.FC = () => {
                                       part.trainingPartName
                                     }`}
                                     <div className="">
-                                      {part.trainingPartType === "LESSON" ? (
-                                        <i className="fas fa-circle"></i>
-                                      ) : (
-                                        <i className="fas fa-pen"></i>
-                                      )}
-
-                                      <span
+                                      {part.trainingPartType === "LESSON" ? ( <> 
+                                       <i className="fas fa-play-circle"></i> 
+                                       <span
                                         style={{
                                           fontSize: "12px",
                                           marginLeft: "8px",
                                         }}
                                       >
-                                        7:28
+                                        Lý thuyết
                                       </span>
+                                      </>
+                                      ) : (
+                                        <>
+                                        <i className="fas fa-pen"></i>
+                                        <span
+                                        style={{
+                                          fontSize: "12px",
+                                          marginLeft: "8px",
+                                        }}
+                                      >
+                                        Bài tập
+                                      </span>
+                                      </>
+                                      )}
+
+                                      
                                     </div>
                                   </span>
                                   <span>
@@ -456,9 +521,11 @@ const Learning: React.FC = () => {
             <TrainingPartContent
               trainingPart={selectedTrainingPart}
               courseInstructor={trainingProgressData?.courseInstructor ?? ""}
+              courseId = {courseId ? courseId : ""}
               onVideoCompleted={handleVideoCompleted}
               onQuizCompleted={handleQuizCompleted}
               onWarningMessage={handleWarningMessage}
+              timestamp = {timeStamp}
             />
           ) : (
             <div className="col-lg-12 ">
@@ -488,7 +555,6 @@ const Learning: React.FC = () => {
       {isNoteBox && (
         <div className="wrapper-note">
           <div className="over-lay" id="note-box" onClick={toggleNoteBox}>
-            {" "}
           </div>
           <div className="note-box" id="note-box">
             <div className="note-header d-flex justify-content-between align-items-center p-3">
@@ -501,7 +567,11 @@ const Learning: React.FC = () => {
                 Đóng cửa sổ
               </button>
             </div>
-            <Note />
+            {notes && notes.map((note )=> 
+        
+              <Note key={note.id} note = {note} onNoteClick={handleNoteClick} onDelete={handDeleteNote} />
+          
+          )}
           </div>
         </div>
       )}

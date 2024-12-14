@@ -16,17 +16,17 @@ class OTPScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              tOtpTitle.toUpperCase(),
+              TTexts.tOtpTitle.toUpperCase(),
               style: GoogleFonts.montserrat(
                   fontWeight: FontWeight.bold, fontSize: 90.0),
             ),
-            Text(tOtpSubTitle.toUpperCase(),
+            Text(TTexts.tOtpSubTitle.toUpperCase(),
                 style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(
               height: 40.0,
             ),
             const Text(
-              "$tOtpMessage trantrung28122003@gmail.com",
+              "${TTexts.tOtpMessage}trantrung28122003@gmail.com",
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -45,8 +45,8 @@ class OTPScreen extends StatelessWidget {
             ),
             SizedBox(
                 width: double.infinity,
-                child:
-                    ElevatedButton(onPressed: () {}, child: const Text(tNext))),
+                child: ElevatedButton(
+                    onPressed: () {}, child: const Text(TTexts.tNext))),
           ],
         ),
       ),

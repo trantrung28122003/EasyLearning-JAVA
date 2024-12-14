@@ -41,14 +41,14 @@ class WelcomeScreen extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Get.to(() => const LoginScreen()),
-                      child: Text(tLogin.toUpperCase()),
+                      child: Text(TTexts.tLogin.toUpperCase()),
                     ),
                   ),
                   const SizedBox(width: 10.0),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () => Get.to(() => const SignUpScreen()),
-                      child: Text(tSignup.toUpperCase()),
+                      child: Text(TTexts.tSignup.toUpperCase()),
                     ),
                   ),
                 ],

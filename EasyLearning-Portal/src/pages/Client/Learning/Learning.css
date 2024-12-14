@@ -1,15 +1,9 @@
-/* CSS chung */
+
 body,
 html {
     margin        : 0;
     padding       : 0;
     font-family   : Arial, sans-serif;
-    /* height     : 100vh;
-    overflow      : hidden; */
-
-
-    /* Chiều cao đầy đủ cho viewport */
-
 }
 
 .app {
@@ -485,6 +479,8 @@ dt:hover {
     will-change     : transform;
     animation       : _slide-in_clz7v_1 ease .5s;
     overflow        : hidden;
+    overflow-y: auto;
+
 }
 
 .over-lay {
@@ -584,3 +580,67 @@ dt:hover {
 .close-button:hover {
     background-color: #0499A4;
 }
+
+
+.note-form {
+    background-color: #f9f9f9;
+    padding: 1rem;
+    bottom          : 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 1rem;
+    width: 100%;
+    z-index: 999;
+  }
+  .title-note span{
+    background-color: #06BBCC;
+    padding: 0 12px;
+    border-radius: 18px;
+    color: white;
+    
+  }
+  .note-form textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+  
+  .note-form button {
+    margin-right: 10px;
+    border-radius: 18px;
+  }
+  .note-loader-container {
+    position: relative; 
+}
+.notification {
+    position: absolute;
+    right: 88px;
+    background-color: #06BBCC;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease-in-out;
+  }
+
+
+  .notification::before {
+    content: "";
+    position: absolute;
+    top: -12px; 
+    left: 50%; 
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 12px solid #06BBCC; 
+  }
+
+  
+
+
+  
+  

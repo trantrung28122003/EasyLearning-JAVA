@@ -14,7 +14,7 @@ import "./ShoppingCart.css";
 import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
 const ShoppingCart: React.FC = () => {
   const [shoppingCart, setShoppingCart] = useState<ShoppingCart>();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Lưu thông báo lỗi
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); 
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [totalPriceDiscount, setTotalPriceDiscount] = useState(0);
   const [couponsByUser, setCouponsByUser] = useState<UserDiscountResponse[]>();
@@ -78,7 +78,7 @@ const ShoppingCart: React.FC = () => {
           setAppliedCoupon(null);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage("Có lỗi xảy ra khi áp dụng mã giảm giá!");
         setAppliedCoupon(null);
       })

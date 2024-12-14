@@ -14,7 +14,7 @@ import {
 } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { ApplicationResponse } from "../../../../model/BaseResponse";
-import SearchCard from "./components/SearchCard";
+import SearchCard from "../../../../components/card/LongCard";
 import { CategoryWithCourse } from "../../../../model/Category";
 import { useNavigate } from "react-router-dom";
 import DataLoader from "../../../../components/lazyLoadComponent/DataLoader";
@@ -164,7 +164,7 @@ const SearchCourse: React.FC = () => {
   return (
     <ClientShared>
       <DataLoader isLoading={isLoading} />
-      <div className="container-search-course" style={{ marginBottom: "80px" }}>
+      <div className="container-search-course" style={{ marginBottom: "80px", padding: "14px" }}>
         <div className="d-flex justify-content align-items-center mb-3">
           <div className="category-dropdown">
             <button
@@ -488,8 +488,6 @@ const SearchCourse: React.FC = () => {
                   <SearchCard course={course} key={index} />
                 ))}
               </div>
-
-              {/* Phần phân trang */}
               <div className="pagination justify-content-center">
                 <button
                   className="pagination-btn"
@@ -510,7 +508,7 @@ const SearchCourse: React.FC = () => {
                       className={`pagination-number ${
                         currentPage === page ? "active" : ""
                       }`}
-                      onClick={() => handleClick(page as number)} // Chuyển đổi string sang number khi click
+                      onClick={() => handleClick(page as number)}
                     >
                       {page}
                     </button>

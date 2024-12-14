@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,13 +23,13 @@ public class UserNote {
     @Column(name ="id", columnDefinition = "VARCHAR(36)")
     String id;
 
-    @Column(name = "NoteContent")
+    @Column(name = "note_content")
     String noteContent;
 
-    @Column(name = "Time")
-    String time;
+    @Column(name = "time_stamp")
+    BigDecimal timeStamp;
 
-    @Column(name = "TrainingPartId")
+    @Column(name = "training_part_id")
     String trainingPartId;
 
     @Column(name = "user_note_course_id")
@@ -44,9 +45,6 @@ public class UserNote {
     @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
     @JsonBackReference
     User user;
-
-    @Column(name = "is_completed")
-    boolean isCompleted;
 
     @Column(name = "date_create")
     LocalDateTime dateCreate;

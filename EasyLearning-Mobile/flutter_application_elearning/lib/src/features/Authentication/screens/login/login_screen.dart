@@ -21,8 +21,8 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   FormHeaderWidget(
                     image: tSplashImage,
-                    title: tLoginTitle,
-                    subTitle: tLoginSubTitle,
+                    title: TTexts.tLoginTitle,
+                    subTitle: TTexts.tLoginSubTitle,
                   ),
                   LoginForm(),
                   LoginFooterWidget(),

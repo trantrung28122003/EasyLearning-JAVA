@@ -41,7 +41,7 @@ public class CommentController {
     @SendTo("/topic/comments")
     public CommentResponse handleComment(@RequestBody CommentRequest request) {
         CommentResponse commentResponse = commentService.addComment(request);
-        return commentResponse; // Lưu và gửi lại
+        return commentResponse;
     }
 
     @MessageMapping("/reply")
@@ -50,10 +50,6 @@ public class CommentController {
         ReplyResponse replyResponse = commentService.addReplyToComment(request);
         System.out.println("chaaaa cua reopybne con "+ request.getParentReplyUserId());
         notificationService.addNotificationByComment(request);
-//        var userId = request.getParentReplyUserId() != null ? request.getParentReplyUserId() ;
-//        String destination = "/user/" + userId + "/notifications";
-//        messagingTemplate.convertAndSend(destination, message);
-//        simpMessagingTemplate.convertAndSend("/topic/notifications", notificationResponse);
-        return replyResponse; // Lưu và gửi lại phản hồi
+        return replyResponse;
     }
 }

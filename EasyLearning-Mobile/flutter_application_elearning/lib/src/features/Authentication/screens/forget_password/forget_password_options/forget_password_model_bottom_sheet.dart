@@ -15,17 +15,17 @@ class ForgetPasswordScreen {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(tForgetPasswordTitle,
+            Text(TTexts.tForgetPasswordTitle,
                 style: Theme.of(context).textTheme.headlineLarge),
-            Text(tForgetPasswordSubTitle,
+            Text(TTexts.tForgetPasswordSubTitle,
                 style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(
               height: 30.0,
             ),
             ForgetPasswordBtnWidget(
               btnIcon: Icons.mail_outline_rounded,
-              title: tEmail,
-              subTitle: tResetViaEMail,
+              title: TTexts.tEmail,
+              subTitle: TTexts.tResetViaEMail,
               onTap: () {
                 Navigator.pop(context);
                 Get.to(() => const ForgetPasswordMailScreen());
@@ -34,8 +34,8 @@ class ForgetPasswordScreen {
             const SizedBox(height: 30.0),
             ForgetPasswordBtnWidget(
               btnIcon: Icons.mobile_friendly_rounded,
-              title: tPhoneNo,
-              subTitle: tResetViaPhone,
+              title: TTexts.tPhoneNo,
+              subTitle: TTexts.tResetViaPhone,
               onTap: () {},
             ),
             const SizedBox(

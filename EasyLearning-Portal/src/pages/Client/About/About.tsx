@@ -4,7 +4,7 @@ const About = () => {
   return (
     <>
       <ClientShared>
-        <div className="container-xxl py-5">
+      <div className="container-xxl py-5">
           <div className="container">
             <div className="row g-4">
               <div
@@ -16,8 +16,7 @@ const About = () => {
                     <i className="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
                     <h5 className="mb-3">Giảng Viên Chuyên Nghiệp</h5>
                     <p>
-                      Phơng pháp giảng dạy linh hoạt và có kinh nghiệm trong
-                      lĩnh vực chuyên môn
+                      Phơng pháp giảng dạy linh hoạt và có kinh nghiệm trong lĩnh vực chuyên môn
                     </p>
                   </div>
                 </div>
@@ -31,8 +30,8 @@ const About = () => {
                     <i className="fa fa-3x fa-globe text-primary mb-4"></i>
                     <h5 className="mb-3">Đăng Ký Trực Tuyến</h5>
                     <p>
-                      Thuận tiện cho việc đăng ký, lựa chọn thời gian và lịch
-                      học phù hợp với lịch trình cá nhân
+                    Thuận tiện cho việc đăng ký, lựa chọn thời gian và lịch học phù hợp với lịch trình cá nhân. 
+                    Bạn có thể theo dõi và quản lý các khóa học đã đăng ký một cách dễ dàng. 
                     </p>
                   </div>
                 </div>
@@ -46,9 +45,8 @@ const About = () => {
                     <i className="fa fa-3x fa-home text-primary mb-4"></i>
                     <h5 className="mb-3">Các Dự Án Tại Nhà</h5>
                     <p>
-                      Không bị giới hạn bởi môi trường làm việc truyền thống, có
-                      thể chọn thời gian làm việc phù hợp với lịch trình cá nhân
-                      và tạo điều kiện tốt nhất để sáng tạo
+                    Không bị giới hạn bởi môi trường làm việc truyền thống, có thể chọn thời gian làm việc phù hợp với lịch trình cá nhân và tạo điều kiện tốt nhất để sáng tạo. 
+                    Hãy phát huy tối đa khả năng của bạn từ không gian quen thuộc!
                     </p>
                   </div>
                 </div>
@@ -62,9 +60,8 @@ const About = () => {
                     <i className="fa fa-3x fa-book-open text-primary mb-4"></i>
                     <h5 className="mb-3">Thư Viện Tài Liệu</h5>
                     <p>
-                      Cung cấp một loạt các tài liệu và tài nguyên khác nhau, từ
-                      sách, bài báo, đến bản ghi và hướng dẫn, giúp bạn nắm vững
-                      thông tin cần thiết cho dự án của mình
+                    Cung cấp một loạt các tài liệu và tài nguyên khác nhau, từ sách, bài báo, đến bản ghi và hướng dẫn, giúp bạn nắm vững thông tin cần thiết cho dự án của mình. 
+                    Chúng tôi cam kết hỗ trợ bạn trong suốt quá trình học tập và phát triển bền vững, tạo ra giá trị thiết thực và lâu dài!
                     </p>
                   </div>
                 </div>

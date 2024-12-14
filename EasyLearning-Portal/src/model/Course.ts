@@ -44,7 +44,7 @@ export interface TrainingPart {
   description?: null | string | string;
   trainingPartType: string;
   imageUrl?: any;
-  videoUrl?: (null | string)[];
+  videoUrl?: string;
   courseId: string;
   courseEventId?: string | string;
   dateCreate?: string | string;
@@ -68,7 +68,7 @@ export interface CourseSlim {
   courseName: string;
   courseImage: string;
   courseType: string;
-  instructor: string;
+  nameInstructor: string;
   coursePrice: number;
   totalFeedback: number;
   averageRating: number;

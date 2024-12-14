@@ -21,8 +21,8 @@ class ForgetPasswordMailScreen extends StatelessWidget {
                 const SizedBox(height: tDefaultSize * 4),
                 const FormHeaderWidget(
                   image: tSplashImage,
-                  title: tForgetPassword,
-                  subTitle: tForgetPasswordSubTitle,
+                  title: TTexts.tForgetPassword,
+                  subTitle: TTexts.tForgetPasswordSubTitle,
                 ),
                 const SizedBox(height: tFormHeight),
                 Form(
@@ -30,8 +30,8 @@ class ForgetPasswordMailScreen extends StatelessWidget {
                     children: [
                       TextFormField(
                         decoration: const InputDecoration(
-                          label: Text(tEmail),
-                          hintText: tEmail,
+                          label: Text(TTexts.tEmail),
+                          hintText: TTexts.tEmail,
                           prefixIcon: Icon(Icons.mail_outline_rounded),
                         ),
                       ),
@@ -42,7 +42,7 @@ class ForgetPasswordMailScreen extends StatelessWidget {
                             onPressed: () {
                               Get.to(() => const OTPScreen());
                             },
-                            child: const Text(tNext)),
+                            child: const Text(TTexts.tNext)),
                       ),
                     ],
                   ),

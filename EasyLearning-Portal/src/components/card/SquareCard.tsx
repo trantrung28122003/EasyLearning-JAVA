@@ -13,11 +13,13 @@ import { HTTP_OK } from "../../constants/HTTPCode";
 import { useNavigate } from "react-router-dom";
 import { isUserLogin } from "../../hooks/useLogin";
 import { formatCurrency } from "../../hooks/useCurrency";
+import "./SquareCard.css"; // Đảm bảo file CSS được kết nối
+
 interface CardProps {
   course: Course;
 }
 
-const Card: React.FC<CardProps> = ({ course }) => {
+const SquareCard: React.FC<CardProps> = ({ course }) => {
   const navigate = useNavigate();
   const starRatings = [1, 2, 3, 4, 5];
   const [averageRating, setAverageRating] = useState<number | null>(null);
@@ -50,7 +52,9 @@ const Card: React.FC<CardProps> = ({ course }) => {
         setIsInCart(data.isInCart);
         setIsPurchased(data.isPurchased);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching course status:", error);
+    }
   };
 
   useEffect(() => {
@@ -80,11 +84,16 @@ const Card: React.FC<CardProps> = ({ course }) => {
     }
   };
 
+  const handleNavigateToCourseDetail = (courseId: string) => {
+    const courseDetailUrl = "/course/" + courseId;
+    window.open(courseDetailUrl, "_blank");
+  };
+
   return (
-    <div className="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-      <div className="course-item bg-light">
+    <div className="col-lg-3 col-md-6 col-sm-12 wow fadeInUp" data-wow-delay="0.3s" >
+      <div className="course-item bg-light h-100 d-flex flex-column">
         <div className="position-relative overflow-hidden">
-          <img className="img-fluid" src={course.imageUrl} alt="" />
+          <img className="img-fluid" src={course.imageUrl} alt="" onClick={() => handleNavigateToCourseDetail(course.id)} />
           <div className="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
             <a
               href={"/course/" + course.id}
@@ -94,69 +103,69 @@ const Card: React.FC<CardProps> = ({ course }) => {
               Xem Thêm
             </a>
             <a
-              onClick={() => addToCart()}
+              onClick={addToCart}
               className="flex-shrink-0 btn btn-sm btn-primary px-3"
               style={{ borderRadius: "0 30px 30px 0" }}
             >
               {isPurchased
                 ? "Bắt Đầu Học Ngay"
                 : isInCart
-                ? "Đi Tới Giỏ Hàng  "
+                ? "Đi Tới Giỏ Hàng"
                 : "Tham Gia Ngay"}
             </a>
           </div>
         </div>
-        <div className="text-center p-3 pb-0">
+        <div className="text-center p-2 pb-0" onClick={() => handleNavigateToCourseDetail(course.id)}>
           {priceDiscount && priceDiscount > 0 ? (
             <>
-              <h3
+              <h5
                 className="mb-0"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   color: "#888",
                   textDecoration: "line-through",
                 }}
               >
                 {formatCurrency(course.coursePrice)}₫
-              </h3>
-              <h3 className="mb-0" style={{ fontSize: "24px" }}>
+              </h5>
+              <h5 className="mb-0" >
                 {formatCurrency(priceDiscount)}₫
-              </h3>
+              </h5>
             </>
           ) : (
             <>
-              <h3
+              <h5
                 className="mb-0"
                 style={{
-                  fontSize: "16px",
+                  fontSize: "14px",
                   color: "#888",
                 }}
               >
                 Chưa có khuyến mãi
-              </h3>
-              <h3 className="mb-0" style={{ fontSize: "24px" }}>
+              </h5>
+              <h5 className="mb-0">
                 {formatCurrency(course.coursePrice)}₫
-              </h3>
+              </h5>
             </>
           )}
-          <div className="mb-2">
+          <div className="mb-2" style={{fontSize: "14px"}}>
             {starRatings.map((i) =>
               i <= (averageRating ?? 0) ? (
                 <small key={i} className="fa fa-star text-warning"></small>
               ) : (
-                <small key={i} className="fa fa-star text-mute"></small>
+                <small key={i} className="fa fa-star text-muted"></small>
               )
             )}
-            <small style={{ marginLeft: "10px" }}>
+            <small style={{ marginLeft: "4px" }}>
               ({course.feedbacks.length})
             </small>
           </div>
-          <h5 className="mb-2">{course.courseName}</h5>
+          <h5 className="mb-2 course-name">{course.courseName}</h5>
         </div>
         <div className="d-flex border-top">
           <small className="flex-fill text-center border-end py-2">
             <i className="fa fa-user-tie text-primary me-2"></i>
-            &nbsp;{course.instructor}
+            {course.instructor}
           </small>
           <small className="flex-fill text-center border-end py-2">
             <i className="fa fa-clock text-primary me-2"></i>
@@ -172,4 +181,4 @@ const Card: React.FC<CardProps> = ({ course }) => {
   );
 };
 
-export default Card;
+export default SquareCard;

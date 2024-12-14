@@ -50,6 +50,13 @@ const CHANGE_PASSWORD_BY_USER = BASE_URL + "/customer/changePassword"
 const FORGOT_PASSWORD_URL = BASE_URL + "/email/sendVerificationCode"
 const VERIFY_CODE_URL = BASE_URL + "/email/verifyCode"
 const RESET_PASSWORD = BASE_URL +"/customer/resetPassword"
+const GET_NOTES_BY_COURSE_AND_USER = BASE_URL +"/customer/getNotesByCourseAndUser"
+const ADD_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/addNotesByCourseAndUser"
+const UPDATE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/updateNotesByCourseAndUser"
+const DELETE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/deleteNotesByCourseAndUser"
+
+
+
 /*
   users
 */
@@ -57,7 +64,7 @@ const RESET_PASSWORD = BASE_URL +"/customer/resetPassword"
 /**
  * home
  */
-const GET_COURSES_MOST_REGISTERED = BASE_URL + "/topThreeMostRegisteredCourses";
+const GET_COURSES_MOST_REGISTERED = BASE_URL + "/topFourMostRegisteredCourses";
 const GET_ALL_CATEGORY_WITH_COURSE = BASE_URL + "/getAllCategoryWithCourse";
 const GET_ALL_COURSE = BASE_URL + "/getAllCourse";
 const GET_COURSE_BY_CATEGORY = BASE_URL + "/getCoursesByCategory";
@@ -65,6 +72,9 @@ const GET_COURSE_DETAIL = BASE_URL + "/detailCourse";
 const GET_FEEDBACKS_FOR_COURSE = BASE_URL + "/getFeedbacksByCourseWithoutUser";
 const GET_TOP_FOUR_MOST_CATEGORY = BASE_URL + "/topFourMostCategory";
 const SEARCH_COURSES = BASE_URL + "/search";
+const GET_FEEDBACKS_WITH_FIVE_RATING = BASE_URL + "/getFeedbacksWithFiveRating";
+const GET_COURSES_WITH_DISCOUNT = BASE_URL + "/getCourseWithDiscount";
+
 
 
 /**
@@ -134,4 +144,10 @@ export {
   RESET_PASSWORD,
   BASE_URL_CREATE_COURSE,
   BASE_URL_COURSE,
+  GET_FEEDBACKS_WITH_FIVE_RATING,
+  GET_COURSES_WITH_DISCOUNT,
+  GET_NOTES_BY_COURSE_AND_USER,
+  ADD_NOTE_BY_COURSE_AND_USER,
+  UPDATE_NOTE_BY_COURSE_AND_USER,
+  DELETE_NOTE_BY_COURSE_AND_USER
 };

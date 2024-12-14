@@ -33,8 +33,8 @@ public class CustomerController {
 
     @Autowired
     private NotificationService notificationService;
-
-
+    @Autowired
+    private UserNoteService userNoteService;
 
     @PostMapping("/addToFeedback")
     ApiResponse<Feedback> createFeedback(@RequestBody FeedbackCreationRequest request) {
@@ -165,4 +165,68 @@ public class CustomerController {
                     .build();
         }
     }
+
+    @GetMapping("/getNotesByCourseAndUser")
+    public ApiResponse<List<UserNoteResponse>> getNotesByCourseAndUser(@RequestParam String courseId) {
+        try{
+
+            return ApiResponse.<List<UserNoteResponse>>builder()
+                    .result(userNoteService.getNotesByCourseIdAndUserId(courseId))
+                    .build();
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<List<UserNoteResponse>>builder()
+                    .code(500)
+                    .message("Đã xảy ra lỗi trong quá trình lấy dữ liệu")
+                    .build();
+        }
+    }
+
+    @PostMapping("/addNotesByCourseAndUser")
+    public ApiResponse<UserNoteResponse> addNotesByCourseAndUser(@RequestBody UserNoteCreationRequest request) {
+        try{
+            return ApiResponse.<UserNoteResponse>builder()
+                    .result(userNoteService.addUserNote(request))
+                    .build();
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<UserNoteResponse>builder()
+                    .code(500)
+                    .message("Đã xảy ra lỗi trong quá trình sửa dữ liệu")
+                    .build();
+        }
+    }
+
+    @PostMapping("/updateNotesByCourseAndUser")
+    public ApiResponse<UserNoteResponse> getNotesByCourseAndUser(@RequestBody UserNoteUpdateRequest request) {
+        try{
+            return ApiResponse.<UserNoteResponse>builder()
+                    .result(userNoteService.updateUserNote(request))
+                    .build();
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<UserNoteResponse>builder()
+                    .code(500)
+                    .message("Đã xảy ra lỗi trong quá trình sửa dữ liệu")
+                    .build();
+        }
+    }
+
+    @DeleteMapping("/deleteNotesByCourseAndUser")
+    public ApiResponse<Void> deleteNotesByCourseAndUser(@RequestParam String userNoteId) {
+        try {
+            userNoteService.deleteNoteById(userNoteId);
+            return ApiResponse.<Void>builder()
+                    .result(null)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<Void>builder()
+                    .code(500)
+                    .message("Đã xảy ra lỗi trong quá trình xóa ghi chú")
+                    .build();
+        }
+    }
+
+
 }

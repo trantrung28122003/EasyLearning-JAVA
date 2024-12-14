@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import style from "./CartItem.module.css";
 import { REMOVE_FROM_CART } from "../../../../constants/API";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
-import { useNavigate } from "react-router-dom";
 import { formatCurrency } from "../../../../hooks/useCurrency";
 interface CartItemProps {
   item: ShoppingCartItem;
 }
 const CartItem: React.FC<CartItemProps> = ({ item }) => {
-  const navigate = useNavigate();
   const removeCartItem = () => {
     const URL = REMOVE_FROM_CART + "/" + item.id;
     DoCallAPIWithToken(URL, "post").then((res) => {
@@ -20,7 +18,8 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
   };
 
   const handleDetailCourse = (courseId: string) => {
-    navigate("/course/" + courseId);
+    const courseDetailUrl = "/course/" + courseId;
+    window.open(courseDetailUrl, "_blank");
   };
 
   return (

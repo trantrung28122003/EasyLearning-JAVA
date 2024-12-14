@@ -18,8 +18,8 @@ class SignUpScreen extends StatelessWidget {
               children: [
                 FormHeaderWidget(
                   image: tSplashImage,
-                  title: tSignUpTitle,
-                  subTitle: tSignUpSubTitle,
+                  title: TTexts.tSignUpTitle,
+                  subTitle: TTexts.tSignUpSubTitle,
                 ),
                 SignUpFormWidget(),
                 SignUpfooterWidget()

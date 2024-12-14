@@ -1,23 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { Course, CourseSlim } from "../../../../../model/Course";
+import { Course} from "../../model/Course";
 import { useEffect, useState } from "react";
 import {
   ADD_TO_CART,
   GET_COURSE_DETAIL,
   GET_COURSE_STATUS_BY_USER,
-} from "../../../../../constants/API";
+} from "../../constants/API";
 import {
   DoCallAPIWithOutToken,
   DoCallAPIWithToken,
-} from "../../../../../services/HttpService";
-import { HTTP_OK } from "../../../../../constants/HTTPCode";
-import { formatCurrency } from "../../../../../hooks/useCurrency";
+} from "../../services/HttpService";
+import { HTTP_OK } from "../../constants/HTTPCode";
+import { formatCurrency } from "../../hooks/useCurrency";
 
 interface CardProps {
   course: Course;
 }
 
-const SearchCard: React.FC<CardProps> = ({ course }) => {
+const LongCard: React.FC<CardProps> = ({ course }) => {
   const navigate = useNavigate();
   const starRatings = [1, 2, 3, 4, 5];
   const [isPurchased, setIsPurchased] = useState(false);
@@ -34,7 +34,6 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
       const response = await DoCallAPIWithOutToken(URL, "GET");
       if (response.status === HTTP_OK) {
         const data = await response.data.result;
-        console.log(data.averageRating);
         setAverageRating(data.averageRating);
         setTotalLearningTime(data.totalLearningTime);
         setPriceDiscount(data.coursePriceDiscount);
@@ -101,8 +100,8 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
             src={course.imageUrl}
             alt="Product"
             style={{
-              width: "100%",
-              height: "auto",
+              width: "180px",
+              height: "100px",
               objectFit: "contain",
             }}
           />
@@ -110,8 +109,7 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
 
         {/* Right side: Product Details */}
         <div className="flex-grow-1">
-          <h5>{course.courseName}</h5>
-
+          <h5 className="text-truncate">{course.courseName}</h5>
           <p className="text-muted mb-1">{course.instructor}</p>
           <p className="mb-1" style={{ fontSize: "15px" }}>
             {starRatings.map((i) =>
@@ -123,7 +121,7 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
             )}{" "}
             ({course.feedbacks.length})
           </p>
-          <p className="mb-1" style={{ fontSize: "14px" }}>
+          <p className="mb-1 text-truncate" style={{ fontSize: "14px" }}>
             {totalLearningTime} tổng số giờ - {course.trainingParts.length} bài
             giảng - cấp độ TẤT CẢ
           </p>
@@ -170,4 +168,4 @@ const SearchCard: React.FC<CardProps> = ({ course }) => {
   );
 };
 
-export default SearchCard;
+export default LongCard;

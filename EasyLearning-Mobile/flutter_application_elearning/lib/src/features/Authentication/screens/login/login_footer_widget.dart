@@ -25,7 +25,7 @@ class LoginFooterWidget extends StatelessWidget {
               width: 20.0,
             ),
             onPressed: () {},
-            label: const Text(tSignInWithGoogle),
+            label: const Text(TTexts.tSignInWithGoogle),
           ),
         ),
         const SizedBox(
@@ -35,11 +35,11 @@ class LoginFooterWidget extends StatelessWidget {
           onPressed: () {},
           child: Text.rich(
             TextSpan(
-                text: tDontHaveAnAccount,
+                text: TTexts.tDontHaveAnAccount,
                 style: Theme.of(context).textTheme.bodyLarge,
                 children: const [
                   TextSpan(
-                    text: tSignup,
+                    text: TTexts.tSignup,
                     style: TextStyle(color: Colors.blue),
                   ),
                 ]),

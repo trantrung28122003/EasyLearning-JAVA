@@ -19,16 +19,16 @@ class LoginForm extends StatelessWidget {
             TextFormField(
               decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person_outline_outlined),
-                  labelText: tEmail,
-                  hintText: tEmail,
+                  labelText: TTexts.tEmail,
+                  hintText: TTexts.tEmail,
                   border: OutlineInputBorder()),
             ),
             const SizedBox(height: tFormHeight - 20),
             TextFormField(
               decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.fingerprint),
-                  labelText: tPassword,
-                  hintText: tPassword,
+                  labelText: TTexts.tPassword,
+                  hintText: TTexts.tPassword,
                   border: OutlineInputBorder(),
                   suffixIcon: IconButton(
                       onPressed: null, icon: Icon(Icons.remove_red_eye_sharp))),
@@ -42,14 +42,14 @@ class LoginForm extends StatelessWidget {
                 onPressed: () {
                   ForgetPasswordScreen.buildShowModalBottomSheet(context);
                 },
-                child: const Text(tForgetPassword),
+                child: const Text(TTexts.tForgetPassword),
               ),
             ),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {},
-                child: Text(tLogin.toUpperCase()),
+                child: Text(TTexts.tLogin.toUpperCase()),
               ),
             ),
           ],

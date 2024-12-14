@@ -79,6 +79,8 @@ public class CourseService {
     @Autowired CourseEventService courseEventService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private CourseDiscountRepository courseDiscountRepository;
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
@@ -232,8 +234,13 @@ public class CourseService {
 //    }
 
 @Transactional
-    public List<Course> getTopThreeMostRegisteredCourses() {
-        return courseRepository.findTop3ByOrderByRegisteredUsersDesc();
+    public List<Course> getTopFourMostRegisteredCourses() {
+        return courseRepository.findTop4ByOrderByRegisteredUsersDesc();
+    }
+
+    @Transactional
+    public List<Course> getCoursesFree() {
+        return courseRepository.findTop4ByOrderByRegisteredUsersDesc();
     }
 
     @Transactional
@@ -574,4 +581,9 @@ public class CourseService {
         return courses;
     }
 
+
+    public List<Course> getAllCourseWithDiscount() {
+
+        return courseDiscountRepository.findDistinctCoursesWithDiscount();
+    }
 }

@@ -103,8 +103,6 @@ public class FeedbackService {
 
             feedbackInfos.add(feedbackResponse);
         }
-
-        // Trả về kết quả phản hồi mà không có thông tin về người dùng
         FeedbackResponse feedbackResponse = FeedbackResponse.builder()
                 .feedbacks(feedbackInfos)
                 .setHasGivenFeedback(false)  // Vì người dùng chưa đăng nhập, không có phản hồi
@@ -113,6 +111,25 @@ public class FeedbackService {
         return feedbackResponse;
     }
 
+
+    @Transactional
+    public List<FeedbackInfoResponse>  getFeedbacksWithFiveRating() {
+        var feedbacks = feedbackRepository.findByFeedbackRating(5);
+        List<FeedbackInfoResponse> feedbackInfos = new ArrayList<>();
+        for (var feedback : feedbacks) {
+            var user = userRepository.findById(feedback.getFeedbackUserId()).orElse(null);
+            if (user != null) {
+                FeedbackInfoResponse feedbackInfoResponse = FeedbackInfoResponse.builder()
+                        .content(feedback.getFeedbackContent())
+                        .avatar(user.getImageUrl())
+                        .fullNameUser(user.getFullName())
+                        .feedbackRating(feedback.getFeedbackRating())
+                        .build();
+                feedbackInfos.add(feedbackInfoResponse);
+            }
+        }
+        return feedbackInfos;
+    }
 
     @Transactional
     public Feedback createFeedback(FeedbackCreationRequest request) {

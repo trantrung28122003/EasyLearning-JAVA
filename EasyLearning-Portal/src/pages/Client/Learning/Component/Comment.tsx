@@ -43,7 +43,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
   );
 
   const [replyContent, setReplyContent] = useState<string>("");
-
+  
   const toggleReplies = (commentId: string) => {
     setVisibleReplies((prev) => ({
       ...prev,
@@ -75,7 +75,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
   const client = getWebSocketClient();
   useEffect(() => {
     console.log("trainpartiddd neeee", trainingPartId);
-    const res = DoCallAPIWithToken(
+    DoCallAPIWithToken(
       BASE_URL + `/comments/commentsByTrainingPart/${trainingPartId}`,
       "GET"
     ).then((res) => {
@@ -196,7 +196,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
               <header className="card-comment border-0 bg-transparent d-flex align-items-center">
                 <div>
                   <img
-                    src="https://via.placeholder.com/40x40"
+                    src={comment.userImageUrl}
                     className="rounded-circle me-2"
                     alt="User Avatar"
                   />
@@ -281,7 +281,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
                           >
                             <header className="card-comment border-0 bg-transparent">
                               <img
-                                src="https://via.placeholder.com/30x30"
+                                src={reply.userImageUrl}
                                 className="rounded-circle me-2"
                                 alt="User Avatar"
                               />

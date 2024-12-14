@@ -21,7 +21,7 @@ class SignUpfooterWidget extends StatelessWidget {
               width: 20.0,
             ),
             onPressed: () {},
-            label: Text(tSignInWithGoogle.toUpperCase()),
+            label: Text(TTexts.tSignInWithGoogle.toUpperCase()),
           ),
         ),
         const SizedBox(
@@ -31,11 +31,11 @@ class SignUpfooterWidget extends StatelessWidget {
           onPressed: () {},
           child: Text.rich(
             TextSpan(
-                text: tAlreadyHaveAnAccount,
+                text: TTexts.tAlreadyHaveAnAccount,
                 style: Theme.of(context).textTheme.bodyLarge,
                 children: const [
                   TextSpan(
-                    text: tLogin,
+                    text: TTexts.tLogin,
                     style: TextStyle(color: Colors.blue),
                   ),
                 ]),

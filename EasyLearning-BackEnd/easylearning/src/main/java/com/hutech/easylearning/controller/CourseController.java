@@ -24,7 +24,6 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public List<Course> getAllCourses() {
         List<Course> courses = courseService.getAllCourses();

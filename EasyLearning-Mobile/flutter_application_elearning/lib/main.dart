@@ -9,7 +9,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -18,7 +17,7 @@ class MyApp extends StatelessWidget {
         themeMode: ThemeMode.system,
         home: const NavigationMenu());
     //home: const AppHome(),
-    //home: WelcomeScreen());
+    //home: const WelcomeScreen());
   }
 }
 

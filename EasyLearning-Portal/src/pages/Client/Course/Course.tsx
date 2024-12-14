@@ -8,7 +8,7 @@ import { CategoryWithCourse } from "../../../model/Category";
 import { DoCallAPIWithOutToken } from "../../../services/HttpService";
 import ClientShared from "../Shared/ClientShared";
 import { ApplicationResponse } from "../../../model/BaseResponse";
-import Card from "../../../components/card/Card";
+import Card from "../../../components/card/SquareCard";
 import { useNavigate, useParams } from "react-router-dom";
 
 const Course: React.FC = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ClientShared from "../../Shared/ClientShared";
 import { useNavigate, useParams } from "react-router-dom";
-import { CourseSlim } from "../../../../model/Course";
+import { CourseSlim, TrainingPart } from "../../../../model/Course";
 import {
   ADD_TO_CART,
   ADD_TO_FEEDBACK,
@@ -21,6 +21,8 @@ import { Feedback } from "../../../../model/FeedBack";
 import { isUserLogin } from "../../../../hooks/useLogin";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { formatCurrency } from "../../../../hooks/useCurrency";
+import CoursePreview from "../CoursePreview/CoursePreview";
+import DataLoader from "../../../../components/lazyLoadComponent/DataLoader";
 
 const CourseDetail: React.FC = () => {
   const navigate = useNavigate();
@@ -34,9 +36,12 @@ const CourseDetail: React.FC = () => {
   const isLogin = isUserLogin();
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState("");
-
+  const [showModalCoursePreview, setShowModalCoursePreview] = useState(false);
+  const [selectTrainingPartPreview, setSelectTrainingPartPreview] = useState<TrainingPart>();
+ const [isLoading, setIsLoading] = useState(false);
   const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
   const fetchCourseDetail = async (courseId: string) => {
+    setIsLoading(true)
     try {
       const URL = GET_COURSE_DETAIL + "/" + courseId;
       const courseRes = await DoCallAPIWithOutToken(URL, "GET");
@@ -44,8 +49,15 @@ const CourseDetail: React.FC = () => {
         const courseDetail: CourseSlim = courseRes.data.result;
         setPriceDiscount(courseRes.data.result.coursePriceDiscount);
         setCourse(courseDetail);
-      }
 
+        if (courseDetail?.courseEventResponses.length > 0) {
+          const initialOpenEvents: { [key: string]: boolean } = {};
+          courseDetail.courseEventResponses.forEach((classEvent, index) => {
+            initialOpenEvents[classEvent.courseEventName] = index === 0;
+          });
+          setOpenEvents(initialOpenEvents);
+        }
+      }
       const feedbackURL = GET_FEEDBACKS_FOR_COURSE + "/" + courseId;
       const feedbackRes = await DoCallAPIWithOutToken(feedbackURL, "GET");
       if (feedbackRes.status === HTTP_OK) {
@@ -53,10 +65,11 @@ const CourseDetail: React.FC = () => {
       }
     } catch (e) {
       console.log(e);
-    }
+    }finally{setIsLoading(false)}
   };
 
   const fetchCourseStatus = async (courseId: string) => {
+    
     try {
       const URL = GET_COURSE_STATUS_BY_USER + "/" + courseId;
       const response = await DoCallAPIWithToken(URL, "GET");
@@ -71,6 +84,7 @@ const CourseDetail: React.FC = () => {
 
   const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
   const toggleEventDetails = (eventName: string) => {
+    
     setOpenEvents((prev) => ({
       ...prev,
       [eventName]: !prev[eventName],
@@ -127,21 +141,37 @@ const CourseDetail: React.FC = () => {
       alert("Đã xảy ra lỗi, vui lòng thử lại sau.");
     }
   };
+
+  const onShowModalCoursePreview = (trainingPart : TrainingPart) => {
+    setShowModalCoursePreview(true); 
+    setSelectTrainingPartPreview(trainingPart)
+  };
+
+  const hanldeCloseModalCoursePreview = () => {
+    setShowModalCoursePreview(false);
+  };
+
   useEffect(() => {
     if (courseId) {
       fetchCourseDetail(courseId);
       fetchCourseStatus(courseId);
       setTimeout(() => {
         window.scrollTo(0, 0);
-      }, 0);
+      }, 0); 
     } else {
       console.error("Course ID is missing!");
     }
+    
+
+    
   }, [courseId]);
 
   return (
     <ClientShared>
-      <div className="container">
+      <>
+      <DataLoader isLoading ={isLoading}/>
+    
+     <div className="container">
         <div className="product-content product-wrap clearfix product-deatil">
           <div className="row">
             <div className="col-md-5 col-sm-12 col-12">
@@ -179,7 +209,7 @@ const CourseDetail: React.FC = () => {
                   {" "}
                   Khóa học bởi
                   <a style={{ color: "#06BBCC", marginLeft: "10px" }}>
-                    {course?.instructor}
+                    {course?.nameInstructor}
                   </a>
                 </small>
                 <span className="fa fa-2x">
@@ -282,6 +312,7 @@ const CourseDetail: React.FC = () => {
                                       free: part.free,
                                       "not-free": !part.free,
                                     })}
+                                    onClick={() => part.free && onShowModalCoursePreview(part)}
                                   >
                                     <span>
                                       {part.trainingPartType == "LESSON" ? (
@@ -294,7 +325,6 @@ const CourseDetail: React.FC = () => {
                                           underline: part.free,
                                         })}
                                       >
-                                        {/* {" "} */}
                                         {part.trainingPartName}
                                       </span>
                                     </span>
@@ -304,8 +334,10 @@ const CourseDetail: React.FC = () => {
                                       </span>
                                     )}
                                   </dd>
+                              
                                 </>
                               ))}
+                              
                             </div>
                           )}
                         </>
@@ -351,7 +383,7 @@ const CourseDetail: React.FC = () => {
                                   fontSize: "25px",
                                   cursor: "pointer",
                                 }}
-                                onClick={() => handleStarClick(value)} // Cập nhật rating khi nhấn vào sao
+                                onClick={() => handleStarClick(value)}
                               ></span>
                             ))}
                           </div>
@@ -480,6 +512,8 @@ const CourseDetail: React.FC = () => {
           </div>
         </div>
       </div>
+      {showModalCoursePreview && course && selectTrainingPartPreview && <CoursePreview course={course} trainingPart={selectTrainingPartPreview} onClose = {hanldeCloseModalCoursePreview} />}
+      </> 
     </ClientShared>
   );
 };
