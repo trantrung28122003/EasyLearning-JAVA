@@ -3,6 +3,7 @@ import ClientShared from "../../Shared/ClientShared";
 import { useNavigate, useParams } from "react-router-dom";
 import { CourseSlim, TrainingPart } from "../../../../model/Course";
 import {
+  ADD_COURSE_FREE,
   ADD_TO_CART,
   ADD_TO_FEEDBACK,
   GET_COURSE_DETAIL,
@@ -46,7 +47,8 @@ const CourseDetail: React.FC = () => {
     useState<TrainingPart>();
   const [isLoading, setIsLoading] = useState(false);
   const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isFree, setIsFree] = useState(false);
+  const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
   const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
   const fetchCourseDetail = async (courseId: string) => {
     setIsLoading(true);
@@ -90,6 +92,7 @@ const CourseDetail: React.FC = () => {
         setIsCourseFull(data.isCourseFull);
         setIsRegistrationDateExpired(data.isRegistrationDateExpired);
         setIsFavorited(data.isFavorited);
+        setIsFree(isFree);
       }
     } catch (error) {}
   };
@@ -100,11 +103,26 @@ const CourseDetail: React.FC = () => {
       [eventName]: !prev[eventName],
     }));
   };
-
+  const addCourseFree = async (courseId: string) => {
+    setIsLoadingAddCart(true);
+    try {
+      const URL = ADD_COURSE_FREE + `?courseId=${courseId}`;
+      const response = await DoCallAPIWithToken(URL, "GET");
+      if (response.status === HTTP_OK && response.data.code === 200) {
+        fetchCourseStatus(courseId);
+      }
+    } catch (error) {
+      console.error("Đã xảy ra lỗi", error);
+    } finally {
+      setIsLoadingAddCart(false);
+    }
+  };
   const addToCart = () => {
     if (!isLogin) {
       localStorage.clear();
       navigate("/login");
+    } else if (isFree && !isPurchased && courseId) {
+      addCourseFree(courseId);
     } else if (isPurchased) {
       navigate("/userCourses");
     } else if (isInCart) {
@@ -297,17 +315,23 @@ const CourseDetail: React.FC = () => {
                     }}
                     // disabled={isCourseFull || isRegistrationDateExpired}
                   >
-                    {isPurchased
-                      ? "Bắt Đầu Học Ngay"
-                      : isInCart
-                      ? "Đi Tới Giỏ Hàng"
-                      : isCourseFull && isRegistrationDateExpired
-                      ? "Ngày đăng ký khóa học đã hết hạn và đã đủ số lượng đăng kí"
-                      : isCourseFull
-                      ? "Khóa học đã đủ số lượng đăng kí"
-                      : isRegistrationDateExpired
-                      ? "Ngày đăng ký khóa học đã hết hạn"
-                      : "Tham Gia Ngay"}
+                    {isLoadingAddCart ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : (
+                      <>
+                        {isPurchased
+                          ? "Bắt Đầu Học Ngay"
+                          : isInCart
+                          ? "Đi Tới Giỏ Hàng"
+                          : isCourseFull && isRegistrationDateExpired
+                          ? "Ngày đăng ký khóa học đã hết hạn và đã đủ số lượng đăng kí"
+                          : isCourseFull
+                          ? "Khóa học đã đủ số lượng đăng kí"
+                          : isRegistrationDateExpired
+                          ? "Ngày đăng ký khóa học đã hết hạn"
+                          : "Tham Gia Ngay"}
+                      </>
+                    )}
                   </a>
                 </div>
 

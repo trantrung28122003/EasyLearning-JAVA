@@ -80,12 +80,12 @@ public class UserTrainingProgressService {
             int totalQuestions = scoreRequest.getTotalQuestionsCount();
             if (totalQuestions > 0) {
                 averageScore = (double) correctAnswers / totalQuestions;
-                averageScore = Math.round(averageScore * 100.0) / 100.0;
+                averageScore = Math.round(averageScore * 10.0) / 10.0;
             } else {
                 System.out.println("Total questions count cannot be zero.");
             }
         }
-        int quizScore = (int) Math.round(averageScore * 100);
+        int quizScore = (int) Math.round(averageScore * 10);
         userTrainingProgress.setCompleted(true);
         userTrainingProgress.setQuizScore(quizScore);
         userTrainingProgress.setDateChange(LocalDateTime.now());
