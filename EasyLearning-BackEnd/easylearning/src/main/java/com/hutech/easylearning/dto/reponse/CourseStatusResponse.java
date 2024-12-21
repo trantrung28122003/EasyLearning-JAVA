@@ -22,5 +22,16 @@ public class CourseStatusResponse {
 
     @JsonProperty("isFeedback")
     private boolean isFeedback;
+
+    @JsonProperty("isFavorited")
+    private boolean isFavorited;
+
+    @JsonProperty("isRegistrationDateExpired")
+    private boolean isRegistrationDateExpired;
+
+    @JsonProperty("isCourseFull")
+    private boolean isCourseFull;
+    @JsonProperty("isFree")
+    private boolean isFree;
 }
 

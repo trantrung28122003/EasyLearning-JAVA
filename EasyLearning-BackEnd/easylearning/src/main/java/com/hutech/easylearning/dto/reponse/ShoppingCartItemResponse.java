@@ -24,4 +24,5 @@ public class ShoppingCartItemResponse {
 
     String courseId;
 
+    boolean notRegistrable;
 }

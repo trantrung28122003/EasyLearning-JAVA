@@ -2,6 +2,7 @@ package com.hutech.easylearning.controller;
 
 
 import com.hutech.easylearning.dto.reponse.ExerciseResponse;
+import com.hutech.easylearning.dto.reponse.TrainingPartProgressResponse;
 import com.hutech.easylearning.dto.reponse.UserTrainingProgressStatusResponse;
 import com.hutech.easylearning.dto.request.ApiResponse;
 import com.hutech.easylearning.dto.request.ScoreRequest;
@@ -53,12 +54,11 @@ public class UserTrainingProgressController {
                 .build();
     }
 
-
     @PostMapping("/updateStatusPartProgress/{trainingPartId}")
-    public ApiResponse<UserTrainingProgress> updateStatusPartProgress(@PathVariable("trainingPartId") String trainingPartId, @RequestBody(required = false) ScoreRequest scoreRequest ) {
-        UserTrainingProgress updatedProgress = userTrainingProgressService.updatePartProgress(trainingPartId, scoreRequest);
-        return ApiResponse.<UserTrainingProgress>builder()
-                .result(updatedProgress)
+    public ApiResponse<TrainingPartProgressResponse> updateStatusPartProgress(@PathVariable("trainingPartId") String trainingPartId, @RequestBody(required = false) ScoreRequest scoreRequest ) {
+
+        return ApiResponse.<TrainingPartProgressResponse>builder()
+                .result(userTrainingProgressService.updatePartProgress(trainingPartId, scoreRequest))
                 .build();
     }
 }

@@ -10,6 +10,7 @@ import com.hutech.easylearning.repository.CategoryRepository;
 import com.hutech.easylearning.repository.CourseDetailRepository;
 import com.hutech.easylearning.repository.CourseRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -22,24 +23,17 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryService {
 
-    @Autowired
-    CategoryRepository categoryRepository;
+     final CategoryRepository categoryRepository;
+     final UserService userService;
+     final CourseDetailService courseDetailService;
+     final UploaderService uploaderService;
+     final CourseDetailRepository courseDetailRepository;
+     final CourseRepository courseRepository;
 
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    CourseDetailService courseDetailService;
-
-    @Autowired
-    private UploaderService uploaderService;
-    @Autowired
-    private CourseDetailRepository courseDetailRepository;
-    @Autowired
-    private CourseRepository courseRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -58,37 +52,21 @@ public class CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Category createCategory(CategoryCreationRequest request, MultipartFile file) {
-        // Lấy thông tin người dùng hiện tại
         var currentUserInfo = userService.getMyInfo();
-
-        // Kiểm tra giá trị nhận được từ request
-        System.out.println("Received categoryName: " + request.getCategoryName());
-        System.out.println("Received imageLink: " + request.getImageLink());
-
-        String imageLink = "Default"; // Đặt giá trị mặc định cho imageLink
-
-        // Nếu có file thì upload file và lấy link ảnh
-        if (file != null) {
+        String imageLink ="Default";
+        if(file != null)
+        {
             imageLink = uploaderService.uploadFile(file);
-        } else if (request.getImageLink() != null && !request.getImageLink().isEmpty()) {
-            imageLink = request.getImageLink(); // Nếu có imageLink từ request, sử dụng link này
         }
-
-        // Kiểm tra imageLink sau khi upload file hoặc lấy từ request
-        System.out.println("Image link after file upload or provided imageLink: " + imageLink);
-
-        // Tạo category từ dữ liệu nhận được
         Category category = Category.builder()
                 .categoryName(request.getCategoryName())
                 .imageLink(imageLink)
-                .sortOrder(request.getSortOrder() != null ? request.getSortOrder() : 0) // Đảm bảo có giá trị sortOrder
+                .sortOrder(request.getSortOrder())
                 .dateCreate(LocalDateTime.now())
                 .dateChange(LocalDateTime.now())
                 .changedBy(currentUserInfo.getId())
-                .isDeleted(request.getIsDeleted() != null ? request.getIsDeleted() : false)
+                .isDeleted(false)
                 .build();
-
-        // Lưu vào CSDL và trả về
         return categoryRepository.save(category);
     }
 
@@ -98,7 +76,8 @@ public class CategoryService {
         var currentUserInfo = userService.getMyInfo();
         var categoryById = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
-        if (file != null) {
+        if(file != null)
+        {
             String imageLink = uploaderService.uploadFile(file);
             categoryById.setImageLink(imageLink);
         }

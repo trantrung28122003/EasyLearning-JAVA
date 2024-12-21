@@ -13,10 +13,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderDetailService {
 
-    OrderDetailRepository orderDetailRepository;
+    final OrderDetailRepository orderDetailRepository;
 
     @Transactional(readOnly = true)
     public List<OrderDetail> getAllOrderDetails() {

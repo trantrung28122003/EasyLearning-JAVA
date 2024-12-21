@@ -1,6 +1,8 @@
 package com.hutech.easylearning.service;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -8,32 +10,32 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailService {
 
     @Value("${spring.mail.host}")
-    private String host;
-
+    String host;
     @Value("${spring.mail.port}")
-    private int port;
-
+    int port;
     @Value("${spring.mail.username}")
-    private String username;
-
+    String username;
     @Value("${spring.mail.password}")
-    private String password;
-
+    String password;
     @Value("${spring.mail.fromEmail}")
-    private String fromEmail;
+    String fromEmail;
 
     public void sendVerificationCode(String toEmail, String verificationCode) throws MessagingException, IOException {
         String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailVerification.html").toString();
@@ -46,26 +48,31 @@ public class EmailService {
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
 
-        // Tạo session với chứng thực
+
         Session session = Session.getInstance(properties, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(username, password);
             }
         });
 
-        // Tạo tin nhắn email
+
         Message msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(fromEmail));
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
         msg.setSubject(subject);
         msg.setContent(emailBody, "text/html; charset=utf-8");
 
-        // Gửi email
+
         Transport.send(msg);
         System.out.println("Email sent successfully.");
     }
+    public static String formatCurrency(BigDecimal totalAmount) {
 
-    public void sendEmailPaymentAsync(String toEmail, String subject, String customerName, String totalAmount, String totalCourses, String authorizationCode, String orderDate, List<String> courseNameList) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
+        numberFormat.setMaximumFractionDigits(0);
+        return numberFormat.format(totalAmount);
+    }
+    public void sendEmailPaymentAsync(String toEmail, String subject, String customerName, BigDecimal totalAmount, String totalCourses, String authorizationCode, String orderDate, List<String> courseNameList) {
         try {
 
             String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailPayment.html").toString();
@@ -75,16 +82,14 @@ public class EmailService {
             StringBuilder coursesBuilder = new StringBuilder();
 
             for (String courseName : courseNameList) {
-                coursesBuilder.append("<li>").append(courseName).append("</li>");
+                coursesBuilder.append("<li style=\"margin-bottom: 10px;\">")
+                        .append(courseName)
+                        .append("</li>");
             }
 
-            String courses = coursesBuilder.toString();
-            DecimalFormat decimalFormat = new DecimalFormat("#,##0.000");
-            decimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols() {{
-                setDecimalSeparator(',');
-            }});
-            String formattedTotalAmount = decimalFormat.format(Double.parseDouble(totalAmount));
 
+            String courses = coursesBuilder.toString();
+            String formattedTotalAmount = formatCurrency(totalAmount);
             String emailBody = emailTemplate
                     .replace("[CustomerName]", customerName != null ? customerName : "")
                     .replace("[totalAmount]", formattedTotalAmount != null ? formattedTotalAmount : "")
@@ -92,8 +97,6 @@ public class EmailService {
                     .replace("[listCourses]", courses)
                     .replace("[orderDate]", orderDate != null ? orderDate : "")
                     .replace("[authorizationCode]", authorizationCode != null ? authorizationCode : "");
-
-
             Properties properties = new Properties();
             properties.put("mail.smtp.host", host);
             properties.put("mail.smtp.port", String.valueOf(port));

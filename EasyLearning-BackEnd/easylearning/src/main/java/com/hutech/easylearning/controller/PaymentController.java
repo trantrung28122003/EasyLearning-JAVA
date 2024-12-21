@@ -2,20 +2,22 @@ package com.hutech.easylearning.controller;
 
 
 
+
 import com.hutech.easylearning.dto.request.*;
-import com.hutech.easylearning.service.NotificationService;
-import com.hutech.easylearning.service.OrderService;
-import com.hutech.easylearning.service.PaymentService;
+import com.hutech.easylearning.service.*;
+
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/payment")
@@ -33,11 +35,11 @@ public class PaymentController {
     @PostMapping("/doPaymentMomo")
     public String doPayment(@RequestBody @Valid MomoRequest request) {
         request.setNote("Thanh toan khoa hoc");
-        return paymentService.doPayment(request.getAmount(), request.getNote());
+        return paymentService.doPaymentMOMO(request.getAmount(), request.getNote());
     }
 
     @PostMapping("/confirmPaymentMomoClient")
-    public ApiResponse<String> confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentSuccessRequest request) {
+    public ApiResponse<String> confirmPaymentMomoClient(@RequestBody @Valid ConfirmPaymentMomoRequest request) {
         System.out.println("partnerCode: " + request.getPartnerCode());
         System.out.println("accessKey: " + request.getAccessKey());
         System.out.println("requestId: " + request.getRequestId());
@@ -57,19 +59,54 @@ public class PaymentController {
         if ("0".equals(request.getErrorCode())) {
             OrderRequest orderRequest = OrderRequest.builder()
                     .amount(request.getAmount())
+                    .paymentMethod("MOMO")
                     .note("Thanh toán thành công")
                     .build();
             orderService.processPaymentAndCreateOrder(orderRequest);
-
             return ApiResponse.<String>builder()
+                    .code(200)
                     .result("Payment successful")
                     .build();
         } else {
             return ApiResponse.<String>builder()
+                    .code(400)
+                    .result("Payment failed: " + request.getMessage())
+                    .build();
+        }
+    }
+
+
+    @GetMapping("/doPaymentVNPay")
+    public String doPaymentVNPay(@RequestParam long amount) throws UnsupportedEncodingException {
+        return paymentService.doPaymentVNPAY(amount);
+    }
+
+    @PostMapping("/confirmPaymentVNPayClient")
+    public ApiResponse<String> confirmPaymentVNPayClient(@RequestBody @Valid ConfirmPaymentVNPayRequest request) {
+        if ("00".equals(request.getErrorCode())) {
+            long amount = Long.parseLong(request.getAmount()) / 100;
+            String amountString = String.valueOf(amount);
+            OrderRequest orderRequest = OrderRequest.builder()
+                    .amount(amountString)
+                    .note("Thanh toán thành công")
+                    .paymentMethod("VNPAY")
+                    .build();
+
+            orderService.processPaymentAndCreateOrder(orderRequest);
+            return ApiResponse.<String>builder()
+                    .code(200)
+                    .result("Payment successful")
+                    .build();
+        } else {
+            return ApiResponse.<String>builder()
+                    .code(400)
                     .result("Payment failed: " + request.getMessage())
                     .build();
         }
     }
 
 }
+
+
+
 

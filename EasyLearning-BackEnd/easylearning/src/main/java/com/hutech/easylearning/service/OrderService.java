@@ -1,6 +1,8 @@
 package com.hutech.easylearning.service;
 
 
+import com.hutech.easylearning.dto.reponse.OrderDetailResponse;
+import com.hutech.easylearning.dto.reponse.PurchaseHistoryResponse;
 import com.hutech.easylearning.dto.request.OrderRequest;
 import com.hutech.easylearning.entity.Course;
 import com.hutech.easylearning.entity.Order;
@@ -25,34 +27,19 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OrderService {
 
-    OrderRepository orderRepository;
-
-    @Autowired
-    ShoppingCartItemService shoppingCartItemService;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    OrderDetailService orderDetailService;
-
-    @Autowired
-    EmailService emailService;
-
-    @Autowired
-    TrainingPartService trainingPartService;
-
-    @Autowired
-    UserTrainingProgressService userTrainingProgressService;
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private NotificationService notificationService;
-
-    private final SimpMessagingTemplate simpMessagingTemplate;
+    final OrderRepository orderRepository;
+    final ShoppingCartItemService shoppingCartItemService;
+    final UserService userService;
+    final OrderDetailService orderDetailService;
+    final EmailService emailService;
+    final TrainingPartService trainingPartService;
+    final UserTrainingProgressService userTrainingProgressService;
+    final CourseRepository courseRepository;
+    final NotificationService notificationService;
+    final SimpMessagingTemplate simpMessagingTemplate;
     
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
@@ -66,20 +53,21 @@ public class OrderService {
     }
 
     @Transactional
-    public Order processPaymentAndCreateOrder(OrderRequest request) {
+    public boolean processPaymentAndCreateOrder(OrderRequest request) {
         var shoppingCartItems = shoppingCartItemService.getShoppingCartItemsByCurrentUser();
         var currentUser = userService.getMyInfo();
         BigDecimal orderAmount = new BigDecimal(request.getAmount());
         Order order = Order.builder()
                 .orderTotalPrice(orderAmount)
                 .orderNotes(request.getNote())
-                .orderPaymentMethod("MOMO")
+                .orderPaymentMethod(request.getPaymentMethod())
                 .orderQuantity(shoppingCartItems.size())
                 .dateCreate(LocalDateTime.now())
-                .userId(userService.getMyInfo().getId())
+                .userId(currentUser.getId())
                 .dateChange(LocalDateTime.now())
-                .changedBy(userService.getMyInfo().getId())
+                .changedBy(currentUser.getId())
                 .isDeleted(false)
+                .isFree(false)
                 .build();
         Order saveOrder = orderRepository.save(order);
 
@@ -87,16 +75,17 @@ public class OrderService {
             var orderDetail = OrderDetail.builder()
                     .orderId(order.getId())
                     .courseId(itemShoppingCart.getCourseId())
+                    .orderDetailPrice(itemShoppingCart.getCartItemPrice())
+                    .orderDetailDiscount(itemShoppingCart.getCartItemPriceDiscount())
                     .dateCreate(LocalDateTime.now())
                     .dateChange(LocalDateTime.now())
-                    .changedBy(userService.getMyInfo().getId())
+                    .changedBy(currentUser.getId())
                     .isDeleted(false)
                     .build();
             orderDetailService.createOrderDetail(orderDetail);
 
-            var trainingpartsByCourse = trainingPartService.getTrainingPartsByCourseId(itemShoppingCart.getCourseId());
-            for(var itemTrainingPart : trainingpartsByCourse)
-            {
+            //var trainingPartsByCourse = trainingPartService.getTrainingPartsByCourseId(itemShoppingCart.getCourseId());
+            for (var itemTrainingPart : itemShoppingCart.getCourse().getTrainingParts()) {
                 UserTrainingProgress userTrainingProgress = new UserTrainingProgress().builder()
                         .userId(currentUser.getId())
                         .trainingPartId(itemTrainingPart.getId())
@@ -105,26 +94,23 @@ public class OrderService {
                         .dateChange(LocalDateTime.now())
                         .dateCreate(LocalDateTime.now())
                         .build();
-
                 userTrainingProgressService.createUserTrainingProgress(userTrainingProgress);
-
-
-
             }
-
             var notificationResponse = notificationService.addNotificationByPurchaseCourse(itemShoppingCart.getCourseId());
-            // Gửi thông báo tới các client qua WebSocket
-            simpMessagingTemplate.convertAndSend("/topic/notifications", notificationResponse);
-            shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
+
+            String destination = "/notifications";
+            try {
+                simpMessagingTemplate.convertAndSendToUser(currentUser.getId(), destination, notificationResponse);
+                System.out.println("Gửi tin nhắn tới: /user/" + currentUser.getId() + destination);
+            } catch (Exception e) {
+                System.err.println("Lỗi khi gửi tin nhắn: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
-
-
-
 
         var toEmail = currentUser.getEmail();
         var subject = "Thanh toán thành công trên trang eLearning";
         var customerName = currentUser.getFullName();
-        var totalAmount = String.valueOf(orderAmount);
         var totalCourses = String.valueOf(shoppingCartItems.size());
         var authorizationCode = order.getId();
         LocalDateTime orderDate = LocalDateTime.now();
@@ -135,11 +121,113 @@ public class OrderService {
 
         for (var itemShoppingCart : shoppingCartItems) {
             courseByNames.add(itemShoppingCart.getCourse().getCourseName());
+            shoppingCartItemService.deleteShoppingCartItem(itemShoppingCart.getId());
         }
-        emailService.sendEmailPaymentAsync(toEmail, subject, customerName, totalAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
 
-        return saveOrder;
+        if(saveOrder !=null) {
+            emailService.sendEmailPaymentAsync(toEmail, subject, customerName, orderAmount, totalCourses, authorizationCode, orderDateString, courseByNames);
+        }
+        return saveOrder != null;
     }
+    @Transactional
+    public boolean addFreeCourseOrder(String courseId) {
+        var currentUser = userService.getMyInfo();
+        var course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));
+        Order order = Order.builder()
+                .orderTotalPrice(BigDecimal.ZERO)
+                .orderNotes("Miễn phí")
+                .orderPaymentMethod("Miễn phí")
+                .orderQuantity(1)
+                .dateCreate(LocalDateTime.now())
+                .userId(currentUser.getId())
+                .dateChange(LocalDateTime.now())
+                .changedBy(currentUser.getId())
+                .isDeleted(false)
+                .isFree(true)
+                .build();
+        Order savedOrder = orderRepository.save(order);
+
+        OrderDetail orderDetail = OrderDetail.builder()
+                .orderId(savedOrder.getId())
+                .courseId(courseId)
+                .orderDetailPrice(BigDecimal.ZERO)
+                .orderDetailDiscount(BigDecimal.ZERO)
+                .dateCreate(LocalDateTime.now())
+                .dateChange(LocalDateTime.now())
+                .changedBy(currentUser.getId())
+                .isDeleted(false)
+                .build();
+        orderDetailService.createOrderDetail(orderDetail);
+
+        for (var trainingPart : course.getTrainingParts()) {
+            UserTrainingProgress userTrainingProgress = new UserTrainingProgress().builder()
+                    .userId(currentUser.getId())
+                    .trainingPartId(trainingPart.getId())
+                    .isCompleted(false)
+                    .changedBy(currentUser.getId())
+                    .dateChange(LocalDateTime.now())
+                    .dateCreate(LocalDateTime.now())
+                    .build();
+            userTrainingProgressService.createUserTrainingProgress(userTrainingProgress);
+        }
+        var notificationResponse = notificationService.addNotificationByPurchaseCourse(courseId);
+        String destination = "/notifications";
+        try {
+            simpMessagingTemplate.convertAndSendToUser(currentUser.getId(), destination, notificationResponse);
+            System.out.println("Gửi thông báo tới: /user/" + currentUser.getId() + destination);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi gửi thông báo: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return savedOrder != null;
+    }
+
+
+
+    public PurchaseHistoryResponse getPurchaseHistory() {
+        var ordersByUser = orderRepository.findOrderByUserId(userService.getMyInfo().getId());
+        List<OrderDetail> orderDetails = new ArrayList<>();
+        List<OrderDetailResponse> orderDetailResponses = new ArrayList<>();
+        for (var order : ordersByUser) {
+            orderDetails.addAll(order.getOrderDetails().stream().toList());
+        }
+        for (var orderDetail : orderDetails) {
+
+            OrderDetailResponse orderDetailResponse = new OrderDetailResponse().builder()
+                    .price(orderDetail.getOrderDetailPrice())
+                    .priceDiscount(orderDetail.getOrderDetailDiscount())
+                    .courseName(orderDetail.getCourse().getCourseName())
+                    .isFree(orderDetail.getCourse().isFree())
+                    .orderDate(orderDetail.getDateCreate())
+                    .build();
+            orderDetailResponses.add(orderDetailResponse);
+        }
+        BigDecimal initialAmount = orderDetails.stream()
+                .map(OrderDetail::getOrderDetailPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal discountedAmount = orderDetails.stream()
+                .map(OrderDetail::getOrderDetailDiscount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        LocalDateTime dateOfFirstPurchase = orderDetails.stream()
+                .map(OrderDetail::getDateCreate)
+                .min(LocalDateTime::compareTo)
+                .orElse(null);
+        LocalDateTime dateOfLatestPurchase = orderDetails.stream()
+                .map(OrderDetail::getDateCreate)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
+        PurchaseHistoryResponse purchaseHistoryResponse = new PurchaseHistoryResponse()
+                .builder()
+                .initialAmount(initialAmount)
+                .discountedAmount(discountedAmount)
+                .dateOfFirstPurchase(dateOfFirstPurchase)
+                .dateOfLatestPurchase(dateOfLatestPurchase)
+                .orderDetailResponseList(orderDetailResponses)
+                .build();
+        return purchaseHistoryResponse;
+    }
+
 
     @Transactional
     public Order updateOrder(Order order) {

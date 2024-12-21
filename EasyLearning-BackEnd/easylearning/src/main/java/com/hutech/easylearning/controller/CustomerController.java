@@ -35,6 +35,10 @@ public class CustomerController {
     private NotificationService notificationService;
     @Autowired
     private UserNoteService userNoteService;
+    @Autowired
+    private UserFavoriteService userFavoriteService;
+    @Autowired
+    private OrderService orderService;
 
     @PostMapping("/addToFeedback")
     ApiResponse<Feedback> createFeedback(@RequestBody FeedbackCreationRequest request) {
@@ -92,13 +96,34 @@ public class CustomerController {
                 .build();
     }
 
-
-    @GetMapping("/CourseStatus/{courseId}")
-    public ApiResponse<CourseStatusResponse> getCourseStatus(@PathVariable("courseId") String courseId) {
+    @GetMapping("/CourseStatus")
+    public ApiResponse<CourseStatusResponse> getCourseStatus(@PathParam("courseId") String courseId) {
         return ApiResponse.<CourseStatusResponse>builder()
                 .result(courseService.getCourseStatus(courseId))
                 .build();
 
+    }
+
+    @PostMapping("/toggleFavorite")
+    public ApiResponse<Boolean> toggleFavorite(@PathParam("courseId") String courseId) {
+        return ApiResponse.<Boolean>builder()
+                .result(userFavoriteService.toggleFavorite(courseId))
+                .build();
+
+    }
+
+    @GetMapping("/favoritesCourseByUser")
+    public ApiResponse<List<Course>> favoritesByUser() {
+        return ApiResponse.<List<Course>>builder()
+                .result(userFavoriteService.getFavoriteCoursesByUserId())
+                .build();
+    }
+
+    @GetMapping("/purchaseHistory")
+    public ApiResponse<PurchaseHistoryResponse> purchasesHistory() {
+        return ApiResponse.<PurchaseHistoryResponse>builder()
+                .result(orderService.getPurchaseHistory())
+                .build();
     }
 
     @GetMapping("/notificationByUser")
@@ -140,7 +165,6 @@ public class CustomerController {
                         .message("Mật khẩu cũ không đúng")
                         .build();
             }
-
         }catch (Exception ex) {
             ex.printStackTrace();
             return ApiResponse.<String>builder()
@@ -228,5 +252,28 @@ public class CustomerController {
         }
     }
 
+    @GetMapping("/addCourseFree")
+    public ApiResponse<String> addCourseFree(@RequestParam String courseId) {
+        try{
+
+            if (orderService.addFreeCourseOrder(courseId)) {
+                return ApiResponse.<String>builder()
+                        .code(200)
+                        .result("Thêm thành công khóa học miễn phí")
+                        .build();
+            } else {
+                return ApiResponse.<String>builder()
+                        .code(400)
+                        .message("Không thành công")
+                        .build();
+            }
+        }catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<String>builder()
+                    .code(500)
+                    .message("Đã xảy ra lỗi trong quá trình xác minh mã")
+                    .build();
+        }
+    }
 
 }

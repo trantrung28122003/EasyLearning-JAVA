@@ -7,6 +7,7 @@ import com.hutech.easylearning.entity.Answer;
 import com.hutech.easylearning.entity.ExerciseQuestion;
 import com.hutech.easylearning.repository.ExerciseQuestionRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,16 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ExerciseQuestionService {
-
-    @Autowired
-    ExerciseQuestionRepository exerciseQuestionRepository;
+    final ExerciseQuestionRepository exerciseQuestionRepository;
 
     public List<ExerciseQuestion> getExerciseQuestionsByTrainingPartId(String trainingPartId) {
         return exerciseQuestionRepository.findByTrainingPartId(trainingPartId);
     }
-
 
     public List<ExerciseResponse> getExerciseByTrainingPart(String trainingPartId) {
         List<ExerciseResponse> exerciseResponseList = new ArrayList<>();

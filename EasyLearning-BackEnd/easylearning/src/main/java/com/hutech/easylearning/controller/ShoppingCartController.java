@@ -11,11 +11,9 @@ import com.hutech.easylearning.dto.request.UserCreationRequest;
 import com.hutech.easylearning.entity.ShoppingCart;
 import com.hutech.easylearning.entity.ShoppingCartItem;
 import com.hutech.easylearning.entity.TrainingPart;
-import com.hutech.easylearning.service.DiscountService;
-import com.hutech.easylearning.service.ShoppingCartItemService;
-import com.hutech.easylearning.service.ShoppingCartService;
-import com.hutech.easylearning.service.TrainingPartService;
+import com.hutech.easylearning.service.*;
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,19 +31,54 @@ public class ShoppingCartController {
     private ShoppingCartItemService shoppingCartItemService;
     @Autowired
     private DiscountService discountService;
+    @Autowired
+    private CourseService courseService;
 
     @GetMapping
     public ShoppingCartResponse getShoppingCart() {
         return shoppingCartService.getShoppingCartByCurrentUser();
     }
 
-    @PostMapping("/addToCart/{courseId}")
-    public ApiResponse<ShoppingCartItem> createShoppingCartItem(@PathVariable("courseId") String courseId) {
+    @PostMapping("/addToCart")
+    public ApiResponse<ShoppingCartItem> createShoppingCartItem(@RequestParam String courseId) {
+        try {
+            boolean isCourseFull = courseService.isCourseOfflineFull(courseId);
+            boolean isRegistrationDateExpired = courseService.isRegistrationDateExpired(courseId);
+            if (isCourseFull && isRegistrationDateExpired) {
+                return ApiResponse.<ShoppingCartItem>builder()
+                        .code(400)
+                        .result(null)
+                        .message("Khóa học đã đầy và ngày đăng ký đã hết hạn")
+                        .build();
+            } else if (isRegistrationDateExpired) {
+                return ApiResponse.<ShoppingCartItem>builder()
+                        .code(401)
+                        .result(null)
+                        .message("Ngày đăng ký đã hết hạn")
+                        .build();
+            } else if (isCourseFull) {
+                return ApiResponse.<ShoppingCartItem>builder()
+                        .code(402)
+                        .result(null)
+                        .message("Khóa học đã đầy số lượng đăng ký")
 
-        return ApiResponse.<ShoppingCartItem>builder()
-                .result(shoppingCartItemService.createShoppingCartItem(courseId))
-                .build();
+                        .build();
+            } else {
+                return ApiResponse.<ShoppingCartItem>builder()
+                        .code(200)
+                        .result(shoppingCartItemService.createShoppingCartItem(courseId))
+                        .build();
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return ApiResponse.<ShoppingCartItem>builder()
+                    .code(500)
+                    .result(null)
+                    .message("Đã xảy ra lỗi trong quá trình xóa ghi chú")
+                    .build();
+        }
     }
+
 
     @PostMapping("/remove/{shoppingCartItemId}")
     public String removeShoppingCartItem(@PathVariable("shoppingCartItemId") String shoppingCartItemId) {
@@ -67,7 +100,7 @@ public class ShoppingCartController {
                     .build();
         } catch (IllegalArgumentException e) {
             return ApiResponse.<ApplyDiscountResponse>builder()
-                    .message(e.getMessage()) // Trả về thông báo lỗi từ exception
+                    .message(e.getMessage())
                     .build();
         }
     }

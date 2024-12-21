@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,16 +23,15 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ShoppingCartItemService {
 
-    ShoppingCartItemRepository shoppingCartItemRepository;
-    ShoppingCartRepository shoppingCartRepository;
-
-    CourseRepository courseRepository;
-
-    @Autowired
-    UserService userService;
+    final ShoppingCartItemRepository shoppingCartItemRepository;
+    final ShoppingCartRepository shoppingCartRepository;
+    final CourseRepository courseRepository;
+    final UserService userService;
+    final DiscountService discountService;
+    final SimpMessagingTemplate simpMessagingTemplate;
 
     @Transactional(readOnly = true)
     public List<ShoppingCartItem> getAllShoppingCartItems() {
@@ -52,12 +52,15 @@ public class ShoppingCartItemService {
     public ShoppingCartItem createShoppingCartItem(String courseId) {
 
         var courseById = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found with id: " + courseId));;
+        var coursePriceDiscount = discountService.applyCourseDiscount(courseById.getId(), courseById.getCoursePrice());
         var currentUser = userService.getMyInfo();
         var shoppingCart = shoppingCartRepository.findShoppingCartByUserId(currentUser.getId());
         ShoppingCartItem shoppingCartItem = ShoppingCartItem.builder()
                 .cartItemName(courseById.getCourseName())
                 .cartItemPrice(courseById.getCoursePrice())
                 .imageUrl(courseById.getImageUrl())
+                .cartItemPriceDiscount(coursePriceDiscount)
+                .cartItemPrice(courseById.getCoursePrice())
                 .shoppingCartId(shoppingCart.getId())
                 .courseId(courseId)
                 .dateCreate(LocalDateTime.now())
@@ -65,6 +68,15 @@ public class ShoppingCartItemService {
                 .changedBy(currentUser.getId())
                 .isDeleted(false)
                 .build();
+        String destination = "/shoppingCarts";
+        try {
+            simpMessagingTemplate.convertAndSendToUser(currentUser.getId(), destination, shoppingCartItem);
+            System.out.println("Gửi tin nhắn tới: /user/" + currentUser.getId() + destination);
+        } catch (Exception e) {
+            System.err.println("Lỗi khi gửi tin nhắn: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         return shoppingCartItemRepository.save(shoppingCartItem);
     }
 

@@ -24,14 +24,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeedbackService {
 
-    FeedbackRepository feedbackRepository;
-
-    OrderDetailRepository orderDetailRepository;
-
-    UserRepository userRepository;
+    final FeedbackRepository feedbackRepository;
+    final OrderDetailRepository orderDetailRepository;
+    final UserRepository userRepository;
 
     @Autowired
     UserService userService;

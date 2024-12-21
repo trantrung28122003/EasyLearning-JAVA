@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface UserDiscountRepository extends JpaRepository<UserDiscount, String> {
     List<UserDiscount> findAllByUserIdAndIsUsedFalse(String userId);
     Optional<UserDiscount> findByUserIdAndDiscountIdAndIsUsedTrue(String userId, String discountId);
+    Optional<UserDiscount> findByUserIdAndDiscountIdAndIsUsedFalse(String userId, String discountId);
     Optional<UserDiscount> findByDiscountIdAndUserId(String discountId, String userId);
-
 }

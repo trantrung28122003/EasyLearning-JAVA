@@ -15,10 +15,10 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TrainerDetailService {
 
-    TrainerDetailRepository trainerDetailRepository;
+    final TrainerDetailRepository trainerDetailRepository;
 
     @Transactional(readOnly = true)
     public List<TrainerDetail> getAllTrainerDetails() {

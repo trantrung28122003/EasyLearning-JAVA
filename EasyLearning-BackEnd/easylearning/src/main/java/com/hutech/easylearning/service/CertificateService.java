@@ -23,6 +23,9 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.layout.element.Image;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,18 +39,15 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CertificateService {
 
-    @Autowired
-    private UploaderService uploaderService;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private CourseService courseService;
-    @Autowired
-    private CertificateRepository certificateRepository;
-    @Autowired
-    private CourseRepository courseRepository;
+    final UploaderService uploaderService;
+    final UserService userService;
+    final CourseService courseService;
+    final CertificateRepository certificateRepository;
+    final CourseRepository courseRepository;
 
     public String generateCertificate(String userName, String courseName, String issueDate, String certificateNumber) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

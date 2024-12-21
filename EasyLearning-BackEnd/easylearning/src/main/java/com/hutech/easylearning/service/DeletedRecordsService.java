@@ -8,6 +8,7 @@ import com.hutech.easylearning.enums.DeletedInfoType;
 import com.hutech.easylearning.repository.CourseRepository;
 import com.hutech.easylearning.repository.TrainingPartRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +22,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DeletedRecordsService {
-
-    @Autowired
-    CourseService courseService;
-
-    @Autowired
-    private TrainingPartService trainingPartService;
-
-    @Autowired
-    private CourseEventService courseEventService;
+    final CourseService courseService;
+    final TrainingPartService trainingPartService;
+    final CourseEventService courseEventService;
 
     public List<DeletedInfoResponse> getAllSoftDelete() {
         List<DeletedInfoResponse> deletedInfoResponses = new ArrayList<DeletedInfoResponse>();

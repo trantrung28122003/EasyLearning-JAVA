@@ -5,6 +5,7 @@ import com.hutech.easylearning.entity.CourseDetail;
 import com.hutech.easylearning.repository.CourseDetailRepository;
 import com.hutech.easylearning.repository.CourseRepository;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +15,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseDetailService {
+    final CourseDetailRepository courseDetailRepository;
 
-    @Autowired
-    CourseDetailRepository courseDetailRepository;
-    @Autowired
-    private CourseRepository courseRepository;
+
 
     @Transactional(readOnly = true)
     public List<CourseDetail> getAllCourseDetails() {

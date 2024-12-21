@@ -26,7 +26,7 @@ import java.util.List;
 public class SecurityConfig {
 
 
-        private final String[] PUBLIC_ENDPOINTS = {"/users",
+        private final String[] PUBLIC_POST_ENDPOINTS = {"/users",
                 "/auth/login",
                 "/auth/introspect",
                 "/auth/register",
@@ -50,7 +50,9 @@ public class SecurityConfig {
             "/getAllCourse",
             "/ws/**",
             "/getFeedbacksWithFiveRating",
-            "/getCourseWithDiscount"
+            "/getCourseWithDiscount",
+            "/getCourseWithFree"
+
     };
 
 
@@ -59,7 +61,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .anyRequest().authenticated());
 
@@ -70,17 +72,17 @@ public class SecurityConfig {
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.cors(cors -> cors.configurationSource(request -> {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(List.of("*"));
-            configuration.setAllowedMethods(List.of("*"));
-            configuration.setAllowedHeaders(List.of("*"));
-            return configuration;
-        }));
+//        httpSecurity.cors(cors -> cors.configurationSource(request -> {
+//            CorsConfiguration configuration = new CorsConfiguration();
+//            configuration.setAllowedOrigins(List.of("*"));
+//            configuration.setAllowedMethods(List.of("*"));
+//            configuration.setAllowedHeaders(List.of("*"));
+//            return configuration;
+//        }));
 
         httpSecurity.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Chỉ định domain cụ thể
+            configuration.setAllowedOrigins(List.of("http://localhost:5173"));
             configuration.setAllowedMethods(List.of("*"));
             configuration.setAllowedHeaders(List.of("*"));
             configuration.setAllowCredentials(true); // Hỗ trợ credentials

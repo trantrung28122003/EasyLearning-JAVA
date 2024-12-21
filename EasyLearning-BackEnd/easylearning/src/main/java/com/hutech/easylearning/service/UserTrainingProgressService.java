@@ -12,6 +12,9 @@ import com.hutech.easylearning.repository.CourseEventRepository;
 import com.hutech.easylearning.repository.CourseRepository;
 import com.hutech.easylearning.repository.TrainingPartRepository;
 import com.hutech.easylearning.repository.UserTrainingProgressRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,21 +28,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserTrainingProgressService {
-    @Autowired
-    private CourseRepository courseRepository;
-
-    @Autowired
-    private UserTrainingProgressRepository userTrainingProgressRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private TrainingPartService trainingPartService;
-    @Autowired
-    private CourseEventRepository courseEventRepository;
-    @Autowired
-    private TrainingPartRepository trainingPartRepository;
+    final CourseRepository courseRepository;
+    final UserTrainingProgressRepository userTrainingProgressRepository;
+    final UserService userService;
+    final TrainingPartService trainingPartService;
+    final CourseEventRepository courseEventRepository;
+    final TrainingPartRepository trainingPartRepository;
 
     @Transactional
     public UserTrainingProgress createUserTrainingProgress(UserTrainingProgress userTrainingProgress) {
@@ -71,7 +68,7 @@ public class UserTrainingProgressService {
     }
 
     @Transactional
-    public UserTrainingProgress updatePartProgress(String trainingPartId, ScoreRequest scoreRequest) {
+    public TrainingPartProgressResponse updatePartProgress(String trainingPartId, ScoreRequest scoreRequest) {
 
         var currentUser = userService.getMyInfo();
         UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
@@ -85,7 +82,28 @@ public class UserTrainingProgressService {
         userTrainingProgress.setQuizScore(score);
         userTrainingProgress.setDateChange(LocalDateTime.now());
         userTrainingProgress.setChangedBy(currentUser.getId());
-        return userTrainingProgressRepository.save(userTrainingProgress);
+        userTrainingProgressRepository.save(userTrainingProgress);
+        Integer watchedDuration = (userTrainingProgress.getWatchedDuration() != null)
+                ? userTrainingProgress.getWatchedDuration()
+                : 0;
+        TrainingPart trainingPartById = trainingPartRepository.findById(trainingPartId).orElseThrow();
+        TrainingPartProgressResponse trainingPartProgressResponse = new TrainingPartProgressResponse().builder()
+                .id(trainingPartById.getId())
+                .trainingPartName(trainingPartById.getTrainingPartName())
+                .trainingPartType(trainingPartById.getTrainingPartType())
+                .startTime(trainingPartById.getStartTime())
+                .endTime(trainingPartById.getEndTime())
+                .dateChange(trainingPartById.getDateChange())
+                .isFree(trainingPartById.isFree())
+                .imageUrl(trainingPartById.getImageUrl())
+                .videoUrl(trainingPartById.getVideoUrl())
+                .watchedDuration(watchedDuration)
+                .quizScore(userTrainingProgress.getQuizScore())
+
+                .completed(userTrainingProgress.isCompleted())
+
+                .build();
+        return trainingPartProgressResponse;
     }
 
 
@@ -122,11 +140,10 @@ public class UserTrainingProgressService {
 
         int completedTrainingParts = 0;
         for (UserTrainingProgress progress : userTrainingProgressList) {
-            if (progress.isCompleted()) {
+            if (progress != null && progress.isCompleted()) {
                 completedTrainingParts++;
             }
         }
-
         return completedTrainingParts;
     }
 
@@ -153,7 +170,6 @@ public class UserTrainingProgressService {
                             .startTime(courseEvent.getDateStart())
                             .endTime(courseEvent.getDateEnd())
                             .location(courseEvent.getLocation())
-
                             .build();
 
                     if (courseEventResponseList.stream()

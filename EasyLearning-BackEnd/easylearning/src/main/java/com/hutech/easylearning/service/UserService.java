@@ -10,6 +10,9 @@ import com.hutech.easylearning.mapper.UserMapper;
 import com.hutech.easylearning.repository.RoleRepository;
 import com.hutech.easylearning.repository.ShoppingCartRepository;
 import com.hutech.easylearning.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,28 +28,17 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    final UserRepository userRepository;
+    final UserMapper userMapper;
+    final PasswordEncoder passwordEncoder;
+    final RoleRepository roleRepository;
+    final UploaderService uploaderService;
+    final ShoppingCartRepository shoppingCartRepository;
 
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-
-
-    @Autowired
-    private UploaderService uploaderService;
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
-
-    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method getUsers");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
@@ -58,14 +50,14 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     public void blockUser(String userId) {
        User userById = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
        userById.setIsDeleted(true);
        userRepository.save(userById);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     public void unblockUser(String userId) {
         User userById = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         userById.setIsDeleted(false);
@@ -128,6 +120,9 @@ public class UserService {
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
+
+
+
         return userMapper.toUserResponse(user);
     }
 

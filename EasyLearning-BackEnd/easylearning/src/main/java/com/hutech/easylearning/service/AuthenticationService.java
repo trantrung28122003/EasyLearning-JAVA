@@ -23,7 +23,9 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +47,14 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Slf4j
 public class AuthenticationService {
-    private final ShoppingCartRepository shoppingCartRepository;
-
-    @Autowired
-
-    private UserRepository userRepository ;
-    @Autowired
-
-    private RoleRepository roleRepository ;
-
-    @Autowired
-    private InvalidatedTokenRepository invalidatedTokenRepository;
-
-    private final GoogleAuthClient googleAuthClient;
+    final ShoppingCartRepository shoppingCartRepository;
+    final UserRepository userRepository;
+    final RoleRepository roleRepository;
+    final InvalidatedTokenRepository invalidatedTokenRepository;
+    final GoogleAuthService googleAuthService;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -90,9 +85,6 @@ public class AuthenticationService {
 
     @NonFinal
     protected final String GRANT_TYPE = "authorization_code";
-    @Autowired
-    private GoogleAuthService googleAuthService;
-
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
@@ -125,6 +117,7 @@ public class AuthenticationService {
                         newUser.setEmail(userInfo.getEmail());
                         newUser.setFullName(userInfo.getName());
                         newUser.setPassword("");
+                        newUser.setUserName(userInfo.getEmail());
                         List<String> defaultRoleNames = List.of("USER");
                         var roles = roleRepository.findByNameIn(defaultRoleNames);
                         newUser.setRoles(new HashSet<>(roles));

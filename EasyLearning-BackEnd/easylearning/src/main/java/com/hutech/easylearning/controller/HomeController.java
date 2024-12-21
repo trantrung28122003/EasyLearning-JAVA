@@ -71,6 +71,13 @@ public class HomeController {
                 .build();
     }
 
+    @GetMapping("/getCourseWithFree")
+    ApiResponse<List<Course>> getCourseWithFree() {
+        return ApiResponse.<List<Course>>builder()
+                .result(courseService.getCourseWithFree())
+                .build();
+    }
+
 
     @GetMapping("/detailCourse/{courseId}")
     public ApiResponse<DetailCourseResponse> getDetailCourse(@PathVariable("courseId") String courseId) {

@@ -21,18 +21,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationService {
 
-
-    private final UserService userService;
-    private final NotificationRepository notificationRepository;
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
-    private final TrainingPartRepository trainingPartRepository;
-    private final CourseRepository courseRepository;
-    private final SimpMessagingTemplate simpMessagingTemplate;
-
+    final UserService userService;
+    final NotificationRepository notificationRepository;
+    final CommentRepository commentRepository;
+    final UserRepository userRepository;
+    final TrainingPartRepository trainingPartRepository;
+    final CourseRepository courseRepository;
+    final SimpMessagingTemplate simpMessagingTemplate;
 
     public List<NotificationResponse> getAllNotificationByUser () {
         List<NotificationResponse> notificationResponseList = new ArrayList<>();
@@ -63,7 +61,7 @@ public class NotificationService {
                 .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy người dùng với ID: " + comment.getUserId()));
         var contentNotification = "Có người đã trả lời bình luận của bạn tại phần học " + trainingPart.getTrainingPartName() + " của khóa học "
                 + course.getCourseName();
-        var targetId = "/learning/" + course.getId();
+        var targetId = "/learning/" + course.getId() + "?trainingPartId=" + trainingPart.getId();
 
         var notificationOfUserId  = request.getParentReplyUserId() != null ? request.getParentReplyUserId() : userOfComment.getId();
 
@@ -105,18 +103,10 @@ public class NotificationService {
 
         var course = courseRepository.findById(courseId) .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy khoa học với ID: " + courseId));
         var currentUser = userService.getMyInfo();
+        var contentNotification = course.isFree() ? "Bạn tham gia thành công khóa học "+course.getCourseName()+"miễn phí"  + ". Chúc bạn học tập hiệu quả! "
+                : "Bạn đã mua thành công khóa học "+course.getCourseName() + ". Chúc bạn học tập hiệu quả! ";
 
-        var contentNotification = "Bạn đã mua thành công khóa học "+course.getCourseName() + ". Chúc bạn học tập hiệu quả! ";
-        var targetId ="";
-
-        if(course.getCourseType() == CourseType.ONLINE)
-        {
-            targetId = "/learning/" + course.getId();
-        }
-        else {
-            targetId = "/schedule";
-        }
-
+        var targetId = course.getCourseType() == CourseType.ONLINE ? "/learning/" + course.getId() : "/schedule";
         Notification notification = new Notification().builder()
 
                 .content(contentNotification)
@@ -130,7 +120,6 @@ public class NotificationService {
                 .changedBy("Hệ thống")
                 .build();
         notificationRepository.save(notification);
-
         NotificationResponse notificationResponse = new NotificationResponse().builder()
                 .id(notification.getId())
                 .contentNotification(notification.getContent())
@@ -139,9 +128,9 @@ public class NotificationService {
                 .type(notification.getType())
                 .targetId(notification.getTargetId())
                 .build();
-
         return notificationResponse;
     }
+
 
     public NotificationResponse addNotificationByCertification(String courseId) {
 

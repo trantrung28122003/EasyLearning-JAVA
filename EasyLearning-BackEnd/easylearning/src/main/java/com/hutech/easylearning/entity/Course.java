@@ -63,14 +63,21 @@ public class Course {
     LocalDateTime endDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "course_registrationDeadline")
-    LocalDateTime registrationDeadline;
+    @Column(name = "course_registrationDeadline", nullable = true)
+    private LocalDateTime registrationDeadline;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "course_next_available_date", nullable = true)
+    private LocalDateTime nextAvailableDate;
 
     @Column(name = "course_maxAttendees")
     int maxAttendees;
 
     @Column(name = "course_registeredUsers")
     int registeredUsers;
+
+    @Column(name = "is_free")
+    boolean isFree;
 
     @Column(name = "date_create")
     LocalDateTime dateCreate;
@@ -125,5 +132,9 @@ public class Course {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @JsonManagedReference
     Set<CourseDiscount> courseDiscounts;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserFavorite> userFavorite;
 
 }

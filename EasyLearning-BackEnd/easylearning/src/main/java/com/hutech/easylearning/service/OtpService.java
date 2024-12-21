@@ -4,6 +4,9 @@ package com.hutech.easylearning.service;
 
 import com.hutech.easylearning.entity.Otp;
 import com.hutech.easylearning.repository.OtpRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -13,10 +16,11 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class OtpService {
 
-    @Autowired
-    private OtpRepository otpRepository;
+    final OtpRepository otpRepository;
 
     public String generateOtp(String email) {
         String otp = generateRandomOtp();

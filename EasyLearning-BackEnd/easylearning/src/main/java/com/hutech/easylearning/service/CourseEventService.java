@@ -33,22 +33,12 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseEventService {
 
-    @Autowired
-    CourseEventRepository courseEventRepository;
-
-    @Autowired
-    CourseRepository courseRepository;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    TrainingPartService trainingPartService;
-    @Autowired
-     TrainingPartRepository trainingPartRepository;
-
-    @Autowired
-    UserTrainingProgressService userTrainingProgressService;
+    final CourseEventRepository courseEventRepository;
+    final CourseRepository courseRepository;
+    final UserService userService;
+    final TrainingPartService trainingPartService;
+    final TrainingPartRepository trainingPartRepository;
+    final UserTrainingProgressService userTrainingProgressService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)

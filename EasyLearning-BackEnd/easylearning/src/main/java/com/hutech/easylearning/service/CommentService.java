@@ -9,7 +9,10 @@ import com.hutech.easylearning.entity.Reply;
 import com.hutech.easylearning.repository.CommentRepository;
 import com.hutech.easylearning.repository.ReplyRepository;
 import com.hutech.easylearning.repository.UserRepository;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,11 +22,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentService {
 
-    private final CommentRepository commentRepository;
-    private final ReplyRepository replyRepository;
-    private final UserRepository userRepository;
+    final CommentRepository commentRepository;
+    final ReplyRepository replyRepository;
+    final UserRepository userRepository;
 
     public List<CommentResponse> getCommentsByTrainingPartId(String trainingPartId) {
         List<CommentResponse> commentResponseList = new ArrayList<>();

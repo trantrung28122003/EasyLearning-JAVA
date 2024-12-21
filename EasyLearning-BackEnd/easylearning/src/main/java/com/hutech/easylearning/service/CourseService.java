@@ -9,7 +9,9 @@ import com.hutech.easylearning.exception.AppException;
 import com.hutech.easylearning.exception.ErrorCode;
 import com.hutech.easylearning.repository.*;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,63 +26,29 @@ import java.util.stream.Collectors;
 
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CourseService {
-
-    @Autowired
-    CourseRepository courseRepository;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    CategoryService categoryService;
-
-    @Autowired
-    CourseDetailService courseDetailService;
-
-    @Autowired
-    TrainerDetailService trainerDetailService;
-
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    private UploaderService uploaderService;
-
-    @Autowired
-    private TrainingPartService trainingPartService;
-
-    @Autowired
-    private ShoppingCartItemService shoppingCartItemService;
-
-    @Autowired
-    private CourseEventRepository courseEventRepository;
-
-    @Autowired
-    private TrainingPartRepository trainingPartRepository;
-
-    @Autowired
-    private FeedbackRepository feedbackRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private  ShoppingCartRepository shoppingCartRepository;
-
-    @Autowired
-    private  ShoppingCartItemRepository shoppingCartItemRepository;
-
-    @Autowired
-    private UserTrainingProgressService userTrainingProgressService;
-
-
-    @Autowired CourseEventService courseEventService;
-    @Autowired
-    private DiscountService discountService;
-    @Autowired
-    private CourseDiscountRepository courseDiscountRepository;
+    final CourseRepository courseRepository;
+    final UserService userService;
+    final CategoryService categoryService;
+    final CourseDetailService courseDetailService;
+    final TrainerDetailService trainerDetailService;
+    final OrderRepository orderRepository;
+    final UploaderService uploaderService;
+    final TrainingPartService trainingPartService;
+    final ShoppingCartItemService shoppingCartItemService;
+    final CourseEventRepository courseEventRepository;
+    final TrainingPartRepository trainingPartRepository;
+    final FeedbackRepository feedbackRepository;
+    final UserRepository userRepository;
+    final ShoppingCartRepository shoppingCartRepository;
+    final ShoppingCartItemRepository shoppingCartItemRepository;
+    final UserTrainingProgressService userTrainingProgressService;
+    final CourseEventService courseEventService;
+    final DiscountService discountService;
+    final CourseDiscountRepository courseDiscountRepository;
+    final UserFavoriteRepository userFavoriteRepository;
 
     @Transactional(readOnly = true)
     public List<Course> getAllCourses() {
@@ -255,7 +223,7 @@ public class CourseService {
                 for (OrderDetail orderDetail : orderDetails) {
                     String courseId = orderDetail.getCourseId();
                     Course course = courseRepository.findById(courseId).orElse(null);
-                    var sizeLearning = course.getLearningOutcomes().size();
+
 
                     var trainingPartByCourse = trainingPartRepository.findTrainingPartByCourseId(courseId);
                     int totalTrainingPartByCourse = trainingPartByCourse.size();
@@ -445,6 +413,7 @@ public class CourseService {
                 .feedFeedbackInfoResponses(feedbackInfos)
                 .totalLearningTime(totalLearningTime)
                 .learningOutcomes(courseById.getLearningOutcomes().stream().toList())
+                .nextAvailableDate(courseById.getNextAvailableDate())
                 .build();
 
         return detailCourseResponse;
@@ -507,10 +476,15 @@ public class CourseService {
 
     @Transactional
     public CourseStatusResponse getCourseStatus(String courseId) {
+        var currentUser = userService.getMyInfo();
         boolean isPurchased = false;
         boolean isLearning = false;
         boolean isInCart = false;
         boolean isFeedback = false;
+        boolean isFavorited = false;
+        boolean isCourseFull = false;
+        boolean isRegistrationDateExpired = false;
+        boolean isFree = false;
         if(isCourseInCart(courseId)){
             isInCart = true;
         }
@@ -522,15 +496,31 @@ public class CourseService {
         if(isFeedbackByUser(courseId)){
             isFeedback = true;
         }
-
-
+        if(isCourseOfflineFull(courseId))
+        {
+            isCourseFull = true;
+        }
+        if(isRegistrationDateExpired(courseId))
+        {
+            isRegistrationDateExpired = true;
+        }
+        if(isCourseFree(courseId))
+        {
+            isFree = true;
+        }
+        if(userFavoriteRepository.findByUserIdAndCourseId(currentUser.getId(), courseId).isPresent()){
+            isFavorited = true;
+        }
         CourseStatusResponse courseStatusResponse = new CourseStatusResponse().builder()
                 .isLearning(isLearning)
                 .isInCart(isInCart)
                 .isPurchased(isPurchased)
                 .isFeedback(isFeedback)
+                .isFavorited(isFavorited)
+                .isCourseFull(isCourseFull)
+                .isRegistrationDateExpired(isRegistrationDateExpired)
+                .isFree(isFree)
                 .build();
-
         return courseStatusResponse;
     }
 
@@ -538,10 +528,9 @@ public class CourseService {
         if (query != null && !query.trim().isEmpty()) {
             return courseRepository.findByCourseNameContainingIgnoreCase(query);
         } else {
-            return courseRepository.findAll();  // Trả về tất cả khóa học nếu không có query
+            return courseRepository.findAll();
         }
     }
-
     public List<Course> searchCourses(String query, String sortBy, String courseType, Integer rating) {
         List<Course> courses  = searchByQuery(query);
 
@@ -550,15 +539,11 @@ public class CourseService {
                     .filter(course -> course.getCourseType().name().equalsIgnoreCase(courseType))
                     .collect(Collectors.toList());
         }
-
-
         if (rating != null) {
 //            courses = courses.stream()
 //                    .filter(course -> course.getRating() != null && course.getRating() >= rating)
 //                    .collect(Collectors.toList());
         }
-
-
         if (sortBy != null && !sortBy.isEmpty()) {
             switch (sortBy.toLowerCase()) {
                 case "az":
@@ -583,7 +568,48 @@ public class CourseService {
 
 
     public List<Course> getAllCourseWithDiscount() {
-
         return courseDiscountRepository.findDistinctCoursesWithDiscount();
     }
+    public List<Course> getCourseWithFree() {
+        return courseRepository.findCoursesByIsFree(true);
+    }
+
+
+    public boolean isCourseOfflineFull(String courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return false;
+        }
+        if(course.getCourseType() == CourseType.ONLINE)
+        {
+            return false;
+        }
+        return course.getRegisteredUsers() >= course.getMaxAttendees();
+    }
+
+    public boolean isCourseFree(String courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return false;
+        }
+        if(course.isFree())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isRegistrationDateExpired(String courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) {
+            return false;
+        }
+        if(course.getCourseType() == CourseType.ONLINE)
+        {
+            return false;
+        }
+        LocalDateTime currentDate = LocalDateTime.now();
+        return currentDate.isAfter(course.getRegistrationDeadline());
+    }
+
 }

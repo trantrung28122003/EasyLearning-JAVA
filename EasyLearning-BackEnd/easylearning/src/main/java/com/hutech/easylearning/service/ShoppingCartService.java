@@ -30,17 +30,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ShoppingCartService {
 
-    ShoppingCartRepository shoppingCartRepository;
-
-    UserRepository userRepository;
-
-    ShoppingCartItemRepository shoppingCartItemRepository;
-
-    DiscountService discountService;
-    private final CourseRepository courseRepository;
+    final ShoppingCartRepository shoppingCartRepository;
+    final UserRepository userRepository;
+    final ShoppingCartItemRepository shoppingCartItemRepository;
+    final DiscountService discountService;
+    final CourseRepository courseRepository;
+    final CourseService courseService;
 
     @Transactional(readOnly = true)
     public List<ShoppingCart> getAllShoppingCarts() {
@@ -86,6 +84,9 @@ public class ShoppingCartService {
             Course courseById = courseRepository.findById(shoppingCartItem.getCourseId()).orElseThrow();
             var coursePriceDiscount = discountService.applyCourseDiscount(courseById.getId(), courseById.getCoursePrice());
 
+            boolean isCourseFull = courseService.isCourseOfflineFull(shoppingCartItem.getCourseId());
+            boolean isRegistrationDateExpired = courseService.isRegistrationDateExpired(shoppingCartItem.getCourseId());
+            boolean notRegistrable = isCourseFull || isRegistrationDateExpired;
 
 
             ShoppingCartItemResponse shoppingCartItemResponse = new ShoppingCartItemResponse().builder()
@@ -96,6 +97,7 @@ public class ShoppingCartService {
                     .quantity(shoppingCartItem.getQuantity())
                     .imageUrl(shoppingCartItem.getImageUrl())
                     .courseId(shoppingCartItem.getCourseId())
+                    .notRegistrable(notRegistrable)
                     .build();
             shoppingCartItemResponses.add(shoppingCartItemResponse);
             shoppingCartItem.setCartItemPriceDiscount(shoppingCartItemResponse.getCartItemPriceDiscount());

@@ -27,5 +27,5 @@ public class CategoryCreationRequest {
 
     String changedBy;
 
-    Boolean isDeleted = false;
+    boolean isDeleted;
 }

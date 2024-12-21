@@ -8,9 +8,9 @@ import org.springframework.cloud.openfeign.FeignClientProperties;
 @Configuration
 public class FeignConfig {
 
-    @Bean
-    public FeignClientProperties feignClientProperties() {
-        return new FeignClientProperties();
-    }
+//    @Bean
+//    public FeignClientProperties feignClientProperties() {
+//        return new FeignClientProperties();
+//    }
 }
 

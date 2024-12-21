@@ -21,15 +21,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TrainingPartService {
 
-    TrainingPartRepository trainingPartRepository;
-
-    CourseEventRepository courseEventRepository;
-
-    @Autowired
-    UserService userService;
+    final TrainingPartRepository trainingPartRepository;
+    final CourseEventRepository courseEventRepository;
+    final UserService userService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional(readOnly = true)
@@ -38,7 +35,7 @@ public class TrainingPartService {
     }
 
 
-    @Transactional(readOnly = true)
+
     public List<TrainingPart> getTrainingPartsByCourseId(String courseId) {
         return trainingPartRepository.findTrainingPartByCourseId(courseId);
     }

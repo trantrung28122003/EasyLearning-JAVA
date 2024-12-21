@@ -10,6 +10,9 @@ import com.hutech.easylearning.entity.UserNote;
 import com.hutech.easylearning.repository.TrainingPartRepository;
 import com.hutech.easylearning.repository.UserNoteRepository;
 import com.hutech.easylearning.repository.UserRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +22,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserNoteService {
 
-    private final UserNoteRepository userNoteRepository;
-    private final UserService userService;
-    private final TrainingPartRepository trainingPartRepository;
-
-    public UserNoteService(UserRepository userRepository, UserNoteRepository userNoteRepository, UserService userService, TrainingPartRepository trainingPartRepository) {
-
-        this.userNoteRepository = userNoteRepository;
-        this.userService = userService;
-        this.trainingPartRepository = trainingPartRepository;
-    }
+    final UserNoteRepository userNoteRepository;
+    final UserService userService;
+    final TrainingPartRepository trainingPartRepository;
 
     public List<UserNoteResponse> getNotesByCourseIdAndUserId (String courseId)
     {

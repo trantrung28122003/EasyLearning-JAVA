@@ -92,6 +92,10 @@ public class User {
     @JsonManagedReference
     Set<UserDiscount> userDiscounts;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    Set<UserFavorite> UserFavorite;
+
     public boolean getIsDeleted() {
         return isDeleted;
     }

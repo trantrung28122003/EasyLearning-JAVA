@@ -11,6 +11,7 @@ import com.hutech.easylearning.entity.UserDiscount;
 import com.hutech.easylearning.enums.DiscountType;
 import com.hutech.easylearning.repository.*;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,26 +24,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DiscountService {
 
-    @Autowired
-    private DiscountRepository discountRepository;
-
-    @Autowired
-    private  CourseDiscountRepository courseDiscountRepository;
-    @Autowired
-    private CourseRepository courseRepository;
-    @Autowired
-    private CourseDetailRepository courseDetailRepository;
-
-    @Autowired
-    private ShoppingCartRepository shoppingCartRepository;
-
-    @Autowired
-    private UserDiscountRepository userDiscountRepository;
-    @Autowired
-    private UserService userService;
+    final DiscountRepository discountRepository;
+    final  CourseDiscountRepository courseDiscountRepository;
+    final CourseRepository courseRepository;
+    final ShoppingCartRepository shoppingCartRepository;
+    final UserDiscountRepository userDiscountRepository;
+    final UserService userService;
 
 
     public Discount createDiscount(Discount discount) {
@@ -135,30 +126,27 @@ public ApplyDiscountResponse applyDiscount(ApplyDiscountRequest applyDiscountReq
         return applyDiscountResponse;
     }
 
-    public UserDiscount addUserDiscount(String discountCode) {
+    public Boolean updateUserDiscount(String discountCode) {
         var currentUser = userService.getMyInfo();
-
         Discount discount = discountRepository.findByDiscountCode(discountCode)
                 .orElseThrow(() -> new IllegalArgumentException("Mã giảm giá không hợp lệ "));
 
-        Optional<UserDiscount> existingUserDiscount = userDiscountRepository.findByDiscountIdAndUserId(discount.getId(), currentUser.getId());
-        if (existingUserDiscount.isPresent()) {
-            throw new IllegalArgumentException("Mã giảm giá này đã được sử dụng.");
+        Optional<UserDiscount> userDiscountOpt = userDiscountRepository.findByUserIdAndDiscountIdAndIsUsedFalse(currentUser.getId(), discount.getId());
+        if (userDiscountOpt.isEmpty()) {
+            throw new IllegalArgumentException("Mã giảm giá này đã được sử dụng hoặc không hợp lệ.");
         }
 
-        UserDiscount userDiscount = new UserDiscount().builder()
-                .discountId(discount.getId())
-                .userId(currentUser.getId())
-                .changedBy(currentUser.getId())
-                .dateCreate(LocalDateTime.now())
-                .dateChange(LocalDateTime.now())
-                .isUsed(true)
-                .active(true)
-                .isDeleted(false)
-                .build();
+        if (userDiscountOpt.isPresent()) {
+            UserDiscount userDiscount = userDiscountOpt.get();
+            userDiscount.setIsUsed(true);
+            userDiscount.setDateChange(LocalDateTime.now());
+            userDiscountRepository.save(userDiscount);
 
-        return userDiscountRepository.save(userDiscount);
+            return true;
+        }
+        return false;
     }
+
 
     public List<UserDiscountResponse> getAllDisCountByUser() {
         var currentUser = userService.getMyInfo();

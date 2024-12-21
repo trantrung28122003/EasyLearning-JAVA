@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,6 +23,7 @@ public class DetailCourseResponse {
     BigDecimal coursePrice;
     BigDecimal coursePriceDiscount;
     String totalLearningTime;
+    LocalDateTime nextAvailableDate;
     int totalFeedback;
     int averageRating;
     List<LearningOutcomes> learningOutcomes;

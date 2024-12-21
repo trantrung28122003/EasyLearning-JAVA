@@ -46,7 +46,6 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody Map<String, String> payload) {
         String access_token = payload.get("access_token");
         var result = authenticationService.authenticateGoogle(access_token);
-        System.out.println(result.getToken());
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
                 .build();

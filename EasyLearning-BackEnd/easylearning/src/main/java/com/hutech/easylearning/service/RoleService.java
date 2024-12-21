@@ -14,14 +14,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleService {
 
-    @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
-    RoleMapper roleMapper;
+    final RoleRepository roleRepository;
+    final RoleMapper roleMapper;
 
     public RoleResponse create(RoleRequest request) {
         var role = roleMapper.toRole(request);

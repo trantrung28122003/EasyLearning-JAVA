@@ -38,6 +38,9 @@ public class Order{
     @Column(name = "order_quantity")
     int orderQuantity;
 
+    @Column(name = "is_free")
+    boolean isFree;
+
     @Column(name = "date_create")
     LocalDateTime dateCreate;
 

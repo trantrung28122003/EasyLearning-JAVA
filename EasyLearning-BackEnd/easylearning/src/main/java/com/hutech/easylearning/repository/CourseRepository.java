@@ -9,7 +9,6 @@ import java.util.List;
 @Repository
 public interface CourseRepository extends JpaRepository<Course, String> {
     List<Course> findTop4ByOrderByRegisteredUsersDesc();
-
     List<Course> findByCourseNameContainingIgnoreCase(String courseName);
-    List<Course> findCoursesByIdIn(List<String> courseId);
+    List<Course> findCoursesByIsFree(boolean free);
 }
