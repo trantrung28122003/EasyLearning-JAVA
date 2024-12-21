@@ -28,6 +28,4 @@ public class FeedBackController {
                 .result(feedbackService.getFeedbacksByCourse(courseId))
                 .build();
     }
-
-
 }

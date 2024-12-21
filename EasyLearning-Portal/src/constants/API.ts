@@ -12,7 +12,6 @@ const REGISTER_URL = BASE_URL_AUTH + "/register";
   authentication
 */
 
-
 /* 
   Category
 */

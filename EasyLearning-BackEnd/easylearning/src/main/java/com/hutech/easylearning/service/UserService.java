@@ -38,6 +38,7 @@ public class UserService {
     final RoleRepository roleRepository;
     final UploaderService uploaderService;
     final ShoppingCartRepository shoppingCartRepository;
+    private final UserDiscountService userDiscountService;
 
     public List<UserResponse> getUsers() {
         log.info("In method getUsers");
@@ -120,8 +121,8 @@ public class UserService {
         } catch (DataIntegrityViolationException exception){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-
-
+        String discountCode ="NEW200K";
+        userDiscountService.addUserDiscount(user.getId(), discountCode);
 
         return userMapper.toUserResponse(user);
     }

@@ -46,6 +46,8 @@ const CourseDetail: React.FC = () => {
     useState<TrainingPart>();
   const [isLoading, setIsLoading] = useState(false);
   const [priceDiscount, setPriceDiscount] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
   const fetchCourseDetail = async (courseId: string) => {
     setIsLoading(true);
     try {
@@ -92,7 +94,6 @@ const CourseDetail: React.FC = () => {
     } catch (error) {}
   };
 
-  const [openEvents, setOpenEvents] = useState<{ [key: string]: boolean }>({});
   const toggleEventDetails = (eventName: string) => {
     setOpenEvents((prev) => ({
       ...prev,
@@ -104,15 +105,15 @@ const CourseDetail: React.FC = () => {
     if (!isLogin) {
       localStorage.clear();
       navigate("/login");
-    }
-    if (isPurchased) {
+    } else if (isPurchased) {
       navigate("/userCourses");
     } else if (isInCart) {
       navigate("/shoppingCart");
     } else {
-      const URL = ADD_TO_CART + "/" + courseId;
+      const URL = ADD_TO_CART + `?courseId=${courseId}`;
       DoCallAPIWithToken(URL, "post").then((res) => {
-        if (res.status === HTTP_OK) {
+        if (res.data.code === HTTP_OK) {
+        } else if (res.data.code === 400) {
           navigate("/shoppingCart");
         }
       });
@@ -121,7 +122,6 @@ const CourseDetail: React.FC = () => {
   const handleStarClick = (value: any) => {
     setRating(value);
   };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!rating || !content.trim()) return alert("Vui lòng điền đủ thông tin!");
@@ -571,6 +571,7 @@ const CourseDetail: React.FC = () => {
             </div>
           </div>
         </div>
+
         {showModalCoursePreview && course && selectTrainingPartPreview && (
           <CoursePreview
             course={course}

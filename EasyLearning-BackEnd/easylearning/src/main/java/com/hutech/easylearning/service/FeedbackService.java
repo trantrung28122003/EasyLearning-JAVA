@@ -85,15 +85,15 @@ public class FeedbackService {
             var user = userRepository.findById(feedback.getFeedbackUserId()).orElse(null);
             if (user != null) {
                 fullName = user.getFullName();
-                avatar = "https://easylearning.blob.core.windows.net/images-videos/userDefault.jpg81716900-b5dd-468a-97eb-ca2678f03288";  // Tạo ảnh đại diện nếu người dùng có thông tin
+                avatar = user.getImageUrl();
             }
             FeedbackInfoResponse feedbackResponse = FeedbackInfoResponse.builder()
                     .feedbackId(feedback.getId())
                     .courseId(feedback.getCourseId())
                     .userId(feedback.getFeedbackUserId())
                     .content(feedback.getFeedbackContent())
-                    .fullNameUser(fullName)  // Mặc định là "Khách hàng" nếu chưa đăng nhập
-                    .typeUser("Khách hàng")      // Mặc định là "Khách hàng"
+                    .fullNameUser(fullName)
+                    .typeUser("Khách hàng")
                     .avatar(avatar)
                     .feedbackRating(feedback.getFeedbackRating())
                     .dateChange(feedback.getDateChange())

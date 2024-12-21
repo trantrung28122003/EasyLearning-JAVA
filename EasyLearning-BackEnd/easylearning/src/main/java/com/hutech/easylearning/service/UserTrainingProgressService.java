@@ -73,13 +73,21 @@ public class UserTrainingProgressService {
         var currentUser = userService.getMyInfo();
         UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
 
-        int score = 0;
-        if (scoreRequest != null) {
-            score = scoreRequest.getCorrectAnswersCount() + scoreRequest.getTotalQuestionsCount();
-        }
 
+        double averageScore = 0.0;
+        if (scoreRequest != null) {
+            int correctAnswers = scoreRequest.getCorrectAnswersCount();
+            int totalQuestions = scoreRequest.getTotalQuestionsCount();
+            if (totalQuestions > 0) {
+                averageScore = (double) correctAnswers / totalQuestions;
+                averageScore = Math.round(averageScore * 100.0) / 100.0;
+            } else {
+                System.out.println("Total questions count cannot be zero.");
+            }
+        }
+        int quizScore = (int) Math.round(averageScore * 100);
         userTrainingProgress.setCompleted(true);
-        userTrainingProgress.setQuizScore(score);
+        userTrainingProgress.setQuizScore(quizScore);
         userTrainingProgress.setDateChange(LocalDateTime.now());
         userTrainingProgress.setChangedBy(currentUser.getId());
         userTrainingProgressRepository.save(userTrainingProgress);
@@ -99,9 +107,7 @@ public class UserTrainingProgressService {
                 .videoUrl(trainingPartById.getVideoUrl())
                 .watchedDuration(watchedDuration)
                 .quizScore(userTrainingProgress.getQuizScore())
-
                 .completed(userTrainingProgress.isCompleted())
-
                 .build();
         return trainingPartProgressResponse;
     }
