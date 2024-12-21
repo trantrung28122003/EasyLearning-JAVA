@@ -52,21 +52,37 @@ public class CategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public Category createCategory(CategoryCreationRequest request, MultipartFile file) {
+        // Lấy thông tin người dùng hiện tại
         var currentUserInfo = userService.getMyInfo();
-        String imageLink ="Default";
-        if(file != null)
-        {
+
+        // Kiểm tra giá trị nhận được từ request
+        System.out.println("Received categoryName: " + request.getCategoryName());
+        System.out.println("Received imageLink: " + request.getImageLink());
+
+        String imageLink = "Default"; // Đặt giá trị mặc định cho imageLink
+
+        // Nếu có file thì upload file và lấy link ảnh
+        if (file != null) {
             imageLink = uploaderService.uploadFile(file);
+        } else if (request.getImageLink() != null && !request.getImageLink().isEmpty()) {
+            imageLink = request.getImageLink(); // Nếu có imageLink từ request, sử dụng link này
         }
+
+        // Kiểm tra imageLink sau khi upload file hoặc lấy từ request
+        System.out.println("Image link after file upload or provided imageLink: " + imageLink);
+
+        // Tạo category từ dữ liệu nhận được
         Category category = Category.builder()
                 .categoryName(request.getCategoryName())
                 .imageLink(imageLink)
-                .sortOrder(request.getSortOrder())
+                .sortOrder(request.getSortOrder() != null ? request.getSortOrder() : 0) // Đảm bảo có giá trị sortOrder
                 .dateCreate(LocalDateTime.now())
                 .dateChange(LocalDateTime.now())
                 .changedBy(currentUserInfo.getId())
-                .isDeleted(false)
+                .isDeleted(request.getIsDeleted() != null ? request.getIsDeleted() : false)
                 .build();
+
+        // Lưu vào CSDL và trả về
         return categoryRepository.save(category);
     }
 
