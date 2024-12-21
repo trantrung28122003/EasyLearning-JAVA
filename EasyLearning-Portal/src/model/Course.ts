@@ -31,10 +31,10 @@ export interface Course {
 }
 
 
-export interface CourseRequest
-{
-  courseName: string;
-}
+//export interface CourseRequest
+//{
+  //courseName: string;
+//}
 
 export interface TrainingPart {
   id: string;
