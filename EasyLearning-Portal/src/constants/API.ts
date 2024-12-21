@@ -28,10 +28,18 @@ const BASE_URL_EVENT = BASE_URL + "/courseEvent";
 const BASE_URL_CREATE_EVENT = BASE_URL_EVENT + "/create";
 const BASE_URL_UPDATE_EVENT = BASE_URL_EVENT + "/update";
 
-/*
-  Categories
+/* 
+  Category
 */
 const BASE_URL_CATEGORY = BASE_URL + "/category";
+const BASE_URL_CREATE_CATEGORY = BASE_URL_CATEGORY + "/create";
+const BASE_URL_UPDATE_CATEGORY = BASE_URL_CATEGORY + "/update";
+
+/* 
+  Category
+*/
+
+
 /*
   user
 */
@@ -162,4 +170,10 @@ export {
   BASE_URL_CREATE_EVENT,
   BASE_URL_UPDATE_EVENT,
   BASE_URL_TRAINNINGPART,
+  BASE_URL_CREATE_CATEGORY,
+  BASE_URL_CATEGORY,
+  BASE_URL_UPDATE_CATEGORY,
+  BASE_URL_CREATE_COURSE,
+  BASE_URL_COURSE,
+  BASE_URL_USER,
 };
