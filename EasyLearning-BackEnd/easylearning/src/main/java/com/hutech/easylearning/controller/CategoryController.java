@@ -29,7 +29,15 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public ApiResponse<Category> createCategory(@Valid CategoryCreationRequest request , @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ApiResponse<Category> createCategory(@Valid CategoryCreationRequest request,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        System.out.println("Received categoryName: " + request.getCategoryName());
+        System.out.println("Received imageLink: " + request.getImageLink());
+
+        // Kiểm tra nếu isDeleted không có giá trị thì gán mặc định là false
+        if (request.getIsDeleted() == null) {
+            request.setIsDeleted(false);
+        }
         return ApiResponse.<Category>builder()
                 .result(categoryService.createCategory(request, file))
                 .build();
