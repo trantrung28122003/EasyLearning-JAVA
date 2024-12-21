@@ -54,7 +54,7 @@ const UPDATE_TRAINING_PROGRESS = BASE_URL + "/userTrainingProgress/updateStatusP
 const GET_QUESTION_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getExercise"
 const GET_SAVED_SCORE_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getUserTrainingProgressByPart"
 const GET_ALL_CERTIFICATE_BY_USER = BASE_URL + "/certificates/getAllCertificate"
-const ADD_TO_FEEDBACK = BASE_URL+ "/customer/addToFeedback"
+const ADD_TO_FEEDBACK = BASE_URL + "/customer/addToFeedback"
 const CREATE_CERTIFICATE = BASE_URL + "/certificates/createCertificate"
 const GET_CERTIFICATE_BY_COURSE = BASE_URL + "/certificates/getCertificateByCourseAndUser"
 const GET_NOTIFICATION_BY_USER = BASE_URL + "/customer/notificationByUser"
@@ -63,11 +63,11 @@ const UPDATE_PROFILE_USER = BASE_URL + "/customer/updateProfile"
 const CHANGE_PASSWORD_BY_USER = BASE_URL + "/customer/changePassword"
 const FORGOT_PASSWORD_URL = BASE_URL + "/email/sendVerificationCode"
 const VERIFY_CODE_URL = BASE_URL + "/email/verifyCode"
-const RESET_PASSWORD = BASE_URL +"/customer/resetPassword"
-const GET_NOTES_BY_COURSE_AND_USER = BASE_URL +"/customer/getNotesByCourseAndUser"
-const ADD_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/addNotesByCourseAndUser"
-const UPDATE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/updateNotesByCourseAndUser"
-const DELETE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/deleteNotesByCourseAndUser"
+const RESET_PASSWORD = BASE_URL + "/customer/resetPassword"
+const GET_NOTES_BY_COURSE_AND_USER = BASE_URL + "/customer/getNotesByCourseAndUser"
+const ADD_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/addNotesByCourseAndUser"
+const UPDATE_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/updateNotesByCourseAndUser"
+const DELETE_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/deleteNotesByCourseAndUser"
 
 
 
@@ -101,7 +101,7 @@ const GET_COURSES_WITH_DISCOUNT = BASE_URL + "/getCourseWithDiscount";
 const BASE_URL_SHOPPING_CART = BASE_URL + "/shoppingCart";
 const ADD_TO_CART = BASE_URL_SHOPPING_CART + "/addToCart";
 const REMOVE_FROM_CART = BASE_URL_SHOPPING_CART + "/remove";
-const GET_COUPONS_BY_USER = BASE_URL +"/discount/getAllDisCountByUser"
+const GET_COUPONS_BY_USER = BASE_URL + "/discount/getAllDisCountByUser"
 
 /**
  * Shopping cart
@@ -156,8 +156,6 @@ export {
   FORGOT_PASSWORD_URL,
   VERIFY_CODE_URL,
   RESET_PASSWORD,
-  BASE_URL_CREATE_COURSE,
-  BASE_URL_COURSE,
   GET_FEEDBACKS_WITH_FIVE_RATING,
   GET_COURSES_WITH_DISCOUNT,
   GET_NOTES_BY_COURSE_AND_USER,
@@ -169,9 +167,7 @@ export {
   BASE_URL_UPDATE_COURSE,
   BASE_URL_CREATE_EVENT,
   BASE_URL_UPDATE_EVENT,
-  BASE_URL_TRAINNINGPART,
   BASE_URL_CREATE_CATEGORY,
-  BASE_URL_CATEGORY,
   BASE_URL_UPDATE_CATEGORY,
   BASE_URL_CREATE_COURSE,
   BASE_URL_COURSE,
