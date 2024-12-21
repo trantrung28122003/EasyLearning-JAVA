@@ -49,7 +49,7 @@ const UserEvents: React.FC = () => {
               courseName: course.courseName,
               eventDate: currentDate,
               location: event.location,
-              instructor: course.instructor,
+              instructor: course.nameInstructor,
               startTime: event.startTime,
               endTime: event.endTime,
             });
@@ -66,7 +66,7 @@ const UserEvents: React.FC = () => {
     if (hasSchedule) {
       setScheduleData(scheduleForWeek);
     } else {
-      setScheduleData([]);
+      setScheduleData(null);
     }
   };
 

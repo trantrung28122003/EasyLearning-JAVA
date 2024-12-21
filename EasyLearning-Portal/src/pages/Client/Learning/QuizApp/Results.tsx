@@ -13,7 +13,7 @@ interface ResultProps {
   answers: AnswerDetail[];
   restartQuiz: () => void;
   isComplete: boolean;
-  saveCore: number;
+  savedScore: number;
 }
 
 const Result: React.FC<ResultProps> = ({
@@ -22,13 +22,16 @@ const Result: React.FC<ResultProps> = ({
   answers,
   restartQuiz,
   isComplete,
-  saveCore,
+  savedScore,
 }) => {
   return (
     <div className="quiz-result-card">
       <h1>
         Tổng số câu đúng : {score} / {totalQuestions}
       </h1>
+      <p style={{ fontSize: "20px", marginBottom: "1rem" }}>
+        Điểm đã lưu của bạn <strong>{savedScore}/10</strong>
+      </p>
       <p>Tóm tắt các câu trả lời</p>
       <ul className="quiz-answer-list">
         {answers.map((answer, index) => (
@@ -53,7 +56,7 @@ const Result: React.FC<ResultProps> = ({
         ))}
       </ul>
       <button className="" onClick={restartQuiz}>
-        Làm lại bài kiểm tra
+        Hoàn thành bài kiểm tra
       </button>
     </div>
   );

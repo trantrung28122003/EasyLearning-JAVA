@@ -35,17 +35,19 @@ interface ExerciseQuizProps {
   trainingPartId: string;
   isComplete: boolean;
   onQuizCompleted: (trainingPartId: string, scoreRequest: ScoreRequest) => void;
+  onQuizStart: (hasStarted: boolean) => void;
 }
 
 const ExerciseQuiz: React.FC<ExerciseQuizProps> = ({
   trainingPartId,
   isComplete,
   onQuizCompleted,
+  onQuizStart,
 }) => {
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [savedScore, setSavedScore] = useState<number>(0); // Điểm đã lưu
+  const [savedScore, setSavedScore] = useState<number>(0);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [answers, setAnswers] = useState<AnswerDetail[]>([]);
   const [hasStarted, setHasStarted] = useState(false);
@@ -85,6 +87,8 @@ const ExerciseQuiz: React.FC<ExerciseQuizProps> = ({
   };
 
   const restartQuiz = () => {
+    setHasStarted(false);
+    onQuizStart(false);
     setCurrentQuestionIndex(0);
     setScore(0);
     setIsQuizCompleted(false);
@@ -116,9 +120,11 @@ const ExerciseQuiz: React.FC<ExerciseQuizProps> = ({
   };
   const handleStartQuiz = () => {
     setHasStarted(true);
+    onQuizStart(true);
   };
   useEffect(() => {
     fetchQuestions(trainingPartId);
+
     if (isComplete) {
       fetchSavedScore(trainingPartId);
     }
@@ -163,7 +169,7 @@ const ExerciseQuiz: React.FC<ExerciseQuizProps> = ({
           restartQuiz={restartQuiz}
           answers={answers}
           isComplete={isComplete}
-          saveCore={savedScore}
+          savedScore={savedScore}
         />
       ) : (
         <Question

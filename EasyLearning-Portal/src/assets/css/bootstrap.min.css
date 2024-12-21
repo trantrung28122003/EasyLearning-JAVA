@@ -12531,4 +12531,13 @@ fieldset:disabled .btn {
     .d-print-none {
         display: none !important
     }
+
+    
+    
+}
+.text-custom {
+    color: #06bbcc !important;
+}
+.bg-custom {
+    background-color: #06bbcc !important;
 }

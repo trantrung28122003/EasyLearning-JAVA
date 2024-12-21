@@ -62,7 +62,7 @@ const ForgotPassword: React.FC = () => {
 
   const handleForgotPassword = (email: string) => {
     setIsLoading(true);
-    DoCallAPIWithToken(FORGOT_PASSWORD_URL, "POST", { email })
+    DoCallAPIWithOutToken(FORGOT_PASSWORD_URL, "POST", { email })
       .then((res) => {
         if (res.data.code === HTTP_OK) {
           setSuccessMessage("Mã xác nhận đã được gửi vào email của bạn");
@@ -164,7 +164,6 @@ const ForgotPassword: React.FC = () => {
 
   return (
     <AuthenticationShared>
-      <DataLoader isLoading={isLoading} />
       {!isCodeVerified ? (
         <div>
           <p className="mb-4" style={{ color: "#4b4b4b", textAlign: "center" }}>
@@ -222,7 +221,13 @@ const ForgotPassword: React.FC = () => {
                     disabled={isCodeSent}
                     onClick={() => handleForgotPassword(values.email)}
                   >
-                    {isCodeSent ? `Gửi lại mã ${timer}` : "Gửi mã "}
+                    {isLoading ? (
+                      <i className="fas fa-spinner fa-spin"></i>
+                    ) : isCodeSent ? (
+                      `Gửi lại mã ${timer}`
+                    ) : (
+                      "Gửi mã "
+                    )}
                   </button>
                 </div>
                 {errors.verificationCode && touched.verificationCode && (

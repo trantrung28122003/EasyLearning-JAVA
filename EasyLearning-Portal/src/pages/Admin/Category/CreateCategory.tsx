@@ -1,102 +1,164 @@
 import React, { useState } from "react";
 import AdminShared from "../Shared/AdminShared";
-import { BASE_URL_CREATE_CATEGORY } from "../../../constants/API";
-import { DoCallAPIWithToken } from "../../../services/HttpService";
-import { HTTP_OK } from "../../../constants/HTTPCode";
 
-const CreateCategory: React.FC = () => {
-  const [categoryName, setCategoryName] = useState("");
-  const [imageLink, setImageLink] = useState("");  // Giữ trạng thái imageLink
-  const [isSubmitting, setIsSubmitting] = useState(false);
+interface Category {
+  id: number;
+  name: string;
+  createdDate: string;
+  updatedDate: string;
+}
 
-  const handleCreateCategory = (e: React.FormEvent) => {
+const Categories: React.FC = () => {
+  // Dữ liệu ban đầu (Chỉ có thể test tạm thời , không lưu được dữ liệu khi refresh)
+  const [categories, setCategories] = useState<Category[]>([
+    { id: 1, name: "Thể loại 1", createdDate: "2024-11-01", updatedDate: "2024-11-15" },
+    { id: 2, name: "Thể loại 2", createdDate: "2024-10-05", updatedDate: "2024-11-10" },
+  ]);
+
+  const [showForm, setShowForm] = useState(false); // Hiển thị hoặc ẩn form
+  const [newCategory, setNewCategory] = useState({ name: "", description: "" }); // Thông tin thể loại mới
+  const [message, setMessage] = useState<string>("");
+
+  // Xử lý thêm thể loại
+  const handleAddCategory = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Kiểm tra nếu các trường bắt buộc bị bỏ trống
-    if (!categoryName.trim()) {
-      alert("Tên danh mục không thể để trống.");
+    if (!newCategory.name) {
+      setMessage("Tên thể loại không được để trống.");
       return;
     }
 
-    // Chỉ tạo FormData với categoryName và imageLink
-    const formData = new FormData();
-    formData.append("categoryName", categoryName.trim());  // Thêm tên danh mục
-    formData.append("imageLink", imageLink.trim());  // Đường dẫn ảnh
+    const newId = categories.length > 0 ? categories[categories.length - 1].id + 1 : 1;
+    const now = new Date().toISOString().split("T")[0]; // Lấy ngày hiện tại (YYYY-MM-DD)
+    const [year, month, day] = now.split("-"); // Tách năm, tháng, ngày
+    const formattedDate = `${day}-${month}-${year}`; // Sắp xếp lại thành DD-MM-YYYY
 
-    setIsSubmitting(true);
+    console.log(formattedDate);
 
-    // Gửi dữ liệu với FormData
-    DoCallAPIWithToken(BASE_URL_CREATE_CATEGORY, "POST", formData)
-      .then((res) => {
-        if (res.status === HTTP_OK) {
-          alert("Thêm danh mục thành công.");
-          window.location.href = "/admin/category";
-        } else {
-          alert(`Lỗi: ${res.statusText || "Không thể thêm danh mục."}`);
-        }
-      })
-      .catch((err) => {
-        console.error("Error creating category:", err.response?.data || err.message);
-        alert("Thêm danh mục thất bại. Vui lòng thử lại.");
-      })
-      .finally(() => {
-        setIsSubmitting(false);
-      });
+    const category: Category = {
+      id: newId,
+      name: newCategory.name,
+      createdDate: formattedDate,
+      updatedDate: formattedDate,
+    };
+
+    setCategories([...categories, category]); // Cập nhật danh sách thể loại
+    setNewCategory({ name: "", description: "" }); // Reset form
+    setShowForm(false); // Ẩn form
+    setMessage("Thêm thể loại thành công!");
+  };
+
+  // Xử lý xóa thể loại
+  const handleDelete = (id: number) => {
+    if (window.confirm("Bạn có chắc muốn xóa thể loại này?")) {
+      setCategories(categories.filter((category) => category.id !== id));
+      setMessage("Đã xóa thể loại thành công.");
+    }
   };
 
   return (
     <AdminShared>
-      <div className="container py-5">
-        <div className="text-center mb-4">
-          <h1 className="display-6 fw-bold text-primary">Thêm Thể Loại Mới</h1>
-          <p className="text-muted">Điền thông tin để thêm thể loại mới</p>
+      <div className="container mt-4">
+        <h1 style={{ textAlign: "center" }}>Danh sách thể loại</h1>
+        <hr />
+        <div className="d-flex justify-content-end mb-3">
+          <button className="btn btn-info" onClick={() => setShowForm(!showForm)}>
+            <i className="fa fa-plus" style={{ marginRight: "10px" }}></i> Thêm thể loại mới
+          </button>
         </div>
 
-        <form onSubmit={handleCreateCategory} className="shadow p-4 rounded bg-light">
-          <div className="mb-3">
-            <label htmlFor="categoryName" className="form-label">
-              Tên Danh Mục
-            </label>
-            <input
-              type="text"
-              id="categoryName"
-              className="form-control"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              placeholder="Nhập tên danh mục"
-              required
-            />
+        {/* Form thêm thể loại */}
+        {showForm && (
+          <div className="card mb-3">
+            <div className="card-header bg-primary text-white">Thêm Thể Loại</div>
+            <div className="card-body">
+              <form onSubmit={handleAddCategory}>
+                <div className="mb-3">
+                  <label htmlFor="categoryName" className="form-label">
+                    Tên Thể Loại
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="categoryName"
+                    value={newCategory.name}
+                    onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                    placeholder="Nhập tên thể loại"
+                  />
+                </div>
+                <div className="d-flex justify-content-end">
+                  <button type="submit" className="btn btn-success me-2">
+                    Lưu
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setShowForm(false)}
+                  >
+                    Hủy
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
+        )}
 
-          {/* Trường nhập đường dẫn ảnh */}
-          <div className="mb-3">
-            <label htmlFor="imageLink" className="form-label">
-              Đường Dẫn Ảnh
-            </label>
-            <input
-              type="text"
-              id="imageLink"
-              className="form-control"
-              value={imageLink}
-              onChange={(e) => setImageLink(e.target.value)}
-              placeholder="Nhập đường dẫn ảnh"
-              required
-            />
+        {/* Thông báo */}
+        {message && (
+          <div className="alert alert-info" role="alert">
+            {message}
           </div>
+        )}
 
-          <div className="text-center">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Đang xử lý..." : "Thêm thể loại"}
-            </button>
-          </div>
-        </form>
+        {/* Bảng danh sách thể loại */}
+        <table className="table table-striped table-bordered">
+          <thead style={{ backgroundColor: "#06bbcc", color: "white" }}>
+            <tr>
+              <th>Tên thể loại</th>
+              <th>Ngày tạo</th>
+              <th>Ngày cập nhật</th>
+              <th>Chức năng</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.length > 0 ? (
+              categories.map((category) => (
+                <tr key={category.id}>
+                  <td>{category.name}</td>
+                  <td>{category.createdDate}</td>
+                  <td>{category.updatedDate}</td>
+                  <td>
+                    <button
+                      className="btn btn-sm btn-primary me-2"
+                      onClick={() =>
+                        (window.location.href = `/admin/category/update/${category.id}`)
+                      }
+                    >
+                      <i className="bi bi-pencil-square"></i>
+                      Sửa
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger me-2"
+                      onClick={() => handleDelete(category.id)}
+                    >
+                      <i className="bi bi-trash"></i>
+                      Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={4} className="text-center">
+                  Không có thể loại nào.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     </AdminShared>
   );
 };
 
-export default CreateCategory;
+export default Categories;

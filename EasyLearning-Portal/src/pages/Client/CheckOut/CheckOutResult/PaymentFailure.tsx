@@ -1,10 +1,9 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import "./CheckOutResult.css"; // Import file CSS vào component
+import "./CheckOutResult.css"; 
 import ClientShared from "../../Shared/ClientShared";
 
 const PaymentFailure = () => {
-  const navigate = useNavigate(); // Dùng hook để chuyển hướng
+  const navigate = useNavigate(); 
 
   return (
     <ClientShared>
@@ -24,7 +23,7 @@ const PaymentFailure = () => {
         </p>
         <button
           className="flex-shrink-0 btn btn-sm btn-primary px-3 btn-payment"
-          onClick={() => navigate("/shoppingCart")}
+          onClick={() => navigate("/shoppingCart ", { replace: true })}
         >
           Quay lại giỏ hàng của bạn
         </button>

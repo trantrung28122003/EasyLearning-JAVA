@@ -206,16 +206,40 @@
 
 
 
+
+
+.no-results {
+    text-align: center;
+    margin-top: 12px;
+}
+
+.no-results img {
+    max-width    : 50%;
+    height       : auto;
+    margin-bottom: 16px;
+}
+
+.no-results-hint {
+    font-size  : 18px;
+    font-weight: bold;
+}
+
+.no-results-list {
+    text-align: left;
+    display   : inline-block;
+    font-size : 17px;
+    color     : #777;
+}
+
 .search-card {
     position: relative;
 }
 
 .hover-popup {
     display         : none;
-    /* Mặc định ẩn */
+
     position        : absolute;
     top             : 100%;
-    /* Đặt dưới thẻ chính */
     left            : 50%;
     transform       : translateX(-50%);
     background-color: #fff;
@@ -224,17 +248,13 @@
     padding         : 10px;
     z-index         : 10;
     width           : 200px;
-    /* Chiều rộng cố định cho popup */
     border-radius   : 8px;
     text-align      : center;
 }
 
 .search-card:hover .hover-popup {
     display: block;
-    /* Hiện popup khi hover */
 }
-
-
 
 .course-card {
     position: relative;
@@ -243,6 +263,10 @@
 .course-card:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+
+
+
 
 .hover-card {
     position        : absolute;
@@ -259,6 +283,7 @@
     opacity         : 0;
     visibility      : hidden;
     transition      : opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  
 }
 
 .course-card:hover .hover-card {
@@ -300,7 +325,8 @@
     cursor          : pointer;
     font-weight     : bold;
     justify-content : center;
-    width           : 200px;
+    margin-right: 6px;
+    width: 178px;
 }
 
 .hover-card-arrow {
@@ -315,26 +341,37 @@
     border-top  : 10px solid #fff;
 }
 
-/* Ảnh khi không tìm thấy */
-.no-results {
-    text-align: center;
-    margin-top: 12px;
-}
 
-.no-results img {
-    max-width    : 50%;
-    height       : auto;
-    margin-bottom: 16px;
-}
 
-.no-results-hint {
-    font-size  : 18px;
-    font-weight: bold;
-}
+.heart-circle {
+    width: 40px; 
+    height: 40px;
+    border: 2px solid #888; 
+    border-radius: 50%; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    font-size: 24px;
+    color: #06BBCC; 
+  }
+  
+  .heart-circle:hover {
+    background-color: #f8f8f8; 
+    border-color: #028C99; 
+  }
 
-.no-results-list {
-    text-align: left;
-    display   : inline-block;
-    font-size : 17px;
-    color     : #777;
-}
+   .heart-circle i {
+    transition: color 0.3s ease;
+  }
+  .heart-circle:hover .far {
+    color: #06BBCC; 
+    font-weight: bold; 
+    font-family: "Font Awesome 5 Free"; 
+    content: "\f004"; 
+  }
+  
+  .favorite-icon:hover .fas {
+    color: #028C99;
+  } 

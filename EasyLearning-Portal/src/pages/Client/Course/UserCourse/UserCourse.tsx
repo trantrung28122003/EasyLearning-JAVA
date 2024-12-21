@@ -44,6 +44,9 @@ const UserCourse: React.FC = () => {
   }
   useEffect(() => {
     doCallGetCourseByUser();
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
   }, []);
 
   return (
@@ -68,7 +71,7 @@ const UserCourse: React.FC = () => {
               </p>
               <button
                 className="explore-course-btn"
-                onClick={() => navigate("/courses")}
+                onClick={() => navigate("/courses/search")}
               >
                 Khám phá các khóa học
               </button>

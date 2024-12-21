@@ -59,6 +59,7 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
       );
       if (response.status === HTTP_OK) {
         setSuccessMessage("Đổi mật khẩu thành công!");
+        setErrorMessage("");
         startCountdown();
       } else if (response.data.result === "Mật khẩu cũ không đúng") {
         setErrorMessage(response.data.result);
@@ -159,7 +160,18 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-
+          <p className="text-center">
+            <a
+              style={{
+                textDecoration: "underline",
+                color: "#06BBCC",
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/forgetPassword")}
+            >
+              Bạn quên mật khẩu?
+            </a>
+          </p>
           <button
             type="button"
             className="change-password-btn btn btn-primary"

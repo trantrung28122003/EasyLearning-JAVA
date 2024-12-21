@@ -11,6 +11,7 @@ import { DoCallAPIWithToken } from "../../services/HttpService";
 import { HTTP_OK } from "../../constants/HTTPCode";
 import { getTimeAgo } from "../../hooks/useTime";
 import { getWebSocketClient } from "../../hooks/websocket";
+import { User } from "../../model/User";
 
 interface Notification {
   id: string;
@@ -24,24 +25,23 @@ interface Notification {
 const Navbar: React.FC = () => {
   const isAdmin = hasAdminRole();
   const isLogin = isUserLogin();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const bellIconRef = useRef<HTMLDivElement>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [currentUser, setCurrentUser] = useState<User | null>(getUserInfo());
   const doGetShoppingCart = () => {
-   // setIsLoading(true);
-    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get")
-      .then((res) => {
-        if (res.status === HTTP_OK) {
-          const shoppingCart: ShoppingCart = res.data;
-          setCartItemsCount(shoppingCart.shoppingCartItemResponses.length);
-        }
-      })
-      //.finally(() => setIsLoading(false));
+    // setIsLoading(true);
+    DoCallAPIWithToken(BASE_URL_SHOPPING_CART, "get").then((res) => {
+      if (res.status === HTTP_OK) {
+        const shoppingCart: ShoppingCart = res.data;
+        setCartItemsCount(shoppingCart.shoppingCartItemResponses.length);
+      }
+    });
+    //.finally(() => setIsLoading(false));
   };
-
 
   const FetchNotificationByUser = async () => {
     try {
@@ -56,11 +56,11 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
-    navigator("/");
+    navigate("/");
   };
   const handleLogin = () => {
     localStorage.clear();
-    navigator("/login");
+    navigate("/login");
   };
 
   const client = getWebSocketClient();
@@ -69,7 +69,7 @@ const Navbar: React.FC = () => {
       FetchNotificationByUser();
       doGetShoppingCart();
     }
-    const currentUser = getUserInfo();
+    setCurrentUser(getUserInfo());
     const handleClickOutside = (event: MouseEvent) => {
       if (
         notificationsRef.current &&
@@ -80,6 +80,7 @@ const Navbar: React.FC = () => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
+
     client.onConnect = () => {
       client.subscribe("/topic/notifications", (content) => {
         const newNotification = JSON.parse(content.body);
@@ -95,6 +96,14 @@ const Navbar: React.FC = () => {
             ...prevNotifications,
             newNotification,
           ]);
+        });
+      }
+
+      if (currentUser?.id) {
+        client.subscribe(`/user/${currentUser.id}/shoppingCarts`, (content) => {
+          const shoppingCartItem = JSON.parse(content.body);
+          console.log("WebSocket Message Received:", shoppingCartItem);
+          setCartItemsCount((prevCount) => prevCount + 1);
         });
       }
     };
@@ -113,13 +122,13 @@ const Navbar: React.FC = () => {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "COMMENT":
-        return <i className="fa fa-comments"></i>; 
+        return <i className="fa fa-comments"></i>;
       case "CERTIFICATE":
-        return <i className="fa fa-certificate"></i>; 
+        return <i className="fa fa-certificate"></i>;
       case "COURSE_PURCHASE":
-        return <i className="fa fa-graduation-cap"></i>; 
+        return <i className="fa fa-graduation-cap"></i>;
       default:
-        return <i className="fa fa-bell"></i>; 
+        return <i className="fa fa-bell"></i>;
     }
   };
   const updateNotificationReadStatus = async (notificationId: string) => {
@@ -158,8 +167,15 @@ const Navbar: React.FC = () => {
         )
       );
     }
+
     if (notification.targetId != null) {
-      navigator(`${notification.targetId}`);
+      const urlParts = notification.targetId.split("?");
+      const urlLearning = urlParts[0];
+      const paramsString = urlParts[1];
+      const params = new URLSearchParams(paramsString);
+      const trainingPartId = params.get("trainingPartId");
+      navigate(`${urlLearning}`);
+      sessionStorage.setItem("trainingPartId", `${trainingPartId}`);
     }
   };
 
@@ -190,10 +206,11 @@ const Navbar: React.FC = () => {
             <a className="nav-item nav-link" href="/courses/search">
               Các Khóa Học
             </a>
-            
-            
             {isLogin && (
               <>
+                <a className="nav-item nav-link" href="/userCourses">
+                  Khóa học của bạn
+                </a>
                 <div className="nav-item dropdown">
                   <a
                     href="#"
@@ -214,9 +231,6 @@ const Navbar: React.FC = () => {
                       Chứng chỉ của bạn
                     </a>
 
-                    <a className="dropdown-item" href="/userProfile">
-                      Cài đặt tài khoản
-                    </a>
                     <a className="dropdown-item" href="/about">
                       Thông tin về eLEARNING
                     </a>
@@ -230,11 +244,9 @@ const Navbar: React.FC = () => {
 
                 <a
                   className="position-relative me-4 my-auto"
-                  href="/shoppingCart"
+                  href="/favoriteCourse"
                 >
                   <i className="far fa-heart fa-2x"></i>
-                   
-            
                 </a>
 
                 <a
@@ -242,11 +254,12 @@ const Navbar: React.FC = () => {
                   href="/shoppingCart"
                 >
                   <i className="fa fa-shopping-bag fa-2x">
-                    {cartItemsCount > 0 &&
-                     <span className="shoppingcart-badge">
+                    {cartItemsCount > 0 && (
+                      <span className="shoppingcart-badge">
                         {cartItemsCount}
-                    </span>
-                  }</i>
+                      </span>
+                    )}
+                  </i>
                 </a>
                 <div
                   className="position-relative me-4 my-auto"
@@ -289,7 +302,6 @@ const Navbar: React.FC = () => {
                             }
                           >
                             <div className="notification-content">
-                              {/* Hiển thị icon tùy thuộc vào loại thông báo */}
                               <div className="notification-icon">
                                 {getNotificationIcon(notification.type)}
                               </div>
@@ -311,25 +323,70 @@ const Navbar: React.FC = () => {
                 </div>
               </>
             )}
-
-
-           <a className="position-relative me-4 my-auto profile-dropdown">
-             <img src="http://res.cloudinary.com/dofr3xzmi/image/upload/v1732969604/mzxf7ihvdzwavbxyshg8.webp"
-             style={{width: "40px", height:"40px", borderRadius: "29px"}}
-             />
-
-            <div className="profile">
-              1111111111
-            </div>
-          </a>
             {isLogin ? (
-              // <button
-              //   className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"
-              //   onClick={handleLogout}
-              // >
-              //   Đăng Xuất<i className="fa fa-arrow-right ms-3"></i>
-              // </button>
-              <></>
+              <div
+                className="position-relative me-4 my-auto profile-dropdown"
+                onMouseEnter={() => setIsNotificationOpen(false)}
+              >
+                <div className="avatar-text">
+                  {currentUser?.fullName
+                    ? currentUser.fullName
+                        .split(" ")
+                        .slice(-1)[0]
+                        .charAt(0)
+                        .toUpperCase()
+                    : "E"}
+                </div>
+
+                <div className="user-menu">
+                  <div className="user-menu-header">
+                    <img className="avatar-img" src={currentUser?.imageUrl} />
+                    <div className="user-info">
+                      <h4>{currentUser?.fullName}</h4>
+                      <p>{currentUser?.email}</p>
+                    </div>
+                  </div>
+                  <ul className="user-menu-list">
+                    <li onClick={() => navigate("/userCourses")}>
+                      Danh sách khóa học
+                    </li>
+                    <li onClick={() => navigate("/shoppingCart")}>
+                      Giỏ hàng
+                      {cartItemsCount > 0 && (
+                        <span className="badge">{cartItemsCount}</span>
+                      )}
+                    </li>
+                    <li onClick={() => navigate("/favoriteCourse")}>
+                      Yêu thích
+                    </li>
+                    <li onClick={() => navigate("/certificate")}>Chứng chỉ</li>
+                  </ul>
+                  <ul
+                    className="user-menu-list"
+                    onClick={() => setIsNotificationOpen(true)}
+                  >
+                    <li>Thông báo</li>
+                  </ul>
+                  <ul className="user-menu-list">
+                    <li onClick={() => navigate("/userProfile")}>
+                      Hồ sơ tài khoản
+                    </li>
+                    <li onClick={() => navigate("/purchaseHistory")}>
+                      Lịch sử mua khóa học
+                    </li>
+                    <li onClick={() => navigate("/about")}>
+                      Thông tin về eLEARNING
+                    </li>
+                  </ul>
+                  <ul className="user-menu-list">
+                    <li onClick={handleLogout}>Đăng xuất tài khoản</li>
+                  </ul>
+                  <div className="user-menu-footer">
+                    <span>Ngôn ngữ</span>
+                    <span>Tiếng Việt &#127760;</span>
+                  </div>
+                </div>
+              </div>
             ) : (
               <button
                 className="btn btn-primary py-4 px-lg-5 d-none d-lg-block"

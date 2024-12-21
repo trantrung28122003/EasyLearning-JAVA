@@ -107,7 +107,7 @@ const Login: React.FC = () => {
         initialValues={{ userName: "", password: "" }}
         validationSchema={schema}
         onSubmit={(values: LoginRequest) => {
-          setLoginError(null); // Xóa lỗi cũ khi người dùng gửi form
+          setLoginError(null);
           doLogin(values);
         }}
         validateOnChange

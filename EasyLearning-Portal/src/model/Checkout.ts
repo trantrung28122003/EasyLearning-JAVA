@@ -3,6 +3,10 @@ interface MomoPaymentRequest {
   note: string;
 }
 
+interface VNPaymentRequest {
+  amount: number;
+}
+
 interface ConfirmPaymentRequest {
   partnerCode: string;
   accessKey: string;

@@ -1,45 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./CheckOutResult.css"; // Import file CSS vào component
+import "./CheckOutResult.css";
 import ClientShared from "../../Shared/ClientShared";
-import { APPLY_DISCOUNT_USER } from "../../../../constants/API";
+import { UPDATE_DISCOUNT_USER } from "../../../../constants/API";
 import { DoCallAPIWithToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 
-const PaymentSuccess = () => {
+const PaymentSuccess: React.FC = () => {
   const navigate = useNavigate();
-  const [discountCode, setDiscountCode] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedDiscountCode = localStorage.getItem("discountCode");
-    if (storedDiscountCode) {
-      setDiscountCode(storedDiscountCode);
-    }
-  }, []);
+  const [discountCode, setDiscountCode] = useState<string | null>(
+    sessionStorage.getItem("discountCode")
+  );
 
   const doCallApplyUserDiscount = async () => {
     try {
-      if (discountCode) {
-        console.log("Calling API with discountCode:", discountCode);
-        const URL = APPLY_DISCOUNT_USER + `?discountCode=${discountCode}`;
-        const response = await DoCallAPIWithToken(URL, "POST");
-        if (response.status === HTTP_OK) {
-          const data = response.data.result;
-          console.log(data);
-          localStorage.removeItem("discountCode");
-        }
+      console.log("Calling API with discountCode:", discountCode);
+      const URL = UPDATE_DISCOUNT_USER + `?discountCode=${discountCode}`;
+      const response = await DoCallAPIWithToken(URL, "POST");
+      if (response.data.code === HTTP_OK) {
+        const data = response.data.result;
+        console.log(data);
+        sessionStorage.removeItem("discountCode");
       }
     } catch (error) {
       console.error("API call failed:", error);
     }
   };
 
-  // Gọi API chỉ khi discountCode thay đổi
   useEffect(() => {
-    if (discountCode) {
-      doCallApplyUserDiscount();
+    const storedDiscountCode = sessionStorage.getItem("discountCode");
+    if (storedDiscountCode) {
+      setDiscountCode(storedDiscountCode);
     }
-  }, [discountCode]); // Khi discountCode thay đổi mới gọi API
+    doCallApplyUserDiscount();
+  }, []);
 
   return (
     <ClientShared>
@@ -63,7 +57,7 @@ const PaymentSuccess = () => {
         </p>
         <button
           className="flex-shrink-0 btn btn-sm btn-primary px-3 btn-payment"
-          onClick={() => navigate("/userCourses")}
+          onClick={() => navigate("/userCourses", { replace: true })}
         >
           Đi tới khóa học của bạn
         </button>

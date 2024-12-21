@@ -39,6 +39,11 @@ const CartItem: React.FC<CartItemProps> = ({ item }) => {
                 <p className="lead fw-normal mb-0" style={{ fontSize: "24px" }}>
                   {item.cartItemName}
                 </p>
+                {item.notRegistrable &&(
+                  <small className="text-danger" >
+                      Khóa học này đã hết hạn đăng kí hoặc đủ số lượng
+                  </small>
+                )}
               </div>
             </div>
             <div className="col-md-2 d-flex justify-content-center">

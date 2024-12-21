@@ -22,6 +22,7 @@ interface ShoppingCartItem {
   dateChange: string;
   changedBy: string;
   deleted: boolean;
+  notRegistrable: boolean;
 }
 
 interface UserDiscountResponse {

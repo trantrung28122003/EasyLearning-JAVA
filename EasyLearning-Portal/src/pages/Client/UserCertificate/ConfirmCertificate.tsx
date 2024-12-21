@@ -10,11 +10,11 @@ import "./UserCertificate.css";
 
 const ConfirmCertificate: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Dùng để chuyển trang
+  const navigate = useNavigate(); 
   const { courseId } = location.state || {};
   const [certificateByCourse, setCertificateByCourse] =
     useState<CertificateResponse>();
-  const [isChecked, setIsChecked] = useState(false); // Trạng thái checkbox
+  const [isChecked, setIsChecked] = useState(false); 
   const isInitialRender = useRef(true);
 
   const imageUrl = certificateByCourse?.certificateUrl.replace(

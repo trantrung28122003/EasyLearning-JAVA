@@ -80,7 +80,7 @@ export const RoutesConfig: ApplicationRoute[] = [
     path: "/admin/course/create",
     component: LazyLoadComponent(import("../pages/Admin/Course/CreateCourse")),
     isProtected: true,
-    isAdmin: true,
+    isAdmin: false,
   },
   {
     path: "/admin/course/details",
@@ -149,14 +149,6 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: true,
   },
   {
-    path: "/admin/user",
-    component: LazyLoadComponent(
-      import("../pages/Admin/User/UsersManagement")
-    ),
-    isProtected: true,
-    isAdmin: true,
-  },
-  {
     path: "/courses/",
     component: LazyLoadComponent(import("../pages/Client/Course/Course")),
     isProtected: false,
@@ -185,11 +177,21 @@ export const RoutesConfig: ApplicationRoute[] = [
   {
     path: "/checkout/confirmPaymentMomoClient",
     component: LazyLoadComponent(
-      import("../pages/Client/CheckOut/CheckOutResult/CheckoutResult")
+      import("../pages/Client/CheckOut/CheckOutResult/CheckoutMomoResult")
     ),
     isProtected: true,
     isAdmin: false,
   },
+
+  {
+    path: "/checkout/confirmPaymentVNPayClient",
+    component: LazyLoadComponent(
+      import("../pages/Client/CheckOut/CheckOutResult/CheckoutVNPayResult")
+    ),
+    isProtected: true,
+    isAdmin: false,
+  },
+  
   {
     path: "/paymentFailure",
     component: LazyLoadComponent(import("../pages/Client/CheckOut/CheckOutResult/PaymentFailure")),
@@ -210,13 +212,6 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: true,
     isAdmin: false,
   },
-  {
-    path: "/userEvents/:courseId",
-    component: LazyLoadComponent(import("../pages/Client/Event/UserEvents")),
-    isProtected: true,
-    isAdmin: false,
-  },
-
   {
     path: "/schedule",
     component: LazyLoadComponent(import("../pages/Client/Schedule/UserSchedule")),
@@ -265,12 +260,20 @@ export const RoutesConfig: ApplicationRoute[] = [
     isProtected: true,
     isAdmin: false,
   },
+
   {
-    path: "/test",
-    component: LazyLoadComponent(import("../pages/Client/Learning/test")),
+    path: "/favoriteCourse",
+    component: LazyLoadComponent(import("../pages/Client/Favorite/Favorite")),
+    isProtected: true,
+    isAdmin: false,
+  },
+  {
+    path: "/purchaseHistory",
+    component: LazyLoadComponent(import("../pages/Client/PurchaseHistory/PurchaseHistory")),
     isProtected: true,
     isAdmin: false,
   },
 
+ 
 
 ];

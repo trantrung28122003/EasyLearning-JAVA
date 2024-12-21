@@ -19,6 +19,7 @@ export interface Course {
   dateCreate: string;
   dateChange: string;
   changedBy: string;
+  isFree: boolean;
   coursesDetails: CoursesDetail[];
   trainerDetails: any[];
   trainingParts: TrainingPart[];
@@ -31,10 +32,10 @@ export interface Course {
 }
 
 
-//export interface CourseRequest
-//{
-  //courseName: string;
-//}
+export interface CourseRequest
+{
+  courseName: string;
+}
 
 export interface TrainingPart {
   id: string;
@@ -74,6 +75,7 @@ export interface CourseSlim {
   averageRating: number;
   startDate: string;
   endDate: string;
+  nextAvailableDate: string;
   totalTrainingPartByCourse: number;
   completedPartsByCourse: number;
   totalLearningTime: string;

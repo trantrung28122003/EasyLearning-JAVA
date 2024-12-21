@@ -17,7 +17,7 @@ const Question: React.FC<QuestionProps> = ({
   handleAnswer,
 }) => {
   if (!question) {
-    return <div>Loading...</div>; // Trả về trạng thái chờ khi không có dữ liệu câu hỏi
+    return <div>Loading...</div>;
   }
   return (
     <div className="quiz-question-card">

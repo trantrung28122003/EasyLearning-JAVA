@@ -29,7 +29,7 @@ const Footer: React.FC = () => {
             <h4 className="text-white mb-3">Thông Tin Liên Hệ</h4>
             <p className="mb-2">
               <i className="fa fa-map-marker-alt me-3"></i>
-              300 Nguyễn Duy Trinh, Quận 2, Thành Phố Hồ Chí Minh
+              Thôn Sao Mai - xã Ka Đơn - huyện Đơn Dương - tỉnh Lâm Đồng
             </p>
             <p className="mb-2">
               <i className="fa fa-phone-alt me-3"></i>

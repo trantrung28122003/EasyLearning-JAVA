@@ -1,74 +1,90 @@
 import React from "react";
 import AdminShared from "../Shared/AdminShared";
-import { useLocation } from "react-router-dom"; // Import useLocation to get passed state
 
 const EventDetail: React.FC = () => {
-  const location = useLocation();
-  const event = location.state?.event; // Retrieve the event data passed from the Events component
-
-  if (!event) {
-    return <div>Loading...</div>; // Handle the case where event data is not passed
-  }
-
   return (
     <AdminShared>
-      <div className="container py-5">
-        <div className="card shadow-lg border-0 rounded-3" style={{ maxWidth: "1000px", margin: "0 auto" }}>
-          <div className="card-body p-4">
-            <div className="text-center mb-4">
-              <h1 className="display-4 text-primary">Chi tiết buổi học</h1>
-              <h2 className="text-muted">
-                <strong>{event.eventName}</strong>
-              </h2>
-              <hr />
-            </div>
-
-            {/* Event Details */}
-            {/* <div className="form-group mb-4">
-              <label className="form-label fs-5">Khóa học</label>
-              <div className="fs-5 text-muted">{event.courseName}</div>
-            </div> */}
-
-            <div className="form-group mb-4">
-              <label className="form-label fs-5">Nội dung buổi học</label>
-              <div className="fs-5 text-muted">{event.eventName}</div>
-            </div>
-
-            <div className="form-group mb-4">
-              <label className="form-label fs-5">Hình thức</label>
-              <div className="fs-5 text-muted">{event.eventType}</div>
-            </div>
-
-            {/* Conditional Rendering for Online vs Offline */}
-            {event.eventType === "Online" ? (
-              <div className="form-group mb-4">
-                <label className="form-label fs-5">Link phòng học online</label>
-                <div className="fs-5 text-muted">{event.onlineLink}</div>
-              </div>
-            ) : (
-              <div className="form-group mb-4">
-                <label className="form-label fs-5">Địa chỉ</label>
-                <div className="fs-5 text-muted">{event.location}</div>
-              </div>
-            )}
-
-            <div className="form-group mb-4">
-              <label className="form-label fs-5">Ngày bắt đầu</label>
-              <div className="fs-5 text-muted">{event.dateStart}</div>
-            </div>
-
-            <div className="form-group mb-4">
-              <label className="form-label fs-5">Ngày kết thúc</label>
-              <div className="fs-5 text-muted">{event.dateEnd}</div>
-            </div>
-
-            {/* Button to go back */}
-            <div className="mt-4 text-center">
-              <a href="#" className="btn btn-danger btn-lg" onClick={() => window.history.back()}>
-                Quay Lại
-              </a>
-            </div>
+      <h1 className="text-center">Chi tiết buổi học</h1>
+      <h1 className="text-center" style={{ marginBottom: "40px" }}>
+        <strong>EventName</strong>{" "}
+      </h1>
+      <hr />
+      <div className="container">
+        <div>
+          <div className="form-group">
+            <label className="control-label">Khóa học</label>
+            <span className="form-control"></span>
           </div>
+          <div className="form-group">
+            <label className="control-label">Nội dung buổi học</label>
+            <span className="form-control">EventName</span>
+          </div>
+          <div className="form-group">
+            <label className="control-label">Hình thức</label>
+            <span className="form-control"></span>
+          </div>
+
+          <div className="form-group" id="onlineRoom">
+            <label className="control-label">Link phòng học online</label>
+            <span className="form-control">OnlineRoomUrl</span>
+          </div>
+
+          <div className="form-group" id="offlineLocation">
+            <label className="control-label">Địa chỉ</label>
+            <span className="form-control">Location</span>
+          </div>
+
+          <div className="form-group">
+            <label className="control-label">Ngày bắt đầu</label>
+            <span className="form-control">DateStart</span>
+          </div>
+          <div className="form-group">
+            <label className="control-label">Ngày kết thúc</label>
+            <span className="form-control">DateEnd</span>
+          </div>
+
+          <h1 className="text-center">Danh sách nội dung của buổi học</h1>
+          <hr />
+          <table className="table table-striped table-bordered">
+            <thead style={{ backgroundColor: "#06bbcc", color: "white" }}>
+              <tr>
+                <th>Tên nội dung</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Hình thức</th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* @if (Model.TrainingParts != null && Model.TrainingParts.Any())
+                {
+                    foreach (var item in Model.TrainingParts)
+                    {
+                        <tr>
+                            <td>@item.TrainingPartName</td>
+                            <td>@item.StartTime</td>
+                            <td>@item.EndTime</td>
+                            <td>@(item.TrainingPartType == TrainingPartType.Lesson ? "Lý thuyết" : (item.TrainingPartType == TrainingPartType.Exercise ? "Bài tập" : "Không xác định"))</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">Không có nội dung cho buổi học này</td>
+                    </tr>
+                } */}
+            </tbody>
+          </table>
+        </div>
+        <div className="form-group text-center">
+          <a
+            asp-controller="Event"
+            asp-action="Index"
+            asp-route-courseId="CourseId"
+            className="btn btn-outline-info btn-lg btn-block"
+          >
+            Quay lại
+          </a>
         </div>
       </div>
     </AdminShared>

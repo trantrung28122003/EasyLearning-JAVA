@@ -35,4 +35,15 @@ const convertSecondsToTime = (seconds: number): string => {
   }
 };
 
-export { getToday , getTimeAgo, convertSecondsToTime};
+
+const formatDateVN = (dateString: string): string => {
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric' 
+  };
+  return date.toLocaleDateString('vi-VN', options); 
+};
+
+export { getToday , getTimeAgo, convertSecondsToTime, formatDateVN};

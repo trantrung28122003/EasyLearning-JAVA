@@ -3,20 +3,15 @@ import "./SearchCourse.css";
 import ClientShared from "../../Shared/ClientShared";
 import { Course } from "../../../../model/Course";
 import {
-  ADD_TO_CART,
   GET_ALL_CATEGORY_WITH_COURSE,
   GET_ALL_COURSE,
   SEARCH_COURSES,
 } from "../../../../constants/API";
-import {
-  DoCallAPIWithOutToken,
-  DoCallAPIWithToken,
-} from "../../../../services/HttpService";
+import { DoCallAPIWithOutToken } from "../../../../services/HttpService";
 import { HTTP_OK } from "../../../../constants/HTTPCode";
 import { ApplicationResponse } from "../../../../model/BaseResponse";
 import SearchCard from "../../../../components/card/LongCard";
 import { CategoryWithCourse } from "../../../../model/Category";
-import { useNavigate } from "react-router-dom";
 import DataLoader from "../../../../components/lazyLoadComponent/DataLoader";
 
 const SearchCourse: React.FC = () => {
@@ -164,7 +159,10 @@ const SearchCourse: React.FC = () => {
   return (
     <ClientShared>
       <DataLoader isLoading={isLoading} />
-      <div className="container-search-course" style={{ marginBottom: "80px", padding: "14px" }}>
+      <div
+        className="container-search-course"
+        style={{ marginBottom: "80px", padding: "14px" }}
+      >
         <div className="d-flex justify-content align-items-center mb-3">
           <div className="category-dropdown">
             <button

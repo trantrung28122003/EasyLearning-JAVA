@@ -25,7 +25,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class EmailService {
-
     @Value("${spring.mail.host}")
     String host;
     @Value("${spring.mail.port}")
@@ -36,7 +35,6 @@ public class EmailService {
     String password;
     @Value("${spring.mail.fromEmail}")
     String fromEmail;
-
     public void sendVerificationCode(String toEmail, String verificationCode) throws MessagingException, IOException {
         String emailTemplatePath = Paths.get("src/main/resources/templates/Email/EmailVerification.html").toString();
         String emailTemplate = new String(Files.readAllBytes(Paths.get(emailTemplatePath)));

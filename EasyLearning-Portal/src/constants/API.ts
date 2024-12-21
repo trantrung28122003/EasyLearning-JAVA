@@ -19,25 +19,11 @@ const REGISTER_URL = BASE_URL_AUTH + "/register";
 */
 const BASE_URL_COURSE = BASE_URL + "/course";
 const BASE_URL_CREATE_COURSE = BASE_URL_COURSE + "/create";
-const BASE_URL_UPDATE_COURSE = BASE_URL_COURSE + "/update";
 
 /* 
-  Event
+  Course
 */
-const BASE_URL_EVENT = BASE_URL + "/courseEvent";
-const BASE_URL_CREATE_EVENT = BASE_URL_EVENT + "/create";
-const BASE_URL_UPDATE_EVENT = BASE_URL_EVENT + "/update";
 
-/* 
-  Category
-*/
-const BASE_URL_CATEGORY = BASE_URL + "/category";
-const BASE_URL_CREATE_CATEGORY = BASE_URL_CATEGORY + "/create";
-const BASE_URL_UPDATE_CATEGORY = BASE_URL_CATEGORY + "/update";
-
-/* 
-  Category
-*/
 
 
 /*
@@ -54,7 +40,7 @@ const UPDATE_TRAINING_PROGRESS = BASE_URL + "/userTrainingProgress/updateStatusP
 const GET_QUESTION_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getExercise"
 const GET_SAVED_SCORE_BY_TRAINING_PART = BASE_URL + "/userTrainingProgress/getUserTrainingProgressByPart"
 const GET_ALL_CERTIFICATE_BY_USER = BASE_URL + "/certificates/getAllCertificate"
-const ADD_TO_FEEDBACK = BASE_URL + "/customer/addToFeedback"
+const ADD_TO_FEEDBACK = BASE_URL+ "/customer/addToFeedback"
 const CREATE_CERTIFICATE = BASE_URL + "/certificates/createCertificate"
 const GET_CERTIFICATE_BY_COURSE = BASE_URL + "/certificates/getCertificateByCourseAndUser"
 const GET_NOTIFICATION_BY_USER = BASE_URL + "/customer/notificationByUser"
@@ -63,13 +49,15 @@ const UPDATE_PROFILE_USER = BASE_URL + "/customer/updateProfile"
 const CHANGE_PASSWORD_BY_USER = BASE_URL + "/customer/changePassword"
 const FORGOT_PASSWORD_URL = BASE_URL + "/email/sendVerificationCode"
 const VERIFY_CODE_URL = BASE_URL + "/email/verifyCode"
-const RESET_PASSWORD = BASE_URL + "/customer/resetPassword"
-const GET_NOTES_BY_COURSE_AND_USER = BASE_URL + "/customer/getNotesByCourseAndUser"
-const ADD_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/addNotesByCourseAndUser"
-const UPDATE_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/updateNotesByCourseAndUser"
-const DELETE_NOTE_BY_COURSE_AND_USER = BASE_URL + "/customer/deleteNotesByCourseAndUser"
-
-
+const RESET_PASSWORD = BASE_URL +"/customer/resetPassword"
+const GET_NOTES_BY_COURSE_AND_USER = BASE_URL +"/customer/getNotesByCourseAndUser"
+const ADD_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/addNotesByCourseAndUser"
+const UPDATE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/updateNotesByCourseAndUser"
+const DELETE_NOTE_BY_COURSE_AND_USER = BASE_URL +"/customer/deleteNotesByCourseAndUser"
+const TOGGLE_FAVORITE_COURSE = BASE_URL +"/customer/toggleFavorite"
+const GET_ALL_FAVORITE_COURSE_BY_COURSE = BASE_URL + "/customer/favoritesCourseByUser"
+const GET_PURCHASE_HISTORY = BASE_URL + "/customer/purchaseHistory"
+const ADD_COURSE_FREE = BASE_URL + "/customer/addCourseFree"
 
 /*
   users
@@ -88,6 +76,7 @@ const GET_TOP_FOUR_MOST_CATEGORY = BASE_URL + "/topFourMostCategory";
 const SEARCH_COURSES = BASE_URL + "/search";
 const GET_FEEDBACKS_WITH_FIVE_RATING = BASE_URL + "/getFeedbacksWithFiveRating";
 const GET_COURSES_WITH_DISCOUNT = BASE_URL + "/getCourseWithDiscount";
+const GET_COURSES_WITH_FREE = BASE_URL + "/getCourseWithFree";
 
 
 
@@ -101,7 +90,7 @@ const GET_COURSES_WITH_DISCOUNT = BASE_URL + "/getCourseWithDiscount";
 const BASE_URL_SHOPPING_CART = BASE_URL + "/shoppingCart";
 const ADD_TO_CART = BASE_URL_SHOPPING_CART + "/addToCart";
 const REMOVE_FROM_CART = BASE_URL_SHOPPING_CART + "/remove";
-const GET_COUPONS_BY_USER = BASE_URL + "/discount/getAllDisCountByUser"
+const GET_COUPONS_BY_USER = BASE_URL +"/discount/getAllDisCountByUser"
 
 /**
  * Shopping cart
@@ -112,8 +101,10 @@ const GET_COUPONS_BY_USER = BASE_URL + "/discount/getAllDisCountByUser"
  */
 const BASE_URL_PAYMENT = BASE_URL + "/payment";
 const DO_PAYMENT_MOMO = BASE_URL_PAYMENT + "/doPaymentMomo";
-const CONFIRM_PAYMENT = BASE_URL_PAYMENT + "/confirmPaymentMomoClient";
-const APPLY_DISCOUNT_USER = BASE_URL + "/discount/addUserDiscount"
+const CONFIRM_PAYMENT_MOMO = BASE_URL_PAYMENT + "/confirmPaymentMomoClient";
+const CONFIRM_PAYMENT_VNPAY = BASE_URL_PAYMENT + "/confirmPaymentVNPayClient";
+const UPDATE_DISCOUNT_USER = BASE_URL + "/discount/updateUserDiscount"
+const DO_PAYMENT_VNPAY = BASE_URL_PAYMENT +"/doPaymentVNPay"
 /**
  * payment
  */
@@ -128,7 +119,7 @@ export {
   ADD_TO_CART,
   REMOVE_FROM_CART,
   DO_PAYMENT_MOMO,
-  CONFIRM_PAYMENT,
+  CONFIRM_PAYMENT_MOMO,
   GET_COURSE_DETAIL,
   GET_COURSE_BY_USER,
   GET_EVENTS_BY_USER,
@@ -144,7 +135,7 @@ export {
   GET_SAVED_SCORE_BY_TRAINING_PART,
   GET_ALL_CERTIFICATE_BY_USER,
   ADD_TO_FEEDBACK,
-  APPLY_DISCOUNT_USER,
+  UPDATE_DISCOUNT_USER,
   GET_COUPONS_BY_USER,
   CREATE_CERTIFICATE,
   GET_CERTIFICATE_BY_COURSE,
@@ -156,20 +147,19 @@ export {
   FORGOT_PASSWORD_URL,
   VERIFY_CODE_URL,
   RESET_PASSWORD,
+  BASE_URL_CREATE_COURSE,
+  BASE_URL_COURSE,
   GET_FEEDBACKS_WITH_FIVE_RATING,
   GET_COURSES_WITH_DISCOUNT,
   GET_NOTES_BY_COURSE_AND_USER,
   ADD_NOTE_BY_COURSE_AND_USER,
   UPDATE_NOTE_BY_COURSE_AND_USER,
   DELETE_NOTE_BY_COURSE_AND_USER,
-  BASE_URL_EVENT,
-  BASE_URL_CATEGORY,
-  BASE_URL_UPDATE_COURSE,
-  BASE_URL_CREATE_EVENT,
-  BASE_URL_UPDATE_EVENT,
-  BASE_URL_CREATE_CATEGORY,
-  BASE_URL_UPDATE_CATEGORY,
-  BASE_URL_CREATE_COURSE,
-  BASE_URL_COURSE,
-  BASE_URL_USER,
+  TOGGLE_FAVORITE_COURSE,
+  GET_ALL_FAVORITE_COURSE_BY_COURSE,
+  GET_PURCHASE_HISTORY,
+  GET_COURSES_WITH_FREE,
+  ADD_COURSE_FREE,
+  DO_PAYMENT_VNPAY,
+  CONFIRM_PAYMENT_VNPAY,
 };

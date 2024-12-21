@@ -1,397 +1,194 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DoCallAPIWithToken } from "../../../services/HttpService";
-import { BASE_URL_CATEGORY, BASE_URL_CREATE_COURSE } from "../../../constants/API";
-import AdminShared from "../Shared/AdminShared";
+import * as yup from "yup";
+import {
+  APIRegisterRequest,
+  RegisterRequest,
+} from "../../../model/Authentication";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import {
+  DoCallAPIWithOutToken,
+  DoCallAPIWithToken,
+} from "../../../services/HttpService";
+import { BASE_URL_CREATE_COURSE, REGISTER_URL } from "../../../constants/API";
+import { HTTP_OK } from "../../../constants/HTTPCode";
+import DataLoader from "../../../components/lazyLoadComponent/DataLoader";
+import AuthenticationShared from "../../Client/Authentication/Shared/AuthenticationShared";
+import { CourseRequest } from "../../../model/Course";
 
-const CreateCourse: React.FC = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate();
-
-  const [categories, setCategories] = useState<any[]>([]);
-  const [formData, setFormData] = useState({
-    courseName: "",
-    courseType: "ONLINE",
-    courseDescription: "",
-    coursePrice: "",
-    requirements: "",
-    courseContent: "",
-    startDate: "",
-    endDate: "",
-    registrationDeadline: "",
-    instructor: "",
-    maxAttendees: "",
-    changedBy: "admin",
-    imageUrl: "",
-    dateChange: "",
-    dateCreate: "",
-    registeredUsers: "0",
-    isDeleted: false,
-    categories: [] as string[],
+  const schema = yup.object().shape({
+    courseName: yup
+      .string()
+      .min(8, "Tên tài khoản phải có ít nhất 8 ký tự")
+      .max(24, "Tên tài khoản không được vượt quá 24 ký tự")
+      .required("Tên tài khoản là bắt buộc"),
   });
-  const formatDate = (isoDate: string) => {
-    return isoDate ? isoDate.split("T")[0] : "";
-  };
 
+  const doRegister = (request: CourseRequest) => {
+    const formData = new FormData();
+    formData.append("courseName", request.courseName);
 
-  const formatCurrentDate = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const date = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-    return `${year}-${month}-${date}T${hours}:${minutes}:${seconds}`;
-  };
-
-  const currentDate = formatCurrentDate();
-
-  useEffect(() => {
-    DoCallAPIWithToken(BASE_URL_CATEGORY, "get")
-      .then((response) => {
-        if (response.status === 200) {
-          setCategories(response.data);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching categories", error);
-      });
-  }, []);
-  const toISODate = (date: string) => `${date}T00:00:00`;
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value, // Đảm bảo name của từng trường trùng khớp với key trong formData
-    }));
-  };
-
-  // Đối với phần nhập liệu là các `select` (ví dụ thể loại), cần xử lý như sau:
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategoryIds = Array.from(e.target.selectedOptions, (option) => option.value);
-    setFormData((prevData) => ({
-      ...prevData,
-      categories: selectedCategoryIds,
-    }));
-  };
-
-
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      imageUrl: e.target.value.trim(),
-    });
-  };
-
-  const formatDateToLocalDateTime = (date: string) => {
-    const dateObject = new Date(date);
-    if (isNaN(dateObject.getTime())) {
-      alert("Ngày không hợp lệ");
-      return "";
-    }
-    return dateObject.toISOString();  // Chuyển thành chuỗi ISO 8601 đầy đủ, bao gồm giờ
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Kiểm tra các trường bắt buộc
-    if (
-      !formData.courseName ||
-      !formData.courseDescription ||
-      !formData.coursePrice ||
-      !formData.startDate ||
-      !formData.endDate ||
-      !formData.registrationDeadline ||
-      !formData.instructor ||
-      !formData.maxAttendees ||
-      !formData.changedBy
-    ) {
-      alert("Vui lòng điền đầy đủ thông tin");
-      return;
-    }
-
-
-    // Kiểm tra giá khóa học hợp lệ
-    const formattedPrice = formData.coursePrice.trim() || "0.0";
-    if (isNaN(parseFloat(formattedPrice)) || parseFloat(formattedPrice) <= 0) {
-      alert("Giá khóa học phải là một số dương.");
-      return;
-    }
-
-    // Kiểm tra số học viên tối đa hợp lệ
-    const formattedMaxAttendees = formData.maxAttendees.trim() || "10";
-    if (isNaN(parseInt(formattedMaxAttendees)) || parseInt(formattedMaxAttendees) <= 0) {
-      alert("Số học viên tối đa phải là một số dương.");
-      return;
-    }
-
-    // Kiểm tra thể loại
-    if (formData.categories.length === 0) {
-      alert("Vui lòng chọn ít nhất một thể loại.");
-      return;
-    }
-
-    // Sử dụng toISODate để chuyển đổi ngày thành chuỗi ISO 8601 đầy đủ
-    const CourseRequest = new FormData();
-    CourseRequest.append("courseName", formData.courseName);
-    CourseRequest.append("courseType", formData.courseType);
-    CourseRequest.append("courseDescription", formData.courseDescription);
-    CourseRequest.append("coursePrice", formattedPrice);
-    CourseRequest.append("requirements", formData.requirements);
-    CourseRequest.append("courseContent", formData.courseContent);
-    CourseRequest.append("startDate", toISODate(formData.startDate)); // Dùng toISODate
-    CourseRequest.append("endDate", toISODate(formData.endDate)); // Dùng toISODate
-    CourseRequest.append("registrationDeadline", toISODate(formData.registrationDeadline)); // Dùng toISODate
-    CourseRequest.append("instructor", formData.instructor);
-    CourseRequest.append("maxAttendees", formattedMaxAttendees);
-    CourseRequest.append("imageUrl", formData.imageUrl);
-    CourseRequest.append("categories", JSON.stringify(formData.categories));
-    CourseRequest.append("isDeleted", String(formData.isDeleted)); // Chuyển boolean thành string 'true' hoặc 'false'
-    CourseRequest.append("changedBy", formData.changedBy);
-    CourseRequest.append("dateChange", currentDate);
-    CourseRequest.append("dateCreate", currentDate);
-    CourseRequest.append("registeredUsers", formData.registeredUsers);
-    // console.log("code request: " + formData);
-    // console.log("code request: " + formData.courseName);
-    // console.log("code request: " + formData.courseType);
-    // console.log("code request: " + formData.courseContent);
-    // console.log("code request: " + formData.courseDescription);
-    // console.log("code request: " + formData.coursePrice);
-    // console.log("code request: " + formData.requirements);
-    // console.log("code request: " + formData.startDate);
-    // console.log("code request: " + formData.endDate);
-    // console.log("code request: " + formData.registrationDeadline);
-    // console.log("code request: " + formData.instructor);
-    // console.log("code request: " + formData.maxAttendees);
-    // console.log("code request: " + formData.imageUrl);
-    // console.log("code request: " + formData.categories);
-    // console.log("code request: " + formData.isDeleted);
-    // console.log("code request: " + formData.changedBy);
-    // console.log("code request: " + formData.dateChange);
-    // console.log("code request: " + formData.dateCreate);
-    // console.log("code request: " + formData.registeredUsers);
-
-
-    // Gửi yêu cầu API
-    DoCallAPIWithToken(BASE_URL_CREATE_COURSE, "post", CourseRequest)
+    DoCallAPIWithToken(BASE_URL_CREATE_COURSE, "post", formData)
       .then((res) => {
-        if (res.status === 200) {
-          navigate("/admin/course");
+        if (res.status === HTTP_OK) {
+          navigate("/login");
         }
       })
-      .catch((err) => {
-        if (err.response) {
-          console.error("Lỗi từ server:", err.response.data);
-          alert(`Lỗi từ server: ${err.response.data.message}`);
-        } else {
-          console.error("Lỗi hệ thống:", err.message);
-          alert(`Lỗi hệ thống: ${err.message}`);
-        }
-      });
-  };
-
-
-
-  const handleBack = () => {
-    navigate("/admin/course");
+      .catch((err) => {});
   };
 
   return (
-    <AdminShared>
-      <h1 className="text-center text-primary mb-5 pt-4">Thêm Khóa Học Mới</h1>
-      <div className="container bg-white p-5 rounded shadow" style={{ maxWidth: "1200px", margin: "0 auto", border: "1px solid #dee2e6" }}>
-        <form onSubmit={handleSubmit}>
-          <div className="row">
-            <div className="col-md-6 mb-4">
-              <label className="form-label fw-bold">Tên khóa học</label>
-              <input
-                type="text"
-                className="form-control"
-                name="courseName"
-                value={formData.courseName} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập tên khóa học"
-              />
+    <AuthenticationShared>
+      <Formik
+        initialValues={{
+          courseName: "",
+        }}
+        validationSchema={schema}
+        onSubmit={(values: CourseRequest) => {
+          const requestPayload: CourseRequest = {
+            courseName: values.courseName,
+          };
+          doRegister(requestPayload);
+        }}
+        validateOnChange
+      >
+        {({}) => (
+          <div>
+            <h1 className="text-center ">Thêm khóa học mới</h1>
+            <hr />
+            <div className="container">
+              <Form>
+                <div className="text-danger"></div>
+                <div className="form-group">
+                  <label className="control-label">Tên khóa học</label>
+                  <Field
+                    className="form-control"
+                    name="courseName"
+                    type="text"
+                  />
+                  <ErrorMessage
+                    name="courseName"
+                    component="div"
+                    className="text-danger"
+                  />
+                </div>
+                {/* <div className="form-group">
+                  <label>Hình thức:</label>
+                  <select className="form-control">
+                    <option value="">Online</option>
+                    <option value="">Offline</option>
+                  </select>
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label"> Mô tả chi tiết</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Giá</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Yêu cầu</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Nội dung</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+
+                <div className="form-group">
+                  <label className="control-label">Ngày bắt đầu </label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Ngày kết thúc</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Hạn đăng ký</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+
+                <div className="form-group" id="instructorFormGroup">
+                  <label className="control-label">Giảng viên</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label"></label>
+                  <input type="checkbox" id="toggleInstructor" />
+                  <span>
+                    Click vào đây sẽ lấy tên trong hồ sơ tài khoản của bạn!
+                  </span>
+                </div>
+
+                <div className="form-group">
+                  <label className="control-label">Số học viên tối đa</label>
+                  <input className="form-control" />
+                  <span className="text-danger"></span>
+                </div>
+                <div className="form-group">
+                  <label className="control-label">Hình ảnh</label>
+                  <div className="custom-file">
+                    <input
+                      className="custom-file-input"
+                      type="file"
+                      id="customFile"
+                      accept="image/*"
+                    />
+                    <label className="custom-file-label" htmlFor="customFile">
+                      Chọn tệp
+                    </label>
+                  </div>
+                  <span className="text-danger"></span>
+                </div>
+
+                <div className="form-group">
+                  <label>Thể Loại:</label>
+                  <div className="checkbox">
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="selectedCategories"
+                        value="@category.Value"
+                      />
+                      Thể loại
+                    </label>
+                  </div>
+                </div> */}
+
+                <div className="form-group text-center">
+                  <input
+                    type="submit"
+                    value="Thêm khóa học"
+                    className="btn btn-outline-info btn-lg btn-block"
+                  />
+                </div>
+              </Form>
             </div>
-
-            <div className="col-md-6 mb-4">
-              <label className="form-label fw-bold">Hình thức</label>
-              <select
-                className="form-select"
-                name="courseType"
-                value={formData.courseType} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-              >
-                <option value="ONLINE">ONLINE</option>
-                <option value="OFFLINE">OFFLINE</option>
-              </select>
-            </div>
-
-            <div className="col-12 mb-4">
-              <label className="form-label fw-bold">Mô tả chi tiết</label>
-              <textarea
-                className="form-control"
-                name="courseDescription"
-                value={formData.courseDescription} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                // rows={3}
-                placeholder="Nhập mô tả chi tiết về khóa học"
-              ></textarea>
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Giá</label>
-              <input
-                type="number"
-                className="form-control"
-                name="coursePrice"
-                value={formData.coursePrice} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập giá khóa học"
-              />
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Yêu cầu</label>
-              <input
-                type="text"
-                className="form-control"
-                name="requirements"
-                value={formData.requirements} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập các yêu cầu"
-              />
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Nội dung</label>
-              <textarea
-                className="form-control"
-                name="courseContent"
-                value={formData.courseContent} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                rows={2}
-                placeholder="Nhập nội dung khóa học"
-              ></textarea>
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Ngày bắt đầu</label>
-              <input
-                type="date"
-                className="form-control"
-                name="startDate"
-                value={formData.startDate} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-              />
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Ngày kết thúc</label>
-              <input
-                type="date"
-                className="form-control"
-                name="endDate"
-                value={formData.endDate} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-              />
-            </div>
-
-            <div className="col-md-4 mb-4">
-              <label className="form-label fw-bold">Hạn đăng ký</label>
-              <input
-                type="date"
-                className="form-control"
-                name="registrationDeadline"
-                value={formData.registrationDeadline} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-              />
-            </div>
-
-            <div className="col-md-6 mb-4">
-              <label className="form-label fw-bold">Giảng viên</label>
-              <input
-                type="text"
-                className="form-control"
-                name="instructor"
-                value={formData.instructor} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập tên giảng viên"
-              />
-            </div>
-
-            <div className="col-md-6 mb-4">
-              <label className="form-label fw-bold">Số học viên tối đa</label>
-              <input
-                type="number"
-                className="form-control"
-                name="maxAttendees"
-                value={formData.maxAttendees} // Liên kết với giá trị trong state
-                onChange={handleInputChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập số học viên tối đa"
-              />
-            </div>
-
-            <div className="col-12 mb-4">
-              <label className="form-label fw-bold">Link hình ảnh</label>
-              <input
-                type="text"
-                className="form-control"
-                name="imageUrl"
-                value={formData.imageUrl} // Liên kết với giá trị trong state
-                onChange={handleImageUrlChange} // Đảm bảo onChange được xử lý đúng
-                placeholder="Nhập đường link ảnh"
-              />
-            </div>
-
-            <div className="col-12 mb-4">
-              <label className="form-label fw-bold">Thể Loại</label>
-              <select
-                className="form-select"
-                name="categories"
-                value={formData.categories} // Liên kết với state
-                onChange={handleCategoryChange} // Xử lý sự kiện thay đổi
-              >
-                <option value="" disabled>
-                  Chọn thể loại
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.categoryName}>
-                    {category.categoryName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-
-            {/* <div className="col-12 mb-4">
-              <label className="form-label fw-bold">Khóa học đã xóa</label>
-              <input
-                type="checkbox"
-                className="form-check-input"
-                name="deleted"
-                checked={formData.deleted}  // Kiểm tra trạng thái của checkbox
-                onChange={(e) => setFormData({ ...formData, deleted: e.target.checked })} // Cập nhật giá trị khi checkbox thay đổi
-              />
-            </div> */}
-            <div className="col-12 d-grid mb-4">
-              <button type="submit" className="btn btn-primary btn-lg">
-                Thêm Khóa Học
-              </button>
+            <div>
+              <a className="btn btn-outline-danger">Quay lại</a>
             </div>
           </div>
-        </form>
+        )}
+      </Formik>
+      <p className="text-center" style={{ marginTop: "8px" }}>
+        <span>Đã Có Tài Khoản ? </span>
 
-        <div className="mt-2 text-center">
-          <button onClick={handleBack} className="btn btn-danger btn-lg">
-            Quay Lại
-          </button>
-        </div>
-      </div>
-    </AdminShared>
+        <span style={{ color: "#06BBCC", cursor: "pointer" }}> Đăng Nhập</span>
+      </p>
+    </AuthenticationShared>
   );
 };
 
-export default CreateCourse;
+export default Register;
