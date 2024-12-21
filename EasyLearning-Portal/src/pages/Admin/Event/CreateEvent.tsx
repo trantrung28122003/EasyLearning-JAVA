@@ -1,132 +1,160 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { DoCallAPIWithToken } from "../../../services/HttpService";
+import { BASE_URL_CREATE_EVENT } from "../../../constants/API";
 import AdminShared from "../Shared/AdminShared";
 
 const CreateEvent: React.FC = () => {
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    eventName: "",
+    eventType: "ONLINE",
+    location: "",
+    dateStart: "",
+    dateEnd: "",
+    isDeleted: false,
+    dateCreate: "",
+    dateChange: "",
+    changedBy: "admin",
+  });
+
+  const formatCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const date = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    return `${year}-${month}-${date}T${hours}:${minutes}:${seconds}`;
+  };
+
+  const currentDate = formatCurrentDate();
+  const toISODate = (date: string) => `${date}T00:00:00`;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.eventName || !formData.dateStart || !formData.dateEnd) {
+      alert("Vui lòng điền đầy đủ thông tin sự kiện.");
+      return;
+    }
+
+    // Kiểm tra giá trị ngày tháng trước khi gửi
+    console.log("Formatted Start Date:", toISODate(formData.dateStart));
+    console.log("Formatted End Date:", toISODate(formData.dateEnd));
+
+
+    // Tạo đối tượng JSON thay vì FormData
+    const eventRequest = {
+      eventName: formData.eventName,
+      eventType: formData.eventType,
+      location: formData.location,
+      dateStart: toISODate(formData.dateStart),
+      dateEnd: toISODate(formData.dateEnd),
+      isDeleted: formData.isDeleted,
+      dateChange: currentDate,
+      dateCreate: currentDate,
+      changedBy: formData.changedBy,
+    };
+
+    // Gọi API với dữ liệu JSON
+    DoCallAPIWithToken(BASE_URL_CREATE_EVENT, "post", eventRequest)
+      .then((res) => {
+        if (res.status === 200) {
+          navigate("/admin/event");
+        }
+      })
+      .catch((err) => {
+        if (err.response) {
+          alert(`Lỗi từ server: ${err.response.data.message}`);
+        } else {
+          alert(`Lỗi hệ thống: ${err.message}`);
+        }
+      });
+  };
+
+  const handleBack = () => {
+    navigate("/admin/event");
+  };
+
   return (
     <AdminShared>
-      <h1 className="text-center">Thêm nội dung buổi học cho khóa học</h1>
-      <h1 className="text-center" style={{ marginBottom: "40px" }}>
-        <strong>@ViewBag.CourseName</strong>{" "}
-      </h1>
-      <hr />
-      <div className="container">
-        <form encType="multipart/form-data">
-          <div className="text-danger"></div>
-          <input
-            type="hidden"
-            id="CourseId"
-            name="CourseId"
-            value="@ViewBag.CourseId"
-          />
-
-          <div className="form-group">
-            <label className="control-label">Nội dung buổi học</label>
-            <input className="form-control" id="eventNameInput" />
-            <span className="text-danger"></span>
-          </div>
-          <div className="form-group">
-            <label>Hình thức:</label>
-            <select className="form-control" id="EventType">
-              <option value="">Trực tuyến</option>
-              <option value="">Trực tiếp</option>
-            </select>
-            <span className="text-danger"></span>
-          </div>
-
-          <div className="form-group" id="onlineRoom">
-            <label className="control-label">Link phòng học online</label>
-            <input type="text" className="form-control" />
-            <span className="text-danger"></span>
-          </div>
-
-          <div className="form-group" id="offlineLocation">
-            <label className="control-label">Địa chỉ</label>
-            <input className="form-control" />
-            <span className="text-danger"></span>
-          </div>
-          <div className="form-group">
-            <label className="control-label">Ngày bắt đầu</label>
-            <input className="form-control" />
-            <span className="text-danger"></span>
-          </div>
-          <div className="form-group">
-            <label className="control-label">Ngày kết thúc</label>
-            <input className="form-control" />
-            <span className="text-danger"></span>
-          </div>
-
-          <h1 className="text-center" style={{ marginTop: "20px" }}>
-            Thêm nội dung phần học cho buổi học
-          </h1>
-          <h2 className="text-center" id="lessonHeading"></h2>
-          <hr />
-
-          <div className="container">
-            <div className="form-group">
-              <label className="control-label">Tên phần học</label>
-              <input className="form-control" />
-              <span className="text-danger"></span>
-            </div>
-            <div className="form-group">
-              <label className="control-label">Thời gian bắt đầu</label>
-              <input className="form-control" />
-              <span className="text-danger"></span>
-            </div>
-            <div className="form-group">
-              <label className="control-label">Thời gian kết thúc</label>
-              <input className="form-control" />
-              <span className="text-danger"></span>
-            </div>
-            <div className="form-group">
-              <label className="control-label">Mô tả</label>
-              <input className="form-control" />
-              <span className="text-danger"></span>
-            </div>
-            <div className="form-group">
-              <label>Hình thức:</label>
-              <select className="form-control">
-                <option value="">Lý thuyết</option>
-                <option value="">Bài tập</option>
-              </select>
-              <span className="text-danger"></span>
-            </div>
-            {/* @if (ViewBag.IsOnlineCourse)
-            {
-                <div className="form-group">
-                    <label className="control-label">Chọn nguồn video:</label><br>
-                    <input type="radio" name="videoSource" id="onlineSource" checked style="margin-left: 24px"> <label for="onlineSource">Từ đường dẫn trực tuyến</label><br>
-                    <input type="radio" name="videoSource" id="uploadSource" style="margin-left: 24px"> <label for="uploadSource">Từ máy tính</label>
-                </div>
-
-                <div id="onlineVideo" className="form-group">
-                    <label asp-for="TrainingPartViewModel.VideoUrl" className="control-label">Đường dẫn video</label>
-                    <input asp-for="TrainingPartViewModel.VideoUrl" className="form-control" />
-                    <span asp-validation-for="TrainingPartViewModel.VideoUrl" className="text-danger"></span>
-                </div>
-                <div className="form-group" id="uploadVideo" style="display: none;">
-                    <label asp-for="TrainingPartViewModel.Video" className="control-label">Tải lên video từ máy tính:</label>
-                    <input asp-for="TrainingPartViewModel.Video" className="form-control" type="file" />
-                    <span asp-validation-for="TrainingPartViewModel.VideoUrl" className="text-danger"></span>
-                </div>
-
-                <div className="form-group">
-                    <input type="checkbox" asp-for="TrainingPartViewModel.IsFree" id="IsFree" />
-                    <label asp-for="TrainingPartViewModel.IsFree" className="control-label">Miễn phí phần bài học này</label>
-                    <span asp-validation-for="TrainingPartViewModel.IsFree" className="text-danger"></span>
-                </div>
-            } */}
-          </div>
-          <div className="form-group text-center">
+      <h1 className="text-center text-primary mb-5 pt-4">Thêm Buổi Học Mới</h1>
+      <div className="container bg-white p-5 rounded shadow" style={{ maxWidth: "1200px", margin: "0 auto", border: "1px solid #dee2e6" }}>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="form-label fw-bold">Tên buổi học</label>
             <input
-              type="submit"
-              value="Thêm một buổi học"
-              className="btn btn-outline-info btn-lg btn-block"
+              type="text"
+              className="form-control"
+              name="eventName"
+              value={formData.eventName}
+              onChange={handleInputChange}
+              placeholder="Nhập tên sự kiện"
             />
           </div>
+
+          <div className="mb-4">
+            <label className="form-label fw-bold">Hình thức</label>
+            <select className="form-select" name="eventType" value={formData.eventType} onChange={handleInputChange}>
+              <option value="ONLINE">ONLINE</option>
+              <option value="OFFLINE">OFFLINE</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="form-label fw-bold">Link phòng học online/offline</label>
+            <input
+              type="text"
+              className="form-control"
+              name="location"
+              value={formData.location}
+              onChange={handleInputChange}
+              placeholder="Nhập link phòng học online/offline"
+            />
+          </div>
+
+          <div className="row">
+            <div className="col-md-6 mb-4">
+              <label className="form-label fw-bold">Ngày bắt đầu</label>
+              <input
+                type="date"
+                className="form-control"
+                name="dateStart"
+                value={formData.dateStart}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="col-md-6 mb-4">
+              <label className="form-label fw-bold">Ngày kết thúc</label>
+              <input
+                type="date"
+                className="form-control"
+                name="dateEnd"
+                value={formData.dateEnd}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          <div className="text-center">
+            <button type="submit" className="btn btn-primary btn-lg w-100">Tạo Sự Kiện</button>
+          </div>
         </form>
-      </div>
-      <div>
-        <a className="btn btn-outline-danger">Quay lại</a>
+
+        <div className="mt-3 text-center">
+          <button onClick={handleBack} className="btn btn-danger btn-lg">Quay Lại</button>
+        </div>
       </div>
     </AdminShared>
   );
