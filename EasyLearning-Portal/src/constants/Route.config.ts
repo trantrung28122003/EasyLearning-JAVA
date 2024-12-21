@@ -80,7 +80,7 @@ export const RoutesConfig: ApplicationRoute[] = [
     path: "/admin/course/create",
     component: LazyLoadComponent(import("../pages/Admin/Course/CreateCourse")),
     isProtected: true,
-    isAdmin: false,
+    isAdmin: true,
   },
   {
     path: "/admin/course/details",
