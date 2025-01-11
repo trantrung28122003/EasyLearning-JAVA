@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_elearning/src/features/Authentication/screens/logout/account_screen.dart';
+import 'package:flutter_application_elearning/src/features/shop/screens/Course_screen/Course_screen.dart';
+import 'package:flutter_application_elearning/src/features/shop/screens/Course_screen/SearchCourse.dart';
 import 'package:flutter_application_elearning/src/features/shop/screens/home/home.dart';
-import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:get/get.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -18,17 +21,15 @@ class NavigationMenu extends StatelessWidget {
           backgroundColor: Colors.white,
           selectedIndex: controller.selectedIndex.value,
           onDestinationSelected: (index) {
-            print('Selected index: $index'); // Debug
             controller.selectedIndex.value = index;
           },
-          // Debug
           destinations: const [
             NavigationDestination(icon: Icon(Iconsax.home), label: 'Trang Chủ'),
             NavigationDestination(
                 icon: Icon(Iconsax.search_normal), label: 'Tìm Kiếm'),
             NavigationDestination(icon: Icon(Iconsax.note), label: 'Học Tập'),
-            NavigationDestination(
-                icon: Icon(Iconsax.heart), label: 'Mong Muốn'),
+            // NavigationDestination(
+            //     icon: Icon(Iconsax.heart), label: 'Mong Muốn'),
             NavigationDestination(icon: Icon(Iconsax.user), label: 'Tài Khoản'),
           ],
         ),
@@ -42,12 +43,11 @@ class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
 
   final screens = [
-    Container(
-      child: const HomeScreen(),
-    ),
-    Container(color: Colors.purple),
-    Container(color: Colors.orange),
-    Container(color: Colors.blue),
-    Container(color: Colors.yellow),
+    Container(child: const HomeScreen()), // Thêm các màn hình của bạn ở đây
+    Container(child: const SearchCourseScreen()),
+    Container(child: const CourseScreen()),
+    // Container(color: Colors.blue),
+    Container(child: const AccountScreen()),
+    // Container(color: Colors.blue),
   ];
 }

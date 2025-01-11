@@ -15,6 +15,7 @@ class TTexts {
   static const String tNext = "Tiếp theo";
   static const String tLogin = "Đăng nhập";
   static const String tEmail = "E-Mail";
+  static const String tuserName = "User Name";
   static const String tSignup = "Đăng ký";
   static const String tPhoneNo = "Số điện thoại";
   static const String tPassword = "Mật khẩu";
@@ -44,6 +45,6 @@ class TTexts {
   static const String tOtpMessage = "Nhập mã xác minh được được gửi đến";
 
 //home
-  static const String tHomeAppBarTitle = "Good day for shopping";
+  // static const String tHomeAppBarTitle = "Good day for shopping";
   static const String tHomeAppBarSubTitle = "ELearning";
 }

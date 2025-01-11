@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const BASE_URL_UPDATE_COURSE = BASE_URL_COURSE + "/update";
+// const BASE_URL_UPDATE_COURSE = BASE_URL_COURSE + "/update";
 import { DoCallAPIWithToken } from "../../../services/HttpService";
-import { BASE_URL_COURSE } from "../../../constants/API";
+import { BASE_URL_COURSE, BASE_URL_UPDATE_COURSE } from "../../../constants/API";
 
 const UpdateCourse: React.FC = () => {
   const location = useLocation();

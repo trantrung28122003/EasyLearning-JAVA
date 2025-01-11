@@ -24,7 +24,7 @@ const Login: React.FC = () => {
   const schema = yup.object().shape({
     userName: yup
       .string()
-      .min(8, "Tên ài khoản phải có ít nhất 8 ký tự")
+      .min(8, "Tên tài khoản phải có ít nhất 8 ký tự")
       .max(30, "Tên tài khoản tối đa 24 ký tự")
       .required("Tên tài khoản không được để trống"),
     password: yup.string().required("Mật khẩu không được để trống"),

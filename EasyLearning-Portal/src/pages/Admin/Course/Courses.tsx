@@ -3,7 +3,7 @@ import AdminShared from "../Shared/AdminShared";
 import { Course } from "../../../model/Course";
 import { DoCallAPIWithToken } from "../../../services/HttpService";
 import { BASE_URL_COURSE } from "../../../constants/API";
-import { HTTP_OK, HTTP_NO_CONTENT } from "../../../constants/HTTPCode";
+import { HTTP_OK } from "../../../constants/HTTPCode";
 import { useNavigate } from "react-router-dom";
 
 const Courses: React.FC = () => {

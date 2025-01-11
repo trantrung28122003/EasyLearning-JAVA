@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_elearning/src/constants/image_string.dart';
 import 'package:flutter_application_elearning/src/constants/sizes.dart';
 import 'package:flutter_application_elearning/src/constants/text_strings.dart';
+import 'package:flutter_application_elearning/src/features/Authentication/screens/login/login_screen.dart';
 
 class SignUpfooterWidget extends StatelessWidget {
   const SignUpfooterWidget({
@@ -28,7 +29,12 @@ class SignUpfooterWidget extends StatelessWidget {
           height: tFormHeight - 20,
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            );
+          },
           child: Text.rich(
             TextSpan(
                 text: TTexts.tAlreadyHaveAnAccount,

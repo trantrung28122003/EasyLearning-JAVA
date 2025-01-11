@@ -19,16 +19,16 @@ class TCartCounterIcon extends StatelessWidget {
             )),
         Positioned(
           right: 0,
-          child: Container(
+          child: SizedBox(
             width: 18,
             height: 18,
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(100),
-            ),
+            // decoration: BoxDecoration(
+            //   color: Colors.black,
+            //   borderRadius: BorderRadius.circular(100),
+            // ),
             child: Center(
               child: Text(
-                '2',
+                '',
                 style: Theme.of(context)
                     .textTheme
                     .labelLarge!

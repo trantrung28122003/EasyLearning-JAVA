@@ -32,7 +32,7 @@ class WelcomeScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               Text(
-                "Bạn có thể đăng kí toàn khaorn bên dưới hoặc đăng nhập nếu có tài khoản",
+                "Bạn có thể đăng kí toàn khoản bên dưới hoặc đăng nhập nếu có tài khoản",
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),

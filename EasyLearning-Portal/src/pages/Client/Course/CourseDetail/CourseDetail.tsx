@@ -94,7 +94,7 @@ const CourseDetail: React.FC = () => {
         setIsFavorited(data.isFavorited);
         setIsFree(isFree);
       }
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const toggleEventDetails = (eventName: string) => {
@@ -131,8 +131,10 @@ const CourseDetail: React.FC = () => {
       const URL = ADD_TO_CART + `?courseId=${courseId}`;
       DoCallAPIWithToken(URL, "post").then((res) => {
         if (res.data.code === HTTP_OK) {
-        } else if (res.data.code === 400) {
-          navigate("/shoppingCart");
+          if (courseId) {
+            navigate("/shoppingCart");
+            fetchCourseStatus(courseId);
+          }
         }
       });
     }
@@ -231,9 +233,8 @@ const CourseDetail: React.FC = () => {
                             <i className="fas fa-spinner fa-spin"></i>
                           ) : (
                             <i
-                              className={`${
-                                isFavorited ? "fas fa-heart" : "far fa-heart"
-                              }`}
+                              className={`${isFavorited ? "fas fa-heart" : "far fa-heart"
+                                }`}
                             ></i>
                           )}
                         </div>
@@ -304,16 +305,15 @@ const CourseDetail: React.FC = () => {
                 <div className="row">
                   <a
                     onClick={() => addToCart()}
-                    className={`flex-shrink-0 btn btn-sm btn-primary px-3 ${
-                      isCourseFull || isRegistrationDateExpired
-                        ? "disabled"
-                        : ""
-                    }`}
+                    className={`flex-shrink-0 btn btn-sm btn-primary px-3 ${isCourseFull || isRegistrationDateExpired
+                      ? "disabled"
+                      : ""
+                      }`}
                     style={{
                       borderRadius: "30px",
                       fontSize: "18px",
                     }}
-                    // disabled={isCourseFull || isRegistrationDateExpired}
+                  // disabled={isCourseFull || isRegistrationDateExpired}
                   >
                     {isLoadingAddCart ? (
                       <i className="fas fa-spinner fa-spin"></i>
@@ -322,14 +322,14 @@ const CourseDetail: React.FC = () => {
                         {isPurchased
                           ? "Bắt Đầu Học Ngay"
                           : isInCart
-                          ? "Đi Tới Giỏ Hàng"
-                          : isCourseFull && isRegistrationDateExpired
-                          ? "Ngày đăng ký khóa học đã hết hạn và đã đủ số lượng đăng kí"
-                          : isCourseFull
-                          ? "Khóa học đã đủ số lượng đăng kí"
-                          : isRegistrationDateExpired
-                          ? "Ngày đăng ký khóa học đã hết hạn"
-                          : "Tham Gia Ngay"}
+                            ? "Đi Tới Giỏ Hàng"
+                            : isCourseFull && isRegistrationDateExpired
+                              ? "Ngày đăng ký khóa học đã hết hạn và đã đủ số lượng đăng kí"
+                              : isCourseFull
+                                ? "Khóa học đã đủ số lượng đăng kí"
+                                : isRegistrationDateExpired
+                                  ? "Ngày đăng ký khóa học đã hết hạn"
+                                  : "Tham Gia Ngay"}
                       </>
                     )}
                   </a>
@@ -394,11 +394,10 @@ const CourseDetail: React.FC = () => {
                               {classEvent.courseEventName} &nbsp;
                               <span className="icon">
                                 <i
-                                  className={`fas ${
-                                    openEvents[classEvent.courseEventName]
-                                      ? "fa-chevron-up"
-                                      : "fa-chevron-down"
-                                  }`}
+                                  className={`fas ${openEvents[classEvent.courseEventName]
+                                    ? "fa-chevron-up"
+                                    : "fa-chevron-down"
+                                    }`}
                                 ></i>
                               </span>
                             </dt>
@@ -474,11 +473,10 @@ const CourseDetail: React.FC = () => {
                               {[1, 2, 3, 4, 5].map((value) => (
                                 <span
                                   key={value}
-                                  className={`fas fa-star ${
-                                    value <= rating
-                                      ? "text-warning"
-                                      : "text-muted"
-                                  }`}
+                                  className={`fas fa-star ${value <= rating
+                                    ? "text-warning"
+                                    : "text-muted"
+                                    }`}
                                   style={{
                                     fontSize: "24px",
                                     cursor: "pointer",
@@ -552,11 +550,10 @@ const CourseDetail: React.FC = () => {
                                         {starRatings.map((i) => (
                                           <i
                                             key={i}
-                                            className={`fas fa-star fa-2x ${
-                                              i <= itemFeedback.feedbackRating
-                                                ? "text-warning"
-                                                : "text-muted"
-                                            }`}
+                                            className={`fas fa-star fa-2x ${i <= itemFeedback.feedbackRating
+                                              ? "text-warning"
+                                              : "text-muted"
+                                              }`}
                                           />
                                         ))}
                                       </span>

@@ -34,13 +34,24 @@ public class AuthenticationController {
     UserService userService;
 
     @PostMapping("/login")
-    public ApiResponse<AuthenticationResponse> authenticate (@RequestBody AuthenticationRequest request)
-    {
-        var result = authenticationService.authenticate(request);
-        return ApiResponse.<AuthenticationResponse>builder()
-                .result(result)
-                .build();
+    public ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+        AuthenticationResponse result = authenticationService.authenticate(request);
+
+        if (result != null && result.isAuthenticated()) {
+            // Đảm bảo rằng AuthenticationResponse chứa token
+            return ApiResponse.<AuthenticationResponse>builder()
+                    .code(200)
+                    .message("Login successful")
+                    .result(result)  // AuthenticationResponse phải chứa token
+                    .build();
+        } else {
+            return ApiResponse.<AuthenticationResponse>builder()
+                    .code(401)
+                    .message("Invalid credentials")
+                    .build();
+        }
     }
+
 
     @PostMapping("/loginWithGoogle")
     public ApiResponse<AuthenticationResponse> authenticateWithGoogle(@RequestBody Map<String, String> payload) {
@@ -52,7 +63,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ApiResponse<UserResponse> CreateUser(@Valid UserCreationRequest request, @RequestParam(value = "file", required = false) MultipartFile file) {
+    public ApiResponse<UserResponse> CreateUser(@Valid @RequestBody UserCreationRequest request, @RequestParam(value = "file", required = false) MultipartFile file) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request, file))
                 .build();

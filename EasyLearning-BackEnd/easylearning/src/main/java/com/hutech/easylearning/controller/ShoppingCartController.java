@@ -40,7 +40,7 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/addToCart")
-    public ApiResponse<ShoppingCartItem> createShoppingCartItem(@RequestParam String courseId) {
+    public ApiResponse<ShoppingCartItem> createShoppingCartItem(@RequestParam  String courseId) {
         try {
             boolean isCourseFull = courseService.isCourseOfflineFull(courseId);
             boolean isRegistrationDateExpired = courseService.isRegistrationDateExpired(courseId);
