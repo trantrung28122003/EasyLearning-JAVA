@@ -73,12 +73,16 @@ const Courses: React.FC = () => {
             <thead className="bg-primary text-white">
               <tr>
                 <th scope="col">Tên Khóa Học</th>
-                <th scope="col" className="text-center">Giá</th>
+                <th scope="col" className="text-center">
+                  Giá
+                </th>
                 <th scope="col">Ngày Bắt Đầu</th>
                 <th scope="col">Ngày Kết Thúc</th>
                 <th scope="col">Hạn Đăng Ký</th>
                 <th scope="col">Sĩ Số</th>
-                <th scope="col" className="text-center">Chức Năng</th>
+                <th scope="col" className="text-center">
+                  Chức Năng
+                </th>
               </tr>
             </thead>
             <tbody>

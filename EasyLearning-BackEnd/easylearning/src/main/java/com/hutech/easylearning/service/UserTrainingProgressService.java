@@ -69,7 +69,6 @@ public class UserTrainingProgressService {
 
     @Transactional
     public TrainingPartProgressResponse updatePartProgress(String trainingPartId, ScoreRequest scoreRequest) {
-
         var currentUser = userService.getMyInfo();
         UserTrainingProgress userTrainingProgress = userTrainingProgressRepository.findByUserIdAndTrainingPartId(currentUser.getId(), trainingPartId);
 

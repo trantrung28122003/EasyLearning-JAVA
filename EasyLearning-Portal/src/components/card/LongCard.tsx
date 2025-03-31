@@ -198,8 +198,13 @@ const LongCard: React.FC<CardProps> = ({ course }) => {
               ({course.feedbacks.length})
             </p>
             <p className="mb-1 text-truncate" style={{ fontSize: "14px" }}>
-              {totalLearningTime} tổng số giờ - {course.trainingParts.length}{" "}
-              bài giảng - cấp độ TẤT CẢ
+              <i
+                className={`fa ${
+                  course.courseType === "ONLINE" ? "fa-globe" : "fa-building"
+                } text-primary me-2`}
+              ></i>
+              {course.courseType === "ONLINE" ? "Trực tuyến" : "Trực tiếp"} -
+              {course.trainingParts.length} bài giảng - cấp độ TẤT CẢ
             </p>
           </div>
 

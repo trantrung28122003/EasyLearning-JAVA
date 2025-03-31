@@ -96,6 +96,10 @@ public class OrderService {
                         .build();
                 userTrainingProgressService.createUserTrainingProgress(userTrainingProgress);
             }
+
+            var course = courseRepository.findById(itemShoppingCart.getCourseId()).orElseThrow();
+            var currentRegistered = course.getRegisteredUsers();
+            course.setRegisteredUsers(currentRegistered + 1);
             var notificationResponse = notificationService.addNotificationByPurchaseCourse(itemShoppingCart.getCourseId());
 
             String destination = "/notifications";

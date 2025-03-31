@@ -34,6 +34,14 @@ export const RoutesConfig: ApplicationRoute[] = [
     isAdmin: false,
   },
   {
+    path: "/login123",
+    component: LazyLoadComponent(
+      import("../pages/Client/Authentication/login123")
+    ),
+    isProtected: false,
+    isAdmin: false,
+  },
+  {
     path: "/register",
     component: LazyLoadComponent(
       import("../pages/Client/Authentication/Register")

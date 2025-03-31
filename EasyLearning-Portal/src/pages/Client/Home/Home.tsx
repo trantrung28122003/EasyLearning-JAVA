@@ -107,7 +107,7 @@ const Home: React.FC = () => {
                         Các Khóa Học Tốt Nhất
                       </h5>
                       <h1 className="display-3 text-white animated slideInDown">
-                        Nền Tảng Bán Khóa Học Tốt Nhất Hiện Nay
+                        Nền Tảng Bán Khóa Học trực tuyến
                       </h1>
                       <a
                         href="/about"

@@ -43,7 +43,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
   );
 
   const [replyContent, setReplyContent] = useState<string>("");
-  
+
   const toggleReplies = (commentId: string) => {
     setVisibleReplies((prev) => ({
       ...prev,
@@ -119,6 +119,7 @@ const Comments: React.FC<CommentsProps> = ({ trainingPartId }) => {
         replyContent: replyContent,
         currentUserId: userInfo?.id,
       };
+
       if (parentReplyUserId) {
         replyRequest.parentReplyUserId = parentReplyUserId;
       }
