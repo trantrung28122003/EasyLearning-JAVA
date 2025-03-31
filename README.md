@@ -142,41 +142,100 @@ flutter pub get
 flutter run
 ```
 
-## 🖼️ Hình ảnh giao diện
+## 🎨 Hình ảnh giao diện
 
 ### 🔑 Xác thực & Tài khoản
 
-- **📚 Trang đăng nhập** ![Login](Docs/Images/login_page.png)
-- **👤 Hồ sơ tài khoản** ![Profile](Docs/Images/user_profile_page.png)
-- **📜 Lịch sử hóa đơn** ![Order History](Docs/Images/order_history_page.png)
-- **📚 Danh sách khóa học của tài khoản** ![Order History](Docs/Images/user_courses_page.png.)
-- **🏅 Danh sách chứng chỉ** ![Order History](Docs/Images/certificate_list_page.png)
+- **🔐 Trang đăng nhập**  
+  ![Login](Docs/Images/login_page.png)
+- **🆕 Trang đăng ký**  
+  ![Register](Docs/Images/register_page.png)
+- **👤 Hồ sơ cá nhân**  
+  ![Profile](Docs/Images/user_profile_page.png)
+- **📜 Lịch sử đơn hàng**  
+  ![Order History](Docs/Images/order_history_page.png)
+- **📚 Khóa học đã đăng ký**  
+  ![User Courses](Docs/Images/user_courses_page.png)
+- **🏆 Danh sách chứng chỉ**  
+  ![Certificates](Docs/Images/certificate_list_page.png)
 
-### 🎓 Học tập & Bài giảng
+### 🎓 Khóa học & Nội dung học tập
 
-- **🏠 Trang chủ** ![Home](Docs/Images/home_page.png)
-- **📚 Danh sách khóa học** ![Courses](Docs/Images/course_list_page.png)
-- **🎥 Học tập chính** ![Learning](Docs/Images/learning_main.png)
-- **📖 Bài tập trắc nghiệm** ![Quizz](Docs/Images/learning_quizz_page.png)
-- **📝 Ghi chú bài học** ![Notes](Docs/Images/note_page.png)
-- **🚫 Chống tua nhanh** ![Anti Skip](Docs/Images/learning_anti_skip_page.png)
-- **🏅 Cấp chứng chỉ** ![Certificate](Docs/Images/certificate_page.png)
-- **🏫 Thời khóa biểu** ![Certificate](Docs/Images/course_schedule_page.png)
+- **📚 Trang chi tiết khóa học**  
+  ![Course Detail](Docs/Images/course_detail_page.png)
+- **🌃 Học thừu**  
+  ![Trial Learning](Docs/Images/trial_learning.png)
+- **⭐ Đánh giá khóa học**  
+  ![Feedback](Docs/Images/course_feedback.png)
 
-### 💳 Thanh toán
+### 🏦 Học tập & Bài giảng
 
-- **💰 Chọn phương thức thanh toán** ![Payment Selection](Docs/Images/payment_selection_page.png)
-- **📲 Hiển thị mã thanh toán** ![Payment QR](Docs/Images/payment_qr_code_page.png)
+- **🏠 Trang chủ**  
+  ![Home](Docs/Images/home_page.png)
+- **📂 Danh sách khóa học**  
+  ![Course List](Docs/Images/course_list_page.png)
+- **🎥 Màn hình học tập chính**  
+  ![Learning Main](Docs/Images/learning_main.png)
+- **📝 Bài tập trắc nghiệm**  
+  ![Quiz](Docs/Images/learning_quizz_page.png)
+- **👒 Ghi chú bài học**  
+  ![Notes](Docs/Images/note_page.png)
+- **⛔ Chống tua nhanh**  
+  ![Anti Skip](Docs/Images/learning_anti_skip_page.png)
+- **🎓 Nhận chứng chỉ**  
+  ![Certificate](Docs/Images/certificate_page.png)
+- **📅 Thời khóa biểu**  
+  ![Schedule](Docs/Images/course_schedule_page.png)
+
+### 💳 Thanh toán & Mua hàng
+
+- **💰 Chọn phương thức thanh toán**  
+  ![Payment Selection](Docs/Images/payment_selection_page.png)
+- **📲 Hiển thị mã thanh toán**  
+  ![Payment QR Code](Docs/Images/payment_qr_code_page.png)
+- **🛒 Giỏ hàng**  
+  ![Cart](Docs/Images/cart_page.png)
+- **➕ Thêm vào giỏ hàng**  
+  ![Add to Cart](Docs/Images/cart_add_page.png)
 
 ### 💬 Giao tiếp & Tương tác
 
-- **💬 Bình luận** ![Comments](Docs/Images/comment_page.png)
-- **🔔 Thông báo** ![Notifications](Docs/Images/notification_page.png)
+- **💬 Bình luận & Thảo luận**  
+  ![Comments](Docs/Images/comment_page.png)
+- **🔔 Thông báo hệ thống**  
+  ![Notifications](Docs/Images/notification_page.png)
 
-### 🛒 Giỏ hàng & Mua sắm
+### 📱 Giao diện Mobile
 
-- **🛒 Giỏ hàng** ![Cart](Docs/Images/cart_page.png)
-- **➕ Thêm vào giỏ hàng** ![Add to Cart](Docs/Images/cart_add_page.png)
+- **🔐 Đăng nhập Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_login_page.png" alt="Mobile Login">
+  </p>
+
+- **🏠 Trang chủ Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_home_page.png" alt="Mobile Home">
+  </p>
+
+- **📂 Danh sách khóa học Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_course_list.png" alt="Mobile Course List">
+  </p>
+
+- **📚 Chi tiết khóa học Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_course_detail.png" alt="Mobile Course Detail">
+  </p>
+
+- **🛍️ Giỏ hàng Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_cart.png" alt="Mobile Cart">
+  </p>
+
+- **👤 Hồ sơ người dùng Mobile**
+  <p align="center">
+    <img src="Docs/Images/mobile_user_profile.png" alt="Mobile Profile">
+  </p>
 
 ### 🛠️ Quản trị viên
 
